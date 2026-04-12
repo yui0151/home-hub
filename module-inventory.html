@@ -112,7 +112,6 @@
     .screen-body {
       flex: 1;
       overflow-y: auto;
-      overflow-x: hidden;
       scrollbar-width: thin;
     }
 
@@ -149,48 +148,6 @@
       color: var(--text-light);
       text-transform: uppercase;
       letter-spacing: 0.05em;
-    }
-
-    /* Tab */
-    .tab-bar {
-      display: flex;
-      background: var(--pink-light);
-      border: 1px solid var(--border);
-      border-radius: 12px;
-      padding: 3px;
-      margin: 12px 16px;
-      gap: 3px;
-    }
-
-    .tab-btn {
-      flex: 1;
-      padding: 8px;
-      border: none;
-      border-radius: 9px;
-      font-family: 'Noto Sans TC', sans-serif;
-      font-size: 12px;
-      font-weight: 500;
-      cursor: pointer;
-      background: transparent;
-      color: var(--text-light);
-      transition: all 0.2s;
-    }
-
-    .tab-btn.active {
-      background: var(--white);
-      color: var(--text);
-      box-shadow: 0 1px 4px rgba(195, 109, 120, 0.15);
-    }
-
-    .badge {
-      display: inline-block;
-      background: var(--danger);
-      color: white;
-      border-radius: 8px;
-      padding: 1px 6px;
-      font-size: 10px;
-      margin-left: 4px;
-      font-weight: 600;
     }
 
     /* 搜尋與篩選 */
@@ -259,21 +216,8 @@
       border-color: var(--pink-main);
     }
 
-    .acc-arrow {
-      font-size: 10px;
-      color: var(--text-light);
-      transition: transform 0.2s;
-    }
-
-    .acc-header.open .acc-arrow {
-      transform: rotate(90deg);
-    }
-
-    .acc-dot {
-      width: 8px;
-      height: 8px;
-      border-radius: 50%;
-      flex-shrink: 0;
+    .acc-header input[type="checkbox"] {
+      cursor: pointer;
     }
 
     .acc-name {
@@ -296,12 +240,12 @@
     .acc-items {
       display: none;
       margin-top: 4px;
+      flex-direction: column;
+      gap: 4px;
     }
 
     .acc-items.open {
       display: flex;
-      flex-direction: column;
-      gap: 4px;
     }
 
     /* 庫存項目 */
@@ -316,11 +260,17 @@
       position: relative;
       overflow: hidden;
       transition: all 0.2s;
+      cursor: pointer;
     }
 
     .inv-item:hover {
       border-color: var(--pink-main);
       background: rgba(253, 246, 247, 0.5);
+    }
+
+    .inv-item.selected {
+      background: rgba(195, 109, 120, 0.1);
+      border-color: var(--pink-main);
     }
 
     .inv-item::before {
@@ -339,6 +289,13 @@
 
     .inv-item.low::before {
       background: var(--danger);
+    }
+
+    .inv-checkbox {
+      width: 20px;
+      height: 20px;
+      cursor: pointer;
+      accent-color: var(--pink-main);
     }
 
     .inv-icon {
@@ -495,6 +452,114 @@
     .fab:hover {
       background: var(--pink-dark);
     }
+
+    /* Modal */
+    .modal {
+      display: none;
+      position: fixed;
+      top: 0;
+      left: 0;
+      right: 0;
+      bottom: 0;
+      background: rgba(0, 0, 0, 0.5);
+      z-index: 200;
+      align-items: flex-end;
+    }
+
+    .modal.active {
+      display: flex;
+    }
+
+    .modal-content {
+      background: var(--card);
+      width: 100%;
+      border-radius: 20px 20px 0 0;
+      padding: 24px 16px 32px;
+      max-height: 85vh;
+      overflow-y: auto;
+    }
+
+    .modal-header {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      margin-bottom: 20px;
+    }
+
+    .modal-title {
+      font-family: 'Noto Serif TC', serif;
+      font-size: 20px;
+      font-weight: 600;
+    }
+
+    .modal-close {
+      font-size: 20px;
+      cursor: pointer;
+      color: var(--text-light);
+    }
+
+    .form-group {
+      margin-bottom: 16px;
+    }
+
+    .form-label {
+      font-size: 12px;
+      font-weight: 700;
+      letter-spacing: 0.1em;
+      color: var(--pink-main);
+      text-transform: uppercase;
+      margin-bottom: 6px;
+      display: block;
+    }
+
+    .form-input, .form-select {
+      width: 100%;
+      padding: 10px 12px;
+      border: 1.5px solid var(--border);
+      border-radius: 10px;
+      font-family: 'Noto Sans TC', sans-serif;
+      font-size: 14px;
+      color: var(--text);
+    }
+
+    .form-input:focus, .form-select:focus {
+      outline: none;
+      border-color: var(--pink-main);
+      box-shadow: 0 0 0 3px rgba(195, 109, 120, 0.1);
+    }
+
+    .form-actions {
+      display: flex;
+      gap: 8px;
+      margin-top: 24px;
+    }
+
+    .btn {
+      flex: 1;
+      padding: 12px;
+      border: none;
+      border-radius: 10px;
+      font-size: 13px;
+      font-weight: 600;
+      cursor: pointer;
+      font-family: 'Noto Sans TC', sans-serif;
+    }
+
+    .btn-primary {
+      background: var(--pink-main);
+      color: white;
+    }
+
+    .btn-secondary {
+      background: var(--bg);
+      border: 1.5px solid var(--border);
+      color: var(--text-mid);
+    }
+
+    .btn-danger {
+      background: rgba(198, 40, 40, 0.1);
+      color: var(--danger);
+    }
   </style>
   <script src="firebase-config.js"></script>
 </head>
@@ -509,7 +574,6 @@
       <div class="ah-title">庫存管理</div>
       <div class="ah-right">
         <button class="hbtn" onclick="goHome()">🏡</button>
-        <button class="hbtn" onclick="openCSV()">CSV</button>
       </div>
     </div>
 
@@ -518,27 +582,27 @@
         <!-- 統計卡 -->
         <div class="stats-grid">
           <div class="stat-card">
-            <div class="stat-num">35</div>
+            <div class="stat-num">
+              <span id="totalCount">0</span>
+            </div>
             <div class="stat-label">品項數</div>
           </div>
           <div class="stat-card">
-            <div class="stat-num danger">5</div>
+            <div class="stat-num danger">
+              <span id="lowStockCount">0</span>
+            </div>
             <div class="stat-label">庫存不足</div>
           </div>
           <div class="stat-card">
-            <div class="stat-num">8</div>
+            <div class="stat-num">
+              <span id="categoryCount">0</span>
+            </div>
             <div class="stat-label">分類數</div>
           </div>
         </div>
 
-        <!-- Tab -->
-        <div class="tab-bar">
-          <button class="tab-btn active" onclick="switchTab('all')">📦 庫存總覽</button>
-          <button class="tab-btn" onclick="switchTab('toupay')">🛒 待買清單 <span class="badge">5</span></button>
-        </div>
-
         <!-- 搜尋 -->
-        <input class="search-inp" placeholder="🔍 搜尋品項、條碼、位置…" id="searchInput" onkeyup="filterItems()">
+        <input class="search-inp" placeholder="🔍 搜尋品項..." id="searchInput" onkeyup="filterItems()">
 
         <!-- 篩選 -->
         <div class="filter-pills" id="filterPills"></div>
@@ -551,7 +615,7 @@
     </div>
 
     <!-- 浮動按鈕 -->
-    <div class="fab" onclick="addItem()">＋</div>
+    <div class="fab" onclick="openAddModal()">＋</div>
 
     <!-- 底部導覽 -->
     <div class="bottom-nav">
@@ -578,56 +642,184 @@
     </div>
   </div>
 
+  <!-- 新增/編輯 Modal -->
+  <div class="modal" id="formModal">
+    <div class="modal-content">
+      <div class="modal-header">
+        <div class="modal-title" id="formTitle">新增品項</div>
+        <div class="modal-close" onclick="closeModal()">✕</div>
+      </div>
+
+      <form id="inventoryForm" onsubmit="saveItem(event)">
+        <div class="form-group">
+          <label class="form-label">品項名稱 *</label>
+          <input type="text" id="name" class="form-input" placeholder="例：白米" required>
+        </div>
+
+        <div class="form-group">
+          <label class="form-label">分類 *</label>
+          <select id="category" class="form-select" required>
+            <option value="">選擇分類</option>
+            <option value="food">🥫 食品</option>
+            <option value="drink">🥤 飲料</option>
+            <option value="frozen">❄️ 冷凍</option>
+            <option value="clean">🧹 清潔</option>
+            <option value="bath">🚿 浴室</option>
+            <option value="medical">💊 藥品</option>
+            <option value="baby">🍼 嬰幼兒</option>
+            <option value="kitchen">🥄 廚房</option>
+            <option value="pet">🐾 寵物</option>
+            <option value="office">📝 文具</option>
+            <option value="other">其他</option>
+          </select>
+        </div>
+
+        <div class="form-group">
+          <label class="form-label">數量 *</label>
+          <input type="number" id="quantity" class="form-input" placeholder="0" required min="0">
+        </div>
+
+        <div class="form-group">
+          <label class="form-label">單位 *</label>
+          <input type="text" id="unit" class="form-input" placeholder="個/盒/包/瓶/kg" required>
+        </div>
+
+        <div class="form-group">
+          <label class="form-label">警告值</label>
+          <input type="number" id="threshold" class="form-input" placeholder="0" min="0">
+        </div>
+
+        <div class="form-group">
+          <label class="form-label">位置</label>
+          <input type="text" id="location" class="form-input" placeholder="例：冰箱/廚房">
+        </div>
+
+        <div class="form-group">
+          <label class="form-label">備註</label>
+          <input type="text" id="note" class="form-input" placeholder="添加備註...">
+        </div>
+
+        <div class="form-actions">
+          <button type="button" class="btn btn-secondary" onclick="closeModal()">取消</button>
+          <button type="button" class="btn btn-danger" id="deleteBtn" style="display: none;" onclick="deleteItem()">刪除</button>
+          <button type="submit" class="btn btn-primary">儲存</button>
+        </div>
+      </form>
+    </div>
+  </div>
+
   <script>
-    let roomCode = new URLSearchParams(window.location.search).get('room') || 'MY0918';
-    let currentTab = 'all';
+    let roomCode = '';
+    let items = [];
+    let editingId = null;
 
     const categories = [
-      { icon: '🥫', name: '食品', color: '#E67E22' },
-      { icon: '🥤', name: '飲料', color: '#3498DB' },
-      { icon: '❄️', name: '冷凍', color: '#A8D8EA' },
-      { icon: '🧹', name: '清潔', color: '#2ECC71' },
-      { icon: '🚿', name: '浴室', color: '#E74C3C' },
-      { icon: '💊', name: '藥品', color: '#9B59B6' },
-      { icon: '🍼', name: '嬰幼兒', color: '#F39C12' },
-      { icon: '🥄', name: '廚房', color: '#1ABC9C' }
+      { icon: '🥫', name: 'food', label: '食品', color: '#E67E22' },
+      { icon: '🥤', name: 'drink', label: '飲料', color: '#3498DB' },
+      { icon: '❄️', name: 'frozen', label: '冷凍', color: '#A8D8EA' },
+      { icon: '🧹', name: 'clean', label: '清潔', color: '#2ECC71' },
+      { icon: '🚿', name: 'bath', label: '浴室', color: '#E74C3C' },
+      { icon: '💊', name: 'medical', label: '藥品', color: '#9B59B6' },
+      { icon: '🍼', name: 'baby', label: '嬰幼兒', color: '#F39C12' },
+      { icon: '🥄', name: 'kitchen', label: '廚房', color: '#1ABC9C' },
+      { icon: '🐾', name: 'pet', label: '寵物', color: '#795548' },
+      { icon: '📝', name: 'office', label: '文具', color: '#607D8B' },
+      { icon: '📦', name: 'other', label: '其他', color: '#95A5A6' }
     ];
 
-    const items = [
-      { id: 1, name: '雞蛋', category: '食品', qty: 10, unit: '顆', threshold: 5, loc: '冰箱', status: 'ok', icon: '🥚' },
-      { id: 2, name: '白米', category: '食品', qty: 1, unit: 'kg', threshold: 2, loc: '廚房', status: 'low', icon: '🍚' },
-      { id: 3, name: '衛生紙', category: '清潔', qty: 3, unit: '包', threshold: 2, loc: '浴室', status: 'ok', icon: '🧹' },
-      { id: 4, name: '洗碗精', category: '清潔', qty: 1, unit: '瓶', threshold: 1, loc: '廚房水槽', status: 'low', icon: '🧴' },
-      { id: 5, name: '牛奶', category: '食品', qty: 2, unit: '瓶', threshold: 1, loc: '冰箱', status: 'ok', icon: '🥛' }
-    ];
+    // ═══════════════════════════════════════════════════════════
+    // 初始化
+    // ═══════════════════════════════════════════════════════════
 
-    function init() {
+    async function init() {
       updateTime();
-      loadInventory();
+      roomCode = await getRoomCode();
       setInterval(updateTime, 1000);
-      
-      // 監聽 Firebase 更新
-      document.addEventListener('firebaseUpdate', (e) => {
-        if (e.detail.collection === 'inventory') {
-          items = e.detail.data;
+
+      document.addEventListener('firebaseReady', () => {
+        loadItems();
+        fbManager.listenToCollection('inventory', roomCode, (data) => {
+          items = data;
           renderItems();
-        }
+        });
       });
+
+      if (fbManager.initialized) {
+        loadItems();
+      }
     }
 
-    async function loadInventory() {
-      const roomCode = await getRoomCode();
+    // ═══════════════════════════════════════════════════════════
+    // 資料操作
+    // ═══════════════════════════════════════════════════════════
+
+    async function loadItems() {
       try {
         items = await fbManager.read('inventory', roomCode);
-        if (items.length === 0) {
-          items = mockItems;
-        }
+        renderItems();
       } catch (err) {
-        console.warn('Firebase 載入失敗，使用本地資料:', err);
-        items = mockItems;
+        console.error('加載庫存失敗:', err);
       }
-      renderItems();
     }
+
+    async function saveItem(event) {
+      event.preventDefault();
+
+      const data = {
+        name: document.getElementById('name').value,
+        category: document.getElementById('category').value,
+        quantity: parseInt(document.getElementById('quantity').value) || 0,
+        unit: document.getElementById('unit').value,
+        threshold: parseInt(document.getElementById('threshold').value) || 0,
+        location: document.getElementById('location').value,
+        note: document.getElementById('note').value
+      };
+
+      try {
+        if (editingId) {
+          await fbManager.write('inventory', roomCode, editingId, data);
+        } else {
+          const id = fbManager.generateId();
+          await fbManager.write('inventory', roomCode, id, data);
+        }
+        closeModal();
+        await loadItems();
+      } catch (err) {
+        console.error('保存失敗:', err);
+        alert('保存失敗');
+      }
+    }
+
+    async function deleteItem() {
+      if (!editingId || !confirm('確定要刪除嗎？')) return;
+
+      try {
+        await fbManager.delete('inventory', roomCode, editingId);
+        closeModal();
+        await loadItems();
+      } catch (err) {
+        console.error('刪除失敗:', err);
+        alert('刪除失敗');
+      }
+    }
+
+    async function updateQuantity(id, delta) {
+      const item = items.find(i => i.id === id);
+      if (!item) return;
+
+      item.quantity = Math.max(0, item.quantity + delta);
+
+      try {
+        await fbManager.write('inventory', roomCode, id, item);
+        await loadItems();
+      } catch (err) {
+        console.error('更新失敗:', err);
+      }
+    }
+
+    // ═══════════════════════════════════════════════════════════
+    // UI 更新
+    // ═══════════════════════════════════════════════════════════
 
     function updateTime() {
       const now = new Date();
@@ -636,97 +828,116 @@
       document.getElementById('currentTime').textContent = `${hours}:${mins}`;
     }
 
-    function renderFilters() {
-      const pills = document.getElementById('filterPills');
-      pills.innerHTML = categories.map((cat, idx) => `
-        <div class="pill ${idx === 0 ? 'active' : ''}" onclick="filterByCategory('${cat.name}')" style="--color: ${cat.color}">
-          ${cat.icon} ${cat.name}
-        </div>
-      `).join('');
-    }
-
     function renderItems() {
-      const categoryGroups = {};
+      // 統計
+      const lowStock = items.filter(i => i.quantity <= i.threshold && i.threshold > 0).length;
+      const categorySet = new Set(items.map(i => i.category));
 
+      document.getElementById('totalCount').textContent = items.length;
+      document.getElementById('lowStockCount').textContent = lowStock;
+      document.getElementById('categoryCount').textContent = categorySet.size;
+
+      // 分組
+      const grouped = {};
       items.forEach(item => {
-        if (!categoryGroups[item.category]) {
-          categoryGroups[item.category] = [];
-        }
-        categoryGroups[item.category].push(item);
+        if (!grouped[item.category]) grouped[item.category] = [];
+        grouped[item.category].push(item);
       });
 
-      const catList = document.getElementById('categoryList');
-      catList.innerHTML = Object.entries(categoryGroups).map(([catName, catItems], idx) => {
-        const cat = categories.find(c => c.name === catName);
-        return `
-          <div class="acc-group">
-            <div class="acc-header open" onclick="toggleCategory(this)">
-              <span class="acc-arrow">▶</span>
-              <div class="acc-dot" style="background: ${cat?.color || '#999'}"></div>
-              <div class="acc-name">${cat?.icon || '📦'} ${catName}</div>
-              <div class="acc-count">${catItems.length}</div>
-            </div>
-            <div class="acc-items open">
-              ${catItems.map(item => `
-                <div class="inv-item ${item.status}">
-                  <div class="inv-icon">${item.icon}</div>
-                  <div class="inv-body">
-                    <div class="inv-name">${item.name}</div>
-                    <div class="inv-loc">📍 ${item.loc}</div>
-                  </div>
-                  <div class="inv-right">
-                    <div class="inv-qty ${item.status === 'low' ? 'low' : ''}">${item.qty}</div>
-                    <div class="inv-unit">${item.unit}</div>
-                    <div class="qty-row">
-                      <button class="qty-btn" onclick="updateQty(${item.id}, -1)">−</button>
-                      <button class="qty-btn" onclick="updateQty(${item.id}, +1)">+</button>
+      document.getElementById('categoryList').innerHTML = Object.entries(grouped)
+        .map(([catName, catItems]) => {
+          const cat = categories.find(c => c.name === catName);
+          return `
+            <div class="acc-group">
+              <div class="acc-header" onclick="toggleCategory(this)">
+                <div class="acc-dot" style="background: ${cat?.color || '#999'}"></div>
+                <div class="acc-name">${cat?.icon} ${cat?.label}</div>
+                <div class="acc-count">${catItems.length}</div>
+              </div>
+              <div class="acc-items">
+                ${catItems.map(item => `
+                  <div class="inv-item ${item.quantity <= item.threshold && item.threshold > 0 ? 'low' : 'ok'}" onclick="openEditModal('${item.id}')">
+                    <div class="inv-icon">📦</div>
+                    <div class="inv-body">
+                      <div class="inv-name">${item.name}</div>
+                      <div class="inv-loc">📍 ${item.location || '未設置'}</div>
+                    </div>
+                    <div class="inv-right">
+                      <div class="inv-qty ${item.quantity <= item.threshold && item.threshold > 0 ? 'low' : ''}">${item.quantity}</div>
+                      <div class="inv-unit">${item.unit}</div>
+                      <div class="qty-row">
+                        <button class="qty-btn" onclick="updateQuantity('${item.id}', -1); event.stopPropagation();">−</button>
+                        <button class="qty-btn" onclick="updateQuantity('${item.id}', +1); event.stopPropagation();">+</button>
+                      </div>
                     </div>
                   </div>
-                </div>
-              `).join('')}
+                `).join('')}
+              </div>
             </div>
+          `;
+        }).join('');
+
+      renderFilters();
+    }
+
+    function renderFilters() {
+      const pills = document.getElementById('filterPills');
+      pills.innerHTML = categories.map(cat => {
+        const count = items.filter(i => i.category === cat.name).length;
+        return `
+          <div class="pill" onclick="filterByCategory('${cat.name}')" title="${count} 項">
+            ${cat.icon} ${cat.label}
           </div>
         `;
       }).join('');
     }
 
     function toggleCategory(header) {
-      header.classList.toggle('open');
       header.nextElementSibling.classList.toggle('open');
     }
 
-    function filterByCategory(catName) {
-      document.querySelectorAll('.pill').forEach((p, idx) => {
-        p.classList.toggle('active', p.textContent.includes(catName));
-      });
+    function filterByCategory(cat) {
+      // 可實現分類篩選邏輯
     }
 
     function filterItems() {
-      // 實現搜尋邏輯
+      // 可實現搜尋邏輯
     }
 
-    function updateQty(id, delta) {
+    // ═══════════════════════════════════════════════════════════
+    // Modal 操作
+    // ═══════════════════════════════════════════════════════════
+
+    function openAddModal() {
+      editingId = null;
+      document.getElementById('formTitle').textContent = '新增品項';
+      document.getElementById('deleteBtn').style.display = 'none';
+      document.getElementById('inventoryForm').reset();
+      document.getElementById('formModal').classList.add('active');
+    }
+
+    function openEditModal(id) {
       const item = items.find(i => i.id === id);
-      if (item) {
-        item.qty = Math.max(0, item.qty + delta);
-        item.status = item.qty <= item.threshold ? 'low' : 'ok';
-        renderItems();
-      }
+      if (!item) return;
+
+      editingId = id;
+      document.getElementById('formTitle').textContent = '編輯品項';
+      document.getElementById('deleteBtn').style.display = 'block';
+      
+      document.getElementById('name').value = item.name;
+      document.getElementById('category').value = item.category;
+      document.getElementById('quantity').value = item.quantity;
+      document.getElementById('unit').value = item.unit;
+      document.getElementById('threshold').value = item.threshold || 0;
+      document.getElementById('location').value = item.location || '';
+      document.getElementById('note').value = item.note || '';
+
+      document.getElementById('formModal').classList.add('active');
     }
 
-    function switchTab(tab) {
-      currentTab = tab;
-      document.querySelectorAll('.tab-btn').forEach((b, i) => {
-        b.classList.toggle('active', (i === 0 && tab === 'all') || (i === 1 && tab === 'toupay'));
-      });
-    }
-
-    function addItem() {
-      alert('新增庫存 (示範版本)');
-    }
-
-    function openCSV() {
-      alert('CSV 匯入/匯出 (示範版本)');
+    function closeModal() {
+      document.getElementById('formModal').classList.remove('active');
+      editingId = null;
     }
 
     function goHome() {
