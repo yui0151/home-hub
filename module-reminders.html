@@ -23,533 +23,87 @@
       --danger: #C62828;
     }
 
-    * {
-      box-sizing: border-box;
-      margin: 0;
-      padding: 0;
-    }
-
-    body {
-      background: var(--bg);
-      color: var(--text);
-      font-family: 'Noto Sans TC', sans-serif;
-      font-weight: 400;
-      -webkit-font-smoothing: antialiased;
-    }
-
-    .phone-container {
-      display: flex;
-      flex-direction: column;
-      height: 100vh;
-      overflow: hidden;
-    }
-
-    .status-bar {
-      height: 28px;
-      background: rgba(253, 246, 247, 0.95);
-      display: flex;
-      align-items: center;
-      justify-content: space-between;
-      padding: 0 16px;
-      font-size: 11px;
-      color: var(--text);
-      border-bottom: 1px solid var(--border);
-    }
-
-    .sb-time {
-      font-size: 12px;
-      font-weight: 700;
-    }
-
-    .app-header {
-      background: rgba(253, 246, 247, 0.95);
-      border-bottom: 1px solid var(--border);
-      padding: 12px 16px;
-      display: flex;
-      align-items: center;
-      justify-content: space-between;
-      position: sticky;
-      top: 0;
-      z-index: 99;
-    }
-
-    .ah-title {
-      font-family: 'Noto Serif TC', serif;
-      font-size: 18px;
-      font-weight: 600;
-    }
-
-    .ah-right {
-      display: flex;
-      align-items: center;
-      gap: 8px;
-    }
-
-    .hbtn {
-      font-size: 12px;
-      background: var(--pink-light);
-      border: 1px solid var(--border);
-      border-radius: 8px;
-      padding: 4px 10px;
-      color: var(--text-mid);
-      font-weight: 500;
-      cursor: pointer;
-      transition: all 0.2s;
-    }
-
-    .hbtn:hover {
-      background: var(--pink-mid);
-      color: white;
-    }
-
-    .main-content {
-      flex: 1;
-      display: flex;
-      flex-direction: column;
-      overflow: hidden;
-      padding-bottom: 60px;
-    }
-
-    .screen-body {
-      flex: 1;
-      overflow-y: auto;
-      scrollbar-width: thin;
-    }
-
-    /* 費用統計 */
-    .expense-banner {
-      margin: 12px 16px;
-      background: linear-gradient(135deg, var(--pink-light), #FCF0F1);
-      border: 1.5px solid var(--pink-light);
-      border-radius: 14px;
-      padding: 14px;
-    }
-
-    .eb-label {
-      font-size: 11px;
-      font-weight: 700;
-      letter-spacing: 0.15em;
-      color: var(--pink-main);
-      text-transform: uppercase;
-      margin-bottom: 6px;
-    }
-
-    .eb-amount {
-      font-family: 'Noto Serif TC', serif;
-      font-size: 28px;
-      font-weight: 400;
-      color: var(--text);
-      line-height: 1;
-    }
-
-    .eb-sub {
-      font-size: 11px;
-      color: var(--text-light);
-      margin-top: 4px;
-    }
-
-    .eb-breakdown {
-      margin-top: 12px;
-      padding-top: 12px;
-      border-top: 1px solid rgba(195, 109, 120, 0.2);
-    }
-
-    .eb-row {
-      display: flex;
-      justify-content: space-between;
-      font-size: 12px;
-      padding: 3px 0;
-      color: var(--text-mid);
-    }
-
-    .eb-row.paid {
-      text-decoration: line-through;
-      opacity: 0.5;
-    }
-
-    /* 提醒卡 */
-    .reminder-card {
-      background: var(--card);
-      border: 1.5px solid var(--border);
-      border-radius: 12px;
-      padding: 12px 14px;
-      margin: 0 16px 8px;
-      display: flex;
-      align-items: center;
-      gap: 10px;
-      position: relative;
-      overflow: hidden;
-      transition: all 0.2s;
-      cursor: pointer;
-    }
-
-    .reminder-card:hover {
-      border-color: var(--pink-main);
-      background: rgba(253, 246, 247, 0.5);
-    }
-
-    .reminder-card.overdue {
-      border-color: rgba(198, 40, 40, 0.2);
-      background: rgba(198, 40, 40, 0.05);
-    }
-
-    .rc-bar {
-      position: absolute;
-      left: 0;
-      top: 0;
-      bottom: 0;
-      width: 3px;
-      background: var(--pink-main);
-    }
-
-    .rc-bar.overdue {
-      background: var(--danger);
-    }
-
-    .rc-bar.warning {
-      background: var(--warning);
-    }
-
-    .rc-icon {
-      width: 32px;
-      height: 32px;
-      border-radius: 8px;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      font-size: 16px;
-      flex-shrink: 0;
-      background: var(--pink-light);
-    }
-
-    .rc-body {
-      flex: 1;
-      min-width: 0;
-      cursor: pointer;
-    }
-
-    .rc-title {
-      font-size: 14px;
-      font-weight: 500;
-      white-space: nowrap;
-      overflow: hidden;
-      text-overflow: ellipsis;
-    }
-
-    .rc-meta {
-      font-size: 11px;
-      color: var(--text-light);
-      margin-top: 2px;
-    }
-
-    .rc-due {
-      font-size: 11px;
-      margin-top: 2px;
-      font-weight: 600;
-      color: var(--text-mid);
-    }
-
-    .rc-due.overdue {
-      color: var(--danger);
-    }
-
-    .rc-due.warning {
-      color: var(--warning);
-    }
-
-    .rc-check {
-      width: 28px;
-      height: 28px;
-      border-radius: 50%;
-      border: 1.5px solid var(--border);
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      flex-shrink: 0;
-      font-size: 12px;
-      cursor: pointer;
-      transition: all 0.2s;
-      color: var(--text-light);
-    }
-
-    .rc-check:hover {
-      border-color: var(--pink-main);
-      background: var(--pink-light);
-    }
-
-    .rc-check.done {
-      background: var(--success);
-      border-color: var(--success);
-      color: white;
-    }
-
-    /* Tab */
-    .tab-bar {
-      display: flex;
-      background: var(--pink-light);
-      border: 1px solid var(--border);
-      border-radius: 12px;
-      padding: 3px;
-      margin: 12px 16px;
-      gap: 3px;
-    }
-
-    .tab-btn {
-      flex: 1;
-      padding: 8px;
-      border: none;
-      border-radius: 9px;
-      font-family: 'Noto Sans TC', sans-serif;
-      font-size: 12px;
-      font-weight: 500;
-      cursor: pointer;
-      background: transparent;
-      color: var(--text-light);
-      transition: all 0.2s;
-    }
-
-    .tab-btn.active {
-      background: var(--white);
-      color: var(--text);
-      box-shadow: 0 1px 4px rgba(195, 109, 120, 0.15);
-    }
-
-    .section-header {
-      display: flex;
-      align-items: center;
-      justify-content: space-between;
-      padding: 12px 16px 8px;
-      margin-top: 8px;
-    }
-
-    .sec-title {
-      font-size: 11px;
-      font-weight: 700;
-      letter-spacing: 0.2em;
-      color: var(--text-light);
-      text-transform: uppercase;
-    }
-
-    /* 底部導覽 */
-    .bottom-nav {
-      position: fixed;
-      bottom: 0;
-      left: 0;
-      right: 0;
-      height: 60px;
-      background: rgba(253, 246, 247, 0.98);
-      backdrop-filter: blur(10px);
-      border-top: 1.5px solid var(--border);
-      display: flex;
-      align-items: center;
-      justify-content: space-around;
-      padding: 8px 0 4px;
-      z-index: 101;
-    }
-
-    .nav-item {
-      display: flex;
-      flex-direction: column;
-      align-items: center;
-      gap: 4px;
-      opacity: 0.5;
-      cursor: pointer;
-      padding: 0 12px;
-      text-decoration: none;
-      color: inherit;
-      transition: all 0.2s;
-    }
-
-    .nav-item.active {
-      opacity: 1;
-    }
-
-    .ni-icon {
-      font-size: 20px;
-      line-height: 1;
-    }
-
-    .ni-label {
-      font-size: 10px;
-      letter-spacing: 0.05em;
-      color: var(--text-light);
-      font-weight: 500;
-    }
-
-    .nav-item.active .ni-label {
-      color: var(--pink-main);
-      font-weight: 700;
-    }
-
-    /* FAB */
-    .fab {
-      position: fixed;
-      bottom: 72px;
-      right: 16px;
-      width: 48px;
-      height: 48px;
-      border-radius: 50%;
-      background: var(--pink-main);
-      color: white;
-      font-size: 24px;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      box-shadow: 0 4px 14px rgba(195, 109, 120, 0.3);
-      cursor: pointer;
-      transition: all 0.2s;
-      z-index: 50;
-    }
-
-    .fab:hover {
-      background: var(--pink-dark);
-    }
-
-    /* Modal */
-    .modal {
-      display: none;
-      position: fixed;
-      top: 0;
-      left: 0;
-      right: 0;
-      bottom: 0;
-      background: rgba(0, 0, 0, 0.5);
-      backdrop-filter: blur(5px);
-      z-index: 200;
-      align-items: flex-end;
-    }
-
-    .modal.active {
-      display: flex;
-    }
-
-    .modal-content {
-      background: var(--card);
-      width: 100%;
-      border-radius: 20px 20px 0 0;
-      padding: 24px 16px 32px;
-      max-height: 85vh;
-      overflow-y: auto;
-      box-shadow: 0 -4px 20px rgba(0, 0, 0, 0.1);
-    }
-
-    .modal-header {
-      display: flex;
-      align-items: center;
-      justify-content: space-between;
-      margin-bottom: 20px;
-    }
-
-    .modal-title {
-      font-family: 'Noto Serif TC', serif;
-      font-size: 20px;
-      font-weight: 600;
-      color: var(--text);
-    }
-
-    .modal-close {
-      font-size: 20px;
-      cursor: pointer;
-      color: var(--text-light);
-    }
-
-    .form-group {
-      margin-bottom: 16px;
-    }
-
-    .form-label {
-      font-size: 12px;
-      font-weight: 700;
-      letter-spacing: 0.1em;
-      color: var(--pink-main);
-      text-transform: uppercase;
-      margin-bottom: 6px;
-      display: block;
-    }
-
-    .form-input, .form-select {
-      width: 100%;
-      padding: 10px 12px;
-      border: 1.5px solid var(--border);
-      border-radius: 10px;
-      font-family: 'Noto Sans TC', sans-serif;
-      font-size: 14px;
-      color: var(--text);
-      transition: all 0.2s;
-    }
-
-    .form-input:focus, .form-select:focus {
-      outline: none;
-      border-color: var(--pink-main);
-      box-shadow: 0 0 0 3px rgba(195, 109, 120, 0.1);
-    }
-
-    .form-actions {
-      display: flex;
-      gap: 8px;
-      margin-top: 24px;
-    }
-
-    .btn {
-      flex: 1;
-      padding: 12px;
-      border: none;
-      border-radius: 10px;
-      font-size: 13px;
-      font-weight: 600;
-      cursor: pointer;
-      transition: all 0.2s;
-      font-family: 'Noto Sans TC', sans-serif;
-    }
-
-    .btn-primary {
-      background: var(--pink-main);
-      color: white;
-    }
-
-    .btn-primary:hover {
-      background: var(--pink-dark);
-    }
-
-    .btn-secondary {
-      background: var(--bg);
-      border: 1.5px solid var(--border);
-      color: var(--text-mid);
-    }
-
-    .btn-secondary:hover {
-      border-color: var(--pink-main);
-      color: var(--pink-main);
-    }
-
-    .btn-danger {
-      background: rgba(198, 40, 40, 0.1);
-      color: var(--danger);
-    }
-
-    .btn-danger:hover {
-      background: rgba(198, 40, 40, 0.2);
-    }
-
-    .loading {
-      text-align: center;
-      padding: 20px;
-      color: var(--text-light);
-    }
-
-    .spinner {
-      display: inline-block;
-      width: 20px;
-      height: 20px;
-      border: 3px solid var(--pink-light);
-      border-top-color: var(--pink-main);
-      border-radius: 50%;
-      animation: spin 0.8s linear infinite;
-    }
-
-    @keyframes spin {
-      to { transform: rotate(360deg); }
-    }
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+    body { background: var(--bg); color: var(--text); font-family: 'Noto Sans TC', sans-serif; font-weight: 400; -webkit-font-smoothing: antialiased; }
+    .phone-container { display: flex; flex-direction: column; height: 100vh; overflow: hidden; }
+    .status-bar { height: 28px; background: rgba(253, 246, 247, 0.95); display: flex; align-items: center; justify-content: space-between; padding: 0 16px; font-size: 11px; color: var(--text); border-bottom: 1px solid var(--border); }
+    .sb-time { font-size: 12px; font-weight: 700; }
+    .app-header { background: rgba(253, 246, 247, 0.95); border-bottom: 1px solid var(--border); padding: 12px 16px; display: flex; align-items: center; justify-content: space-between; position: sticky; top: 0; z-index: 99; }
+    .ah-title { font-family: 'Noto Serif TC', serif; font-size: 18px; font-weight: 600; }
+    .ah-right { display: flex; align-items: center; gap: 8px; }
+    .hbtn { font-size: 12px; background: var(--pink-light); border: 1px solid var(--border); border-radius: 8px; padding: 4px 10px; color: var(--text-mid); font-weight: 500; cursor: pointer; transition: all 0.2s; }
+    .hbtn:hover { background: var(--pink-mid); color: white; }
+    .main-content { flex: 1; display: flex; flex-direction: column; overflow: hidden; padding-bottom: 60px; }
+    .screen-body { flex: 1; overflow-y: auto; scrollbar-width: thin; }
+    
+    .expense-banner { margin: 12px 16px; background: linear-gradient(135deg, var(--pink-light), #FCF0F1); border: 1.5px solid var(--pink-light); border-radius: 14px; padding: 14px; }
+    .eb-label { font-size: 11px; font-weight: 700; letter-spacing: 0.15em; color: var(--pink-main); text-transform: uppercase; margin-bottom: 6px; }
+    .eb-amount { font-family: 'Noto Serif TC', serif; font-size: 28px; font-weight: 400; color: var(--text); line-height: 1; }
+    .eb-sub { font-size: 11px; color: var(--text-light); margin-top: 4px; }
+    .eb-breakdown { margin-top: 12px; padding-top: 12px; border-top: 1px solid rgba(195, 109, 120, 0.2); }
+    .eb-row { display: flex; justify-content: space-between; font-size: 12px; padding: 3px 0; color: var(--text-mid); }
+    .eb-row.paid { text-decoration: line-through; opacity: 0.5; }
+
+    .reminder-card { background: var(--card); border: 1.5px solid var(--border); border-radius: 12px; padding: 12px 14px; margin: 0 16px 8px; display: flex; align-items: center; gap: 10px; position: relative; overflow: hidden; transition: all 0.2s; cursor: pointer; }
+    .reminder-card:hover { border-color: var(--pink-main); background: rgba(253, 246, 247, 0.5); }
+    .reminder-card.overdue { border-color: rgba(198, 40, 40, 0.2); background: rgba(198, 40, 40, 0.05); }
+    .rc-bar { position: absolute; left: 0; top: 0; bottom: 0; width: 3px; background: var(--pink-main); }
+    .rc-bar.overdue { background: var(--danger); }
+    .rc-bar.warning { background: var(--warning); }
+    .rc-icon { width: 32px; height: 32px; border-radius: 8px; display: flex; align-items: center; justify-content: center; font-size: 16px; flex-shrink: 0; background: var(--pink-light); }
+    .rc-body { flex: 1; min-width: 0; cursor: pointer; }
+    .rc-title { font-size: 14px; font-weight: 500; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+    .rc-meta { font-size: 11px; color: var(--text-light); margin-top: 2px; }
+    .rc-due { font-size: 11px; margin-top: 2px; font-weight: 600; color: var(--text-mid); }
+    .rc-due.overdue { color: var(--danger); }
+    .rc-due.warning { color: var(--warning); }
+    .rc-check { width: 28px; height: 28px; border-radius: 50%; border: 1.5px solid var(--border); display: flex; align-items: center; justify-content: center; flex-shrink: 0; font-size: 12px; cursor: pointer; transition: all 0.2s; color: var(--text-light); }
+    .rc-check:hover { border-color: var(--pink-main); background: var(--pink-light); }
+    .rc-check.done { background: var(--success); border-color: var(--success); color: white; }
+
+    .tab-bar { display: flex; background: var(--pink-light); border: 1px solid var(--border); border-radius: 12px; padding: 3px; margin: 12px 16px; gap: 3px; }
+    .tab-btn { flex: 1; padding: 8px; border: none; border-radius: 9px; font-family: 'Noto Sans TC', sans-serif; font-size: 12px; font-weight: 500; cursor: pointer; background: transparent; color: var(--text-light); transition: all 0.2s; }
+    .tab-btn.active { background: var(--white); color: var(--text); box-shadow: 0 1px 4px rgba(195, 109, 120, 0.15); }
+
+    .section-header { display: flex; align-items: center; justify-content: space-between; padding: 12px 16px 8px; margin-top: 8px; }
+    .sec-title { font-size: 11px; font-weight: 700; letter-spacing: 0.2em; color: var(--text-light); text-transform: uppercase; }
+
+    .bottom-nav { position: fixed; bottom: 0; left: 0; right: 0; height: 60px; background: rgba(253, 246, 247, 0.98); backdrop-filter: blur(10px); border-top: 1.5px solid var(--border); display: flex; align-items: center; justify-content: space-around; padding: 8px 0 4px; z-index: 101; }
+    .nav-item { display: flex; flex-direction: column; align-items: center; gap: 4px; opacity: 0.5; cursor: pointer; padding: 0 12px; text-decoration: none; color: inherit; transition: all 0.2s; }
+    .nav-item.active { opacity: 1; }
+    .ni-icon { font-size: 20px; line-height: 1; }
+    .ni-label { font-size: 10px; letter-spacing: 0.05em; color: var(--text-light); font-weight: 500; }
+    .nav-item.active .ni-label { color: var(--pink-main); font-weight: 700; }
+
+    .fab { position: fixed; bottom: 72px; right: 16px; width: 48px; height: 48px; border-radius: 50%; background: var(--pink-main); color: white; font-size: 24px; display: flex; align-items: center; justify-content: center; box-shadow: 0 4px 14px rgba(195, 109, 120, 0.3); cursor: pointer; transition: all 0.2s; z-index: 50; }
+    .fab:hover { background: var(--pink-dark); }
+
+    .modal { display: none; position: fixed; top: 0; left: 0; right: 0; bottom: 0; background: rgba(0, 0, 0, 0.5); backdrop-filter: blur(5px); z-index: 200; align-items: flex-end; }
+    .modal.active { display: flex; }
+    .modal-content { background: var(--card); width: 100%; border-radius: 20px 20px 0 0; padding: 24px 16px 32px; max-height: 85vh; overflow-y: auto; }
+    .modal-header { display: flex; align-items: center; justify-content: space-between; margin-bottom: 20px; }
+    .modal-title { font-family: 'Noto Serif TC', serif; font-size: 20px; font-weight: 600; color: var(--text); }
+    .modal-close { font-size: 20px; cursor: pointer; color: var(--text-light); }
+
+    .detail-section { margin-bottom: 16px; padding-bottom: 16px; border-bottom: 1px solid var(--border); }
+    .detail-section:last-child { border-bottom: none; }
+    .detail-label { font-size: 11px; font-weight: 700; letter-spacing: 0.1em; color: var(--pink-main); text-transform: uppercase; margin-bottom: 6px; }
+    .detail-value { font-size: 15px; color: var(--text); line-height: 1.6; }
+
+    .form-group { margin-bottom: 16px; }
+    .form-label { font-size: 12px; font-weight: 700; letter-spacing: 0.1em; color: var(--pink-main); text-transform: uppercase; margin-bottom: 6px; display: block; }
+    .form-input, .form-select { width: 100%; padding: 10px 12px; border: 1.5px solid var(--border); border-radius: 10px; font-family: 'Noto Sans TC', sans-serif; font-size: 14px; color: var(--text); transition: all 0.2s; }
+    .form-input:focus, .form-select:focus { outline: none; border-color: var(--pink-main); box-shadow: 0 0 0 3px rgba(195, 109, 120, 0.1); }
+
+    .modal-actions { display: flex; gap: 8px; margin-top: 24px; }
+    .btn { flex: 1; padding: 12px; border: none; border-radius: 10px; font-size: 13px; font-weight: 600; cursor: pointer; transition: all 0.2s; font-family: 'Noto Sans TC', sans-serif; }
+    .btn-primary { background: var(--pink-main); color: white; }
+    .btn-primary:hover { background: var(--pink-dark); }
+    .btn-secondary { background: var(--bg); border: 1.5px solid var(--border); color: var(--text-mid); }
+    .btn-secondary:hover { border-color: var(--pink-main); color: var(--pink-main); }
+    .btn-danger { background: rgba(198, 40, 40, 0.1); color: var(--danger); }
+
+    .hidden { display: none; }
   </style>
   <script src="firebase-config.js"></script>
 </head>
@@ -569,7 +123,6 @@
 
     <div class="main-content">
       <div class="screen-body">
-        <!-- 費用統計 -->
         <div class="expense-banner">
           <div class="eb-label">本月費用</div>
           <div class="eb-amount">TWD <span id="totalExpense">0</span></div>
@@ -577,13 +130,11 @@
           <div class="eb-breakdown" id="expenseBreakdown"></div>
         </div>
 
-        <!-- Tab -->
         <div class="tab-bar">
           <button class="tab-btn active" onclick="switchTab('all')">📋 所有提醒</button>
           <button class="tab-btn" onclick="switchTab('overdue')">⚠️ 逾期</button>
         </div>
 
-        <!-- 提醒列表 -->
         <div class="section-header">
           <div class="sec-title" id="listTitle">提醒</div>
         </div>
@@ -593,10 +144,8 @@
       </div>
     </div>
 
-    <!-- 浮動按鈕 -->
     <div class="fab" onclick="openAddModal()">＋</div>
 
-    <!-- 底部導覽 -->
     <div class="bottom-nav">
       <a href="javascript:void(0)" class="nav-item" onclick="goHome()">
         <div class="ni-icon">🏡</div>
@@ -621,68 +170,101 @@
     </div>
   </div>
 
-  <!-- 新增/編輯 Modal -->
-  <div class="modal" id="formModal">
+  <!-- Modal -->
+  <div class="modal" id="detailModal">
     <div class="modal-content">
       <div class="modal-header">
-        <div class="modal-title" id="formTitle">新增提醒</div>
+        <div class="modal-title" id="modalTitle">提醒詳情</div>
         <div class="modal-close" onclick="closeModal()">✕</div>
       </div>
 
-      <form id="reminderForm" onsubmit="saveReminder(event)">
-        <div class="form-group">
-          <label class="form-label">提醒名稱 *</label>
-          <input type="text" id="title" class="form-input" placeholder="例：水電費" required>
+      <!-- 查看模式 -->
+      <div id="viewMode">
+        <div class="detail-section">
+          <div class="detail-label">提醒名稱</div>
+          <div class="detail-value" id="detailTitle">-</div>
         </div>
+        <div class="detail-section">
+          <div class="detail-label">類型</div>
+          <div class="detail-value" id="detailType">-</div>
+        </div>
+        <div class="detail-section">
+          <div class="detail-label">週期</div>
+          <div class="detail-value" id="detailRecurrence">-</div>
+        </div>
+        <div class="detail-section">
+          <div class="detail-label">到期日期</div>
+          <div class="detail-value" id="detailDueDate">-</div>
+        </div>
+        <div class="detail-section">
+          <div class="detail-label">金額</div>
+          <div class="detail-value" id="detailAmount">-</div>
+        </div>
+        <div class="detail-section">
+          <div class="detail-label">備註</div>
+          <div class="detail-value" id="detailDescription">-</div>
+        </div>
+        <div class="detail-section">
+          <div class="detail-label">狀態</div>
+          <div class="detail-value" id="detailStatus">-</div>
+        </div>
+        <div class="modal-actions">
+          <button class="btn btn-secondary" onclick="closeModal()">關閉</button>
+          <button class="btn btn-primary" onclick="switchToEditMode()">✏️ 編輯</button>
+        </div>
+      </div>
 
-        <div class="form-group">
-          <label class="form-label">類型 *</label>
-          <select id="type" class="form-select" required>
-            <option value="financial">💳 財務</option>
-            <option value="subscription">📱 訂閱</option>
-            <option value="consumable">🔄 耗材</option>
-            <option value="chore">🧹 家務</option>
-            <option value="health">💊 健康</option>
-            <option value="other">📌 其他</option>
-          </select>
-        </div>
-
-        <div class="form-group">
-          <label class="form-label">週期 *</label>
-          <select id="recurrence" class="form-select" required>
-            <option value="once">單次</option>
-            <option value="daily">每日</option>
-            <option value="weekly">每週</option>
-            <option value="biweekly">雙週</option>
-            <option value="monthly">每月</option>
-            <option value="bimonthly">雙月</option>
-            <option value="quarterly">每季</option>
-            <option value="semiannual">半年</option>
-            <option value="yearly">每年</option>
-          </select>
-        </div>
-
-        <div class="form-group">
-          <label class="form-label">到期日期 *</label>
-          <input type="date" id="dueDate" class="form-input" required>
-        </div>
-
-        <div class="form-group">
-          <label class="form-label">金額（可選）</label>
-          <input type="number" id="amount" class="form-input" placeholder="0" min="0" step="0.01">
-        </div>
-
-        <div class="form-group">
-          <label class="form-label">備註</label>
-          <input type="text" id="description" class="form-input" placeholder="添加備註...">
-        </div>
-
-        <div class="form-actions">
-          <button type="button" class="btn btn-secondary" onclick="closeModal()">取消</button>
-          <button type="button" class="btn btn-danger" id="deleteBtn" style="display: none;" onclick="deleteReminder()">刪除</button>
-          <button type="submit" class="btn btn-primary">儲存</button>
-        </div>
-      </form>
+      <!-- 編輯模式 -->
+      <div id="editMode" class="hidden">
+        <form id="reminderForm" onsubmit="saveReminder(event)">
+          <div class="form-group">
+            <label class="form-label">提醒名稱 *</label>
+            <input type="text" id="title" class="form-input" required>
+          </div>
+          <div class="form-group">
+            <label class="form-label">類型 *</label>
+            <select id="type" class="form-select" required>
+              <option value="financial">💳 財務</option>
+              <option value="subscription">📱 訂閱</option>
+              <option value="consumable">🔄 耗材</option>
+              <option value="chore">🧹 家務</option>
+              <option value="health">💊 健康</option>
+              <option value="other">📌 其他</option>
+            </select>
+          </div>
+          <div class="form-group">
+            <label class="form-label">週期 *</label>
+            <select id="recurrence" class="form-select" required>
+              <option value="once">單次</option>
+              <option value="daily">每日</option>
+              <option value="weekly">每週</option>
+              <option value="biweekly">雙週</option>
+              <option value="monthly">每月</option>
+              <option value="bimonthly">雙月</option>
+              <option value="quarterly">每季</option>
+              <option value="semiannual">半年</option>
+              <option value="yearly">每年</option>
+            </select>
+          </div>
+          <div class="form-group">
+            <label class="form-label">到期日期 *</label>
+            <input type="date" id="dueDate" class="form-input" required>
+          </div>
+          <div class="form-group">
+            <label class="form-label">金額（可選）</label>
+            <input type="number" id="amount" class="form-input" min="0" step="0.01">
+          </div>
+          <div class="form-group">
+            <label class="form-label">備註</label>
+            <input type="text" id="description" class="form-input">
+          </div>
+          <div class="modal-actions">
+            <button type="button" class="btn btn-secondary" onclick="switchToViewMode()">返回</button>
+            <button type="button" class="btn btn-danger" id="deleteBtn" style="display: none;" onclick="deleteReminder()">🗑️ 刪除</button>
+            <button type="submit" class="btn btn-primary">💾 儲存</button>
+          </div>
+        </form>
+      </div>
     </div>
   </div>
 
@@ -691,73 +273,39 @@
     let currentTab = 'all';
     let reminders = [];
     let editingId = null;
-    let isLoading = false;
+    let currentDetailData = null;
 
-    const typeIcons = {
-      financial: '💳',
-      subscription: '📱',
-      consumable: '🔄',
-      chore: '🧹',
-      health: '💊',
-      other: '📌'
-    };
-
-    const typeNames = {
-      financial: '財務',
-      subscription: '訂閱',
-      consumable: '耗材',
-      chore: '家務',
-      health: '健康',
-      other: '其他'
-    };
-
-    // ═══════════════════════════════════════════════════════════
-    // 初始化
-    // ═══════════════════════════════════════════════════════════
+    const typeIcons = { financial: '💳', subscription: '📱', consumable: '🔄', chore: '🧹', health: '💊', other: '📌' };
+    const typeNames = { financial: '財務', subscription: '訂閱', consumable: '耗材', chore: '家務', health: '健康', other: '其他' };
+    const recurrenceNames = { once: '單次', daily: '每日', weekly: '每週', biweekly: '雙週', monthly: '每月', bimonthly: '雙月', quarterly: '每季', semiannual: '半年', yearly: '每年' };
 
     async function init() {
       updateTime();
       roomCode = await getRoomCode();
       setInterval(updateTime, 1000);
-
-      // 等待 Firebase 初始化
       document.addEventListener('firebaseReady', () => {
         loadReminders();
-        // 即時監聽
         fbManager.listenToCollection('reminders', roomCode, (data) => {
           reminders = data;
           renderReminders();
           updateExpenseBanner();
         });
       });
-
-      // 如果 Firebase 已準備好
-      if (fbManager.initialized) {
-        loadReminders();
-      }
+      if (fbManager.initialized) loadReminders();
     }
 
-    // ═══════════════════════════════════════════════════════════
-    // 資料操作
-    // ═══════════════════════════════════════════════════════════
-
     async function loadReminders() {
-      isLoading = true;
       try {
         reminders = await fbManager.read('reminders', roomCode);
         renderReminders();
         updateExpenseBanner();
       } catch (err) {
         console.error('加載提醒失敗:', err);
-        alert('加載資料失敗，請檢查網路連線');
-      } finally {
-        isLoading = false;
       }
     }
 
     async function saveReminder(event) {
       event.preventDefault();
-
       const data = {
         title: document.getElementById('title').value,
         type: document.getElementById('type').value,
@@ -767,70 +315,45 @@
         description: document.getElementById('description').value,
         status: editingId ? (reminders.find(r => r.id === editingId)?.status || 'pending') : 'pending'
       };
-
-      isLoading = true;
       try {
         if (editingId) {
-          // 更新
           await fbManager.write('reminders', roomCode, editingId, data);
-          console.log('✅ 提醒已更新');
         } else {
-          // 新增
           const id = fbManager.generateId();
           await fbManager.write('reminders', roomCode, id, data);
-          console.log('✅ 提醒已新增');
         }
         closeModal();
         await loadReminders();
       } catch (err) {
         console.error('保存失敗:', err);
-        alert('保存失敗，請重試');
-      } finally {
-        isLoading = false;
+        alert('保存失敗');
       }
     }
 
     async function deleteReminder() {
-      if (!editingId) return;
-      if (!confirm('確定要刪除此提醒嗎？')) return;
-
-      isLoading = true;
+      if (!editingId || !confirm('確定要刪除嗎？')) return;
       try {
         await fbManager.delete('reminders', roomCode, editingId);
-        console.log('✅ 提醒已刪除');
         closeModal();
         await loadReminders();
       } catch (err) {
         console.error('刪除失敗:', err);
-        alert('刪除失敗，請重試');
-      } finally {
-        isLoading = false;
+        alert('刪除失敗');
       }
     }
 
-    async function toggleReminder(id) {
+    async function toggleReminder(id, event) {
+      event.stopPropagation();
       const reminder = reminders.find(r => r.id === id);
       if (!reminder) return;
-
       reminder.status = reminder.status === 'completed' ? 'pending' : 'completed';
-      reminder.lastModified = new Date();
-
-      isLoading = true;
       try {
         await fbManager.write('reminders', roomCode, id, reminder);
-        console.log('✅ 狀態已更新');
         await loadReminders();
       } catch (err) {
         console.error('更新失敗:', err);
-        alert('更新失敗，請重試');
-      } finally {
-        isLoading = false;
       }
     }
-
-    // ═══════════════════════════════════════════════════════════
-    // UI 更新
-    // ═══════════════════════════════════════════════════════════
 
     function updateTime() {
       const now = new Date();
@@ -868,65 +391,27 @@
         const today = new Date();
         return due.getMonth() === today.getMonth() && due.getFullYear() === today.getFullYear();
       });
-
       const totalExpense = thisMonth.reduce((sum, r) => sum + (r.amount || 0), 0);
       const paidCount = thisMonth.filter(r => r.status === 'completed').length;
-
       document.getElementById('totalExpense').textContent = totalExpense.toFixed(0);
       document.getElementById('totalCount').textContent = thisMonth.length;
       document.getElementById('paidCount').textContent = paidCount;
-
-      const breakdown = thisMonth
-        .filter(r => r.type === 'financial' || r.type === 'subscription')
-        .map(r => `
-          <div class="eb-row ${r.status === 'completed' ? 'paid' : ''}">
-            <span>${r.title}</span>
-            <span>TWD ${r.amount || 0}</span>
-          </div>
-        `).join('');
-
+      const breakdown = thisMonth.filter(r => r.type === 'financial' || r.type === 'subscription').map(r => `<div class="eb-row ${r.status === 'completed' ? 'paid' : ''}"><span>${r.title}</span><span>TWD ${r.amount || 0}</span></div>`).join('');
       document.getElementById('expenseBreakdown').innerHTML = breakdown;
     }
 
     function renderReminders() {
-      const filtered = currentTab === 'all' 
-        ? reminders 
-        : reminders.filter(r => {
-            const days = getDaysUntilDue(r.dueDate);
-            return days < 0 || (days === 0 && r.status === 'pending');
-          });
-
+      const filtered = currentTab === 'all' ? reminders : reminders.filter(r => { const days = getDaysUntilDue(r.dueDate); return days < 0 || (days === 0 && r.status === 'pending'); });
       if (filtered.length === 0) {
-        document.getElementById('reminderList').innerHTML = `
-          <div style="text-align: center; padding: 40px 16px; color: var(--text-light);">
-            <div style="font-size: 48px; margin-bottom: 12px;">📋</div>
-            <div style="font-size: 13px;">${currentTab === 'all' ? '還沒有提醒' : '沒有逾期項目'}</div>
-          </div>
-        `;
+        document.getElementById('reminderList').innerHTML = `<div style="text-align: center; padding: 40px 16px; color: var(--text-light);"><div style="font-size: 48px; margin-bottom: 12px;">📋</div><div style="font-size: 13px;">${currentTab === 'all' ? '還沒有提醒' : '沒有逾期項目'}</div></div>`;
         return;
       }
-
       document.getElementById('reminderList').innerHTML = filtered.map(r => {
         const daysUntil = getDaysUntilDue(r.dueDate);
         const status = getDueStatus(daysUntil);
         const dueText = getDueText(daysUntil, status);
         const isOverdue = status === 'overdue';
-
-        return `
-          <div class="reminder-card ${isOverdue ? 'overdue' : ''}" onclick="openEditModal('${r.id}')">
-            <div class="rc-bar ${isOverdue ? 'overdue' : (status === 'soon' ? 'warning' : '')}"></div>
-            <div class="rc-icon">${typeIcons[r.type] || '📌'}</div>
-            <div class="rc-body">
-              <div class="rc-title">${r.title}</div>
-              <div class="rc-meta">${typeNames[r.type]}</div>
-              ${r.amount ? `<div class="rc-meta">TWD ${r.amount}</div>` : ''}
-              <div class="rc-due ${isOverdue ? 'overdue' : (status === 'soon' ? 'warning' : '')}">${dueText}</div>
-            </div>
-            <div class="rc-check ${r.status === 'completed' ? 'done' : ''}" onclick="toggleReminder('${r.id}'); event.stopPropagation();">
-              ${r.status === 'completed' ? '✓' : '○'}
-            </div>
-          </div>
-        `;
+        return `<div class="reminder-card ${isOverdue ? 'overdue' : ''}" onclick="openDetailModal('${r.id}')"><div class="rc-bar ${isOverdue ? 'overdue' : (status === 'soon' ? 'warning' : '')}"></div><div class="rc-icon">${typeIcons[r.type] || '📌'}</div><div class="rc-body"><div class="rc-title">${r.title}</div><div class="rc-meta">${typeNames[r.type]}</div>${r.amount ? `<div class="rc-meta">TWD ${r.amount}</div>` : ''}<div class="rc-due ${isOverdue ? 'overdue' : (status === 'soon' ? 'warning' : '')}">${dueText}</div></div><div class="rc-check ${r.status === 'completed' ? 'done' : ''}" onclick="toggleReminder('${r.id}', event)">${r.status === 'completed' ? '✓' : '○'}</div></div>`;
       }).join('');
     }
 
@@ -939,51 +424,60 @@
       renderReminders();
     }
 
-    // ═══════════════════════════════════════════════════════════
-    // Modal 操作
-    // ═══════════════════════════════════════════════════════════
-
     function openAddModal() {
       editingId = null;
-      document.getElementById('formTitle').textContent = '新增提醒';
       document.getElementById('deleteBtn').style.display = 'none';
       document.getElementById('reminderForm').reset();
       document.getElementById('dueDate').valueAsDate = new Date();
-      document.getElementById('formModal').classList.add('active');
+      document.getElementById('viewMode').classList.add('hidden');
+      document.getElementById('editMode').classList.remove('hidden');
+      document.getElementById('detailModal').classList.add('active');
     }
 
-    function openEditModal(id) {
+    function openDetailModal(id) {
       const reminder = reminders.find(r => r.id === id);
       if (!reminder) return;
-
       editingId = id;
-      document.getElementById('formTitle').textContent = '編輯提醒';
-      document.getElementById('deleteBtn').style.display = 'block';
-      
-      document.getElementById('title').value = reminder.title;
-      document.getElementById('type').value = reminder.type;
-      document.getElementById('recurrence').value = reminder.recurrence;
-      document.getElementById('dueDate').value = reminder.dueDate;
-      document.getElementById('amount').value = reminder.amount || 0;
-      document.getElementById('description').value = reminder.description || '';
+      currentDetailData = reminder;
+      document.getElementById('detailTitle').textContent = reminder.title;
+      document.getElementById('detailType').textContent = typeNames[reminder.type];
+      document.getElementById('detailRecurrence').textContent = recurrenceNames[reminder.recurrence];
+      document.getElementById('detailDueDate').textContent = reminder.dueDate;
+      document.getElementById('detailAmount').textContent = reminder.amount ? `TWD ${reminder.amount}` : '-';
+      document.getElementById('detailDescription').textContent = reminder.description || '-';
+      document.getElementById('detailStatus').textContent = reminder.status === 'completed' ? '✓ 已完成' : '○ 待完成';
+      document.getElementById('viewMode').classList.remove('hidden');
+      document.getElementById('editMode').classList.add('hidden');
+      document.getElementById('detailModal').classList.add('active');
+    }
 
-      document.getElementById('formModal').classList.add('active');
+    function switchToEditMode() {
+      if (!currentDetailData) return;
+      document.getElementById('title').value = currentDetailData.title;
+      document.getElementById('type').value = currentDetailData.type;
+      document.getElementById('recurrence').value = currentDetailData.recurrence;
+      document.getElementById('dueDate').value = currentDetailData.dueDate;
+      document.getElementById('amount').value = currentDetailData.amount || 0;
+      document.getElementById('description').value = currentDetailData.description || '';
+      document.getElementById('deleteBtn').style.display = 'block';
+      document.getElementById('viewMode').classList.add('hidden');
+      document.getElementById('editMode').classList.remove('hidden');
+    }
+
+    function switchToViewMode() {
+      document.getElementById('viewMode').classList.remove('hidden');
+      document.getElementById('editMode').classList.add('hidden');
     }
 
     function closeModal() {
-      document.getElementById('formModal').classList.remove('active');
+      document.getElementById('detailModal').classList.remove('active');
       editingId = null;
+      currentDetailData = null;
     }
 
-    function goHome() {
-      window.location.href = `index.html?room=${roomCode}`;
-    }
+    function goHome() { window.location.href = `index.html?room=${roomCode}`; }
+    function navigateTo(page) { window.location.href = `${page}?room=${roomCode}`; }
 
-    function navigateTo(page) {
-      window.location.href = `${page}?room=${roomCode}`;
-    }
-
-    // 啟動
     init();
   </script>
 </body>
