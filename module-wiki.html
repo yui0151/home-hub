@@ -1,0 +1,676 @@
+<!DOCTYPE html>
+<html lang="zh-TW">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>家庭數位管家 — 小百科</title>
+  <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+TC:wght@300;400;500;700&family=Noto+Serif+TC:wght@400;600&display=swap" rel="stylesheet">
+  <style>
+    :root {
+      --bg: #FDF6F7;
+      --white: #FFFFFF;
+      --pink-light: #F4C5C9;
+      --pink-mid: #EFA5A8;
+      --pink-main: #C36D78;
+      --pink-dark: #8C3A44;
+      --text: #2D1B1E;
+      --text-mid: #5C3D42;
+      --text-light: #9B6B72;
+      --border: #F4C5C9;
+      --card: #FFFFFF;
+    }
+
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+    }
+
+    body {
+      background: var(--bg);
+      color: var(--text);
+      font-family: 'Noto Sans TC', sans-serif;
+      font-weight: 400;
+      -webkit-font-smoothing: antialiased;
+    }
+
+    .phone-container {
+      display: flex;
+      flex-direction: column;
+      height: 100vh;
+      overflow: hidden;
+    }
+
+    .status-bar {
+      height: 28px;
+      background: rgba(253, 246, 247, 0.95);
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 0 16px;
+      font-size: 11px;
+      color: var(--text);
+      border-bottom: 1px solid var(--border);
+    }
+
+    .sb-time {
+      font-size: 12px;
+      font-weight: 700;
+    }
+
+    .app-header {
+      background: rgba(253, 246, 247, 0.95);
+      border-bottom: 1px solid var(--border);
+      padding: 12px 16px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      position: sticky;
+      top: 0;
+      z-index: 99;
+    }
+
+    .ah-title {
+      font-family: 'Noto Serif TC', serif;
+      font-size: 18px;
+      font-weight: 600;
+    }
+
+    .ah-right {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+
+    .hbtn {
+      font-size: 12px;
+      background: var(--pink-light);
+      border: 1px solid var(--border);
+      border-radius: 8px;
+      padding: 4px 10px;
+      color: var(--text-mid);
+      font-weight: 500;
+      cursor: pointer;
+      transition: all 0.2s;
+    }
+
+    .hbtn:hover {
+      background: var(--pink-mid);
+      color: white;
+    }
+
+    .view-toggle {
+      display: flex;
+      gap: 4px;
+      align-items: center;
+    }
+
+    .toggle-btn {
+      background: var(--pink-light);
+      border: 1px solid var(--border);
+      border-radius: 6px;
+      padding: 4px 8px;
+      font-size: 12px;
+      cursor: pointer;
+      transition: all 0.2s;
+    }
+
+    .toggle-btn.active {
+      background: var(--pink-main);
+      color: white;
+      border-color: var(--pink-main);
+      font-weight: 600;
+    }
+
+    .main-content {
+      flex: 1;
+      display: flex;
+      flex-direction: column;
+      overflow: hidden;
+      padding-bottom: 60px;
+    }
+
+    .screen-body {
+      flex: 1;
+      overflow-y: auto;
+      overflow-x: hidden;
+      scrollbar-width: thin;
+    }
+
+    /* 搜尋 */
+    .search-wrap {
+      padding: 8px 16px;
+    }
+
+    .search-inp {
+      background: var(--white);
+      border: 1.5px solid var(--border);
+      border-radius: 10px;
+      padding: 9px 12px;
+      font-size: 13px;
+      color: var(--text);
+      font-family: 'Noto Sans TC', sans-serif;
+      width: 100%;
+      display: block;
+    }
+
+    /* 篩選 */
+    .filter-pills {
+      display: flex;
+      gap: 6px;
+      padding: 8px 16px;
+      overflow-x: auto;
+      scrollbar-width: none;
+    }
+
+    .filter-pills::-webkit-scrollbar {
+      display: none;
+    }
+
+    .pill {
+      white-space: nowrap;
+      background: var(--white);
+      border: 1px solid var(--border);
+      border-radius: 20px;
+      padding: 5px 12px;
+      font-size: 11px;
+      color: var(--text-light);
+      cursor: pointer;
+      transition: all 0.2s;
+    }
+
+    .pill.active {
+      background: var(--pink-main);
+      border-color: var(--pink-main);
+      color: white;
+      font-weight: 600;
+    }
+
+    /* 區塊標題 */
+    .section-header {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 12px 16px 8px;
+      margin-top: 0;
+    }
+
+    .sec-title {
+      font-size: 11px;
+      font-weight: 700;
+      letter-spacing: 0.2em;
+      color: var(--text-light);
+      text-transform: uppercase;
+    }
+
+    /* 最近查閱（水平滾動） */
+    .scroll-wrap {
+      padding: 0 16px 10px;
+      overflow-x: auto;
+      scrollbar-width: none;
+    }
+
+    .scroll-wrap::-webkit-scrollbar {
+      display: none;
+    }
+
+    .scroll-row {
+      display: flex;
+      gap: 10px;
+    }
+
+    .recent-card {
+      background: var(--card);
+      border: 1.5px solid var(--border);
+      border-radius: 12px;
+      overflow: hidden;
+      width: 120px;
+      flex-shrink: 0;
+      cursor: pointer;
+      transition: all 0.2s;
+    }
+
+    .recent-card:hover {
+      border-color: var(--pink-main);
+      box-shadow: 0 4px 12px rgba(195, 109, 120, 0.15);
+    }
+
+    .rc-img {
+      width: 100%;
+      height: 68px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 24px;
+      background: linear-gradient(135deg, var(--pink-light), #FAD4D8);
+    }
+
+    .rc-body {
+      padding: 8px;
+    }
+
+    .rc-title {
+      font-size: 10px;
+      font-weight: 500;
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
+    }
+
+    .rc-domain {
+      font-size: 9px;
+      color: var(--text-light);
+      margin-top: 2px;
+    }
+
+    /* 書籤卡（網格） */
+    .wiki-grid {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 10px;
+      padding: 0 16px 20px;
+    }
+
+    .wiki-card {
+      background: var(--card);
+      border: 1.5px solid var(--border);
+      border-radius: 14px;
+      overflow: hidden;
+      cursor: pointer;
+      transition: all 0.2s;
+    }
+
+    .wiki-card:hover {
+      border-color: var(--pink-main);
+      box-shadow: 0 4px 12px rgba(195, 109, 120, 0.15);
+    }
+
+    .wc-img {
+      width: 100%;
+      aspect-ratio: 16/9;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 32px;
+      background: linear-gradient(135deg, var(--pink-light), #FAD4D8);
+    }
+
+    .wc-body {
+      padding: 9px 10px 11px;
+    }
+
+    .wc-cat-row {
+      display: flex;
+      align-items: center;
+      gap: 4px;
+      margin-bottom: 5px;
+    }
+
+    .wc-dot {
+      width: 6px;
+      height: 6px;
+      border-radius: 50%;
+    }
+
+    .wc-cat {
+      font-size: 9px;
+      color: var(--text-light);
+    }
+
+    .wc-title {
+      font-size: 12px;
+      font-weight: 500;
+      line-height: 1.4;
+      display: -webkit-box;
+      -webkit-line-clamp: 2;
+      -webkit-box-orient: vertical;
+      overflow: hidden;
+      margin-bottom: 4px;
+    }
+
+    .wc-domain {
+      font-size: 9px;
+      color: var(--text-light);
+      opacity: 0.8;
+    }
+
+    /* 列表模式 */
+    .wiki-list {
+      display: flex;
+      flex-direction: column;
+      gap: 0;
+      padding: 0;
+    }
+
+    .wiki-item {
+      background: var(--card);
+      border-bottom: 1.5px solid var(--border);
+      padding: 12px 16px;
+      cursor: pointer;
+      transition: all 0.2s;
+      display: flex;
+      align-items: center;
+      gap: 12px;
+    }
+
+    .wiki-item:last-child {
+      border-bottom: none;
+    }
+
+    .wiki-item:hover {
+      background: rgba(253, 246, 247, 0.5);
+    }
+
+    .wi-icon {
+      font-size: 24px;
+      flex-shrink: 0;
+    }
+
+    .wi-body {
+      flex: 1;
+      min-width: 0;
+    }
+
+    .wi-title {
+      font-size: 13px;
+      font-weight: 500;
+      margin-bottom: 3px;
+    }
+
+    .wi-meta {
+      font-size: 10px;
+      color: var(--text-light);
+    }
+
+    /* 底部導覽 */
+    .bottom-nav {
+      position: fixed;
+      bottom: 0;
+      left: 0;
+      right: 0;
+      height: 60px;
+      background: rgba(253, 246, 247, 0.98);
+      backdrop-filter: blur(10px);
+      border-top: 1.5px solid var(--border);
+      display: flex;
+      align-items: center;
+      justify-content: space-around;
+      padding: 8px 0 4px;
+      z-index: 101;
+    }
+
+    .nav-item {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 4px;
+      opacity: 0.5;
+      cursor: pointer;
+      padding: 0 12px;
+      text-decoration: none;
+      color: inherit;
+      transition: all 0.2s;
+    }
+
+    .nav-item.active {
+      opacity: 1;
+    }
+
+    .ni-icon {
+      font-size: 20px;
+      line-height: 1;
+    }
+
+    .ni-label {
+      font-size: 10px;
+      letter-spacing: 0.05em;
+      color: var(--text-light);
+      font-weight: 500;
+    }
+
+    .nav-item.active .ni-label {
+      color: var(--pink-main);
+      font-weight: 700;
+    }
+
+    /* FAB */
+    .fab {
+      position: fixed;
+      bottom: 72px;
+      right: 16px;
+      width: 48px;
+      height: 48px;
+      border-radius: 50%;
+      background: var(--pink-main);
+      color: white;
+      font-size: 24px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      box-shadow: 0 4px 14px rgba(195, 109, 120, 0.3);
+      cursor: pointer;
+      transition: all 0.2s;
+      z-index: 50;
+    }
+
+    .fab:hover {
+      background: var(--pink-dark);
+    }
+  </style>
+</head>
+<body>
+  <div class="phone-container">
+    <div class="status-bar">
+      <span class="sb-time" id="currentTime">09:18</span>
+      <span>📶 🔋</span>
+    </div>
+
+    <div class="app-header">
+      <div class="ah-title">小百科</div>
+      <div class="ah-right">
+        <div class="view-toggle">
+          <button class="toggle-btn active" onclick="switchView('grid')">⊞</button>
+          <button class="toggle-btn" onclick="switchView('list')">☰</button>
+        </div>
+        <button class="hbtn" onclick="goHome()">🏡</button>
+        <button class="hbtn" onclick="openCSV()">CSV</button>
+      </div>
+    </div>
+
+    <div class="main-content">
+      <div class="screen-body">
+        <!-- 搜尋 -->
+        <div class="search-wrap">
+          <input class="search-inp" placeholder="🔍 搜尋標題、標籤、網域…" id="searchInput">
+        </div>
+
+        <!-- 篩選 -->
+        <div class="filter-pills" id="filterPills"></div>
+
+        <!-- 最近查閱 -->
+        <div class="section-header">
+          <div class="sec-title">最近查閱</div>
+        </div>
+        <div class="scroll-wrap">
+          <div class="scroll-row" id="recentList"></div>
+        </div>
+
+        <!-- 書籤列表/網格 -->
+        <div id="wikiContainer"></div>
+
+        <div style="height: 20px;"></div>
+      </div>
+    </div>
+
+    <!-- 浮動按鈕 -->
+    <div class="fab" onclick="addBookmark()">＋</div>
+
+    <!-- 底部導覽 -->
+    <div class="bottom-nav">
+      <a href="javascript:void(0)" class="nav-item" onclick="goHome()">
+        <div class="ni-icon">🏡</div>
+        <div class="ni-label">首頁</div>
+      </a>
+      <a href="javascript:void(0)" class="nav-item" onclick="navigateTo('module-reminders.html')">
+        <div class="ni-icon">📋</div>
+        <div class="ni-label">提醒</div>
+      </a>
+      <a href="javascript:void(0)" class="nav-item" onclick="navigateTo('module-inventory.html')">
+        <div class="ni-icon">📦</div>
+        <div class="ni-label">庫存</div>
+      </a>
+      <a href="javascript:void(0)" class="nav-item" onclick="navigateTo('module-wardrobe.html')">
+        <div class="ni-icon">👗</div>
+        <div class="ni-label">衣櫥</div>
+      </a>
+      <a href="javascript:void(0)" class="nav-item active">
+        <div class="ni-icon">📖</div>
+        <div class="ni-label">百科</div>
+      </a>
+    </div>
+  </div>
+
+  <script>
+    let roomCode = new URLSearchParams(window.location.search).get('room') || 'MY0918';
+    let viewMode = 'grid';
+
+    const categories = [
+      { icon: '🍳', name: '食譜', color: '#E67E22' },
+      { icon: '❤️', name: '健康', color: '#E74C3C' },
+      { icon: '🍼', name: '育兒', color: '#F39C12' },
+      { icon: '🏠', name: '居家', color: '#16A085' },
+      { icon: '💰', name: '財務', color: '#3498DB' },
+      { icon: '✈️', name: '旅遊', color: '#9B59B6' },
+      { icon: '🔧', name: '工具', color: '#34495E' },
+      { icon: '📌', name: '備忘', color: '#95A5A6' },
+      { icon: '📚', name: '其他', color: '#C0392B' }
+    ];
+
+    const articles = [
+      { id: 1, title: '嬰兒推車 2026 最佳推薦', category: '育兒', icon: '🍼', domain: 'babycare.tw', url: 'https://babycare.tw', tags: ['推車', '育兒'] },
+      { id: 2, title: '氣炸鍋雞胸肉食譜', category: '食譜', icon: '🍳', domain: 'cooking.tw', url: 'https://cooking.tw', tags: ['氣炸鍋', '雞肉'] },
+      { id: 3, title: '家庭財務規劃指南', category: '財務', icon: '💰', domain: 'finance.tw', url: 'https://finance.tw', tags: ['理財', '預算'] },
+      { id: 4, title: 'Awesome Gemini Gems', category: '工具', icon: '🔧', domain: 'israynotarray.dev', url: 'https://israynotarray.dev', tags: ['工具', '開發'] },
+      { id: 5, title: '居家佈置靈感', category: '居家', icon: '🏠', domain: 'home.design', url: 'https://home.design', tags: ['佈置', '家裝'] }
+    ];
+
+    function init() {
+      updateTime();
+      renderFilters();
+      renderRecent();
+      renderArticles();
+      setInterval(updateTime, 1000);
+    }
+
+    function updateTime() {
+      const now = new Date();
+      const hours = String(now.getHours()).padStart(2, '0');
+      const mins = String(now.getMinutes()).padStart(2, '0');
+      document.getElementById('currentTime').textContent = `${hours}:${mins}`;
+    }
+
+    function renderFilters() {
+      const pills = document.getElementById('filterPills');
+      pills.innerHTML = categories.map((cat, idx) => `
+        <div class="pill ${idx === 0 ? 'active' : ''}" onclick="filterCat('${cat.name}')">
+          ${cat.icon} ${cat.name}${idx === 0 ? ' (5)' : ''}
+        </div>
+      `).join('');
+    }
+
+    function renderRecent() {
+      const recent = articles.slice(0, 3);
+      const list = document.getElementById('recentList');
+      list.innerHTML = recent.map(a => `
+        <div class="recent-card" onclick="openArticle(${a.id})">
+          <div class="rc-img">${a.icon}</div>
+          <div class="rc-body">
+            <div class="rc-title">${a.title}</div>
+            <div class="rc-domain">${a.domain}</div>
+          </div>
+        </div>
+      `).join('');
+    }
+
+    function renderArticles() {
+      const container = document.getElementById('wikiContainer');
+      
+      if (viewMode === 'grid') {
+        container.innerHTML = `
+          <div class="wiki-grid">
+            ${articles.map(a => {
+              const cat = categories.find(c => c.name === a.category);
+              return `
+                <div class="wiki-card" onclick="openArticle(${a.id})">
+                  <div class="wc-img">${a.icon}</div>
+                  <div class="wc-body">
+                    <div class="wc-cat-row">
+                      <div class="wc-dot" style="background: ${cat?.color || '#999'}"></div>
+                      <div class="wc-cat">${a.category}</div>
+                    </div>
+                    <div class="wc-title">${a.title}</div>
+                    <div class="wc-domain">${a.domain}</div>
+                  </div>
+                </div>
+              `;
+            }).join('')}
+          </div>
+        `;
+      } else {
+        container.innerHTML = `
+          <div class="wiki-list">
+            ${articles.map(a => `
+              <div class="wiki-item" onclick="openArticle(${a.id})">
+                <div class="wi-icon">${a.icon}</div>
+                <div class="wi-body">
+                  <div class="wi-title">${a.title}</div>
+                  <div class="wi-meta">${a.category} · ${a.domain}</div>
+                </div>
+              </div>
+            `).join('')}
+          </div>
+        `;
+      }
+    }
+
+    function switchView(mode) {
+      viewMode = mode;
+      document.querySelectorAll('.toggle-btn').forEach((btn, i) => {
+        btn.classList.toggle('active', (i === 0 && mode === 'grid') || (i === 1 && mode === 'list'));
+      });
+      renderArticles();
+    }
+
+    function filterCat(catName) {
+      document.querySelectorAll('.pill').forEach(p => {
+        p.classList.toggle('active', p.textContent.includes(catName));
+      });
+    }
+
+    function openArticle(id) {
+      const article = articles.find(a => a.id === id);
+      if (article) {
+        alert(`打開文章: ${article.title}\n網址: ${article.url}`);
+      }
+    }
+
+    function addBookmark() {
+      alert('新增書籤 (示範版本)');
+    }
+
+    function openCSV() {
+      alert('CSV 匯入/匯出 (示範版本)');
+    }
+
+    function goHome() {
+      window.location.href = `index.html?room=${roomCode}`;
+    }
+
+    function navigateTo(page) {
+      window.location.href = `${page}?room=${roomCode}`;
+    }
+
+    init();
+  </script>
+</body>
+</html>

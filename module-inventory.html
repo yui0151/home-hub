@@ -1,0 +1,743 @@
+<!DOCTYPE html>
+<html lang="zh-TW">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>家庭數位管家 — 庫存管理</title>
+  <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+TC:wght@300;400;500;700&family=Noto+Serif+TC:wght@400;600&display=swap" rel="stylesheet">
+  <style>
+    :root {
+      --bg: #FDF6F7;
+      --white: #FFFFFF;
+      --pink-light: #F4C5C9;
+      --pink-mid: #EFA5A8;
+      --pink-main: #C36D78;
+      --pink-dark: #8C3A44;
+      --text: #2D1B1E;
+      --text-mid: #5C3D42;
+      --text-light: #9B6B72;
+      --border: #F4C5C9;
+      --card: #FFFFFF;
+      --danger: #C62828;
+      --warning: #E65100;
+    }
+
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+    }
+
+    body {
+      background: var(--bg);
+      color: var(--text);
+      font-family: 'Noto Sans TC', sans-serif;
+      font-weight: 400;
+      -webkit-font-smoothing: antialiased;
+    }
+
+    .phone-container {
+      display: flex;
+      flex-direction: column;
+      height: 100vh;
+      overflow: hidden;
+    }
+
+    .status-bar {
+      height: 28px;
+      background: rgba(253, 246, 247, 0.95);
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 0 16px;
+      font-size: 11px;
+      color: var(--text);
+      border-bottom: 1px solid var(--border);
+    }
+
+    .sb-time {
+      font-size: 12px;
+      font-weight: 700;
+    }
+
+    .app-header {
+      background: rgba(253, 246, 247, 0.95);
+      border-bottom: 1px solid var(--border);
+      padding: 12px 16px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      position: sticky;
+      top: 0;
+      z-index: 99;
+    }
+
+    .ah-title {
+      font-family: 'Noto Serif TC', serif;
+      font-size: 18px;
+      font-weight: 600;
+    }
+
+    .ah-right {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+
+    .hbtn {
+      font-size: 12px;
+      background: var(--pink-light);
+      border: 1px solid var(--border);
+      border-radius: 8px;
+      padding: 4px 10px;
+      color: var(--text-mid);
+      font-weight: 500;
+      cursor: pointer;
+      transition: all 0.2s;
+    }
+
+    .hbtn:hover {
+      background: var(--pink-mid);
+      color: white;
+    }
+
+    .main-content {
+      flex: 1;
+      display: flex;
+      flex-direction: column;
+      overflow: hidden;
+      padding-bottom: 60px;
+    }
+
+    .screen-body {
+      flex: 1;
+      overflow-y: auto;
+      overflow-x: hidden;
+      scrollbar-width: thin;
+    }
+
+    /* 統計卡 */
+    .stats-grid {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 8px;
+      padding: 12px 16px;
+    }
+
+    .stat-card {
+      background: var(--card);
+      border: 1.5px solid var(--border);
+      border-radius: 12px;
+      padding: 12px 8px;
+      text-align: center;
+    }
+
+    .stat-num {
+      font-family: 'Noto Serif TC', serif;
+      font-size: 22px;
+      font-weight: 400;
+      line-height: 1;
+      margin-bottom: 4px;
+    }
+
+    .stat-num.danger {
+      color: var(--danger);
+    }
+
+    .stat-label {
+      font-size: 10px;
+      color: var(--text-light);
+      text-transform: uppercase;
+      letter-spacing: 0.05em;
+    }
+
+    /* Tab */
+    .tab-bar {
+      display: flex;
+      background: var(--pink-light);
+      border: 1px solid var(--border);
+      border-radius: 12px;
+      padding: 3px;
+      margin: 12px 16px;
+      gap: 3px;
+    }
+
+    .tab-btn {
+      flex: 1;
+      padding: 8px;
+      border: none;
+      border-radius: 9px;
+      font-family: 'Noto Sans TC', sans-serif;
+      font-size: 12px;
+      font-weight: 500;
+      cursor: pointer;
+      background: transparent;
+      color: var(--text-light);
+      transition: all 0.2s;
+    }
+
+    .tab-btn.active {
+      background: var(--white);
+      color: var(--text);
+      box-shadow: 0 1px 4px rgba(195, 109, 120, 0.15);
+    }
+
+    .badge {
+      display: inline-block;
+      background: var(--danger);
+      color: white;
+      border-radius: 8px;
+      padding: 1px 6px;
+      font-size: 10px;
+      margin-left: 4px;
+      font-weight: 600;
+    }
+
+    /* 搜尋與篩選 */
+    .search-inp {
+      margin: 8px 16px;
+      background: var(--white);
+      border: 1.5px solid var(--border);
+      border-radius: 10px;
+      padding: 9px 12px;
+      font-size: 13px;
+      color: var(--text);
+      font-family: 'Noto Sans TC', sans-serif;
+      width: calc(100% - 32px);
+      display: block;
+    }
+
+    .filter-pills {
+      display: flex;
+      gap: 6px;
+      padding: 0 16px 10px;
+      overflow-x: auto;
+      scrollbar-width: none;
+    }
+
+    .filter-pills::-webkit-scrollbar {
+      display: none;
+    }
+
+    .pill {
+      white-space: nowrap;
+      background: var(--white);
+      border: 1px solid var(--border);
+      border-radius: 20px;
+      padding: 5px 12px;
+      font-size: 11px;
+      color: var(--text-light);
+      cursor: pointer;
+      transition: all 0.2s;
+    }
+
+    .pill.active {
+      background: var(--pink-main);
+      border-color: var(--pink-main);
+      color: white;
+      font-weight: 600;
+    }
+
+    /* Accordion */
+    .acc-group {
+      margin: 0 16px 8px;
+    }
+
+    .acc-header {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      padding: 10px 12px;
+      background: var(--white);
+      border: 1.5px solid var(--border);
+      border-radius: 10px;
+      cursor: pointer;
+      transition: all 0.2s;
+    }
+
+    .acc-header:hover {
+      border-color: var(--pink-main);
+    }
+
+    .acc-arrow {
+      font-size: 10px;
+      color: var(--text-light);
+      transition: transform 0.2s;
+    }
+
+    .acc-header.open .acc-arrow {
+      transform: rotate(90deg);
+    }
+
+    .acc-dot {
+      width: 8px;
+      height: 8px;
+      border-radius: 50%;
+      flex-shrink: 0;
+    }
+
+    .acc-name {
+      font-size: 12px;
+      font-weight: 600;
+      flex: 1;
+      color: var(--text);
+    }
+
+    .acc-count {
+      font-size: 10px;
+      background: var(--pink-light);
+      border: 1px solid var(--border);
+      border-radius: 8px;
+      padding: 2px 8px;
+      color: var(--pink-main);
+      font-weight: 600;
+    }
+
+    .acc-items {
+      display: none;
+      margin-top: 4px;
+    }
+
+    .acc-items.open {
+      display: flex;
+      flex-direction: column;
+      gap: 4px;
+    }
+
+    /* 庫存項目 */
+    .inv-item {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      padding: 10px 12px;
+      background: var(--white);
+      border: 1.5px solid var(--border);
+      border-radius: 10px;
+      position: relative;
+      overflow: hidden;
+      transition: all 0.2s;
+    }
+
+    .inv-item:hover {
+      border-color: var(--pink-main);
+      background: rgba(253, 246, 247, 0.5);
+    }
+
+    .inv-item::before {
+      content: '';
+      position: absolute;
+      left: 0;
+      top: 0;
+      bottom: 0;
+      width: 3px;
+      border-radius: 10px 0 0 10px;
+    }
+
+    .inv-item.ok::before {
+      background: var(--pink-mid);
+    }
+
+    .inv-item.low::before {
+      background: var(--danger);
+    }
+
+    .inv-icon {
+      width: 32px;
+      height: 32px;
+      border-radius: 8px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 16px;
+      flex-shrink: 0;
+      background: var(--pink-light);
+    }
+
+    .inv-body {
+      flex: 1;
+      min-width: 0;
+    }
+
+    .inv-name {
+      font-size: 13px;
+      font-weight: 500;
+      margin-bottom: 2px;
+    }
+
+    .inv-loc {
+      font-size: 10px;
+      color: var(--text-light);
+    }
+
+    .inv-right {
+      text-align: right;
+      display: flex;
+      flex-direction: column;
+      align-items: flex-end;
+      gap: 3px;
+    }
+
+    .inv-qty {
+      font-family: 'Noto Serif TC', serif;
+      font-size: 16px;
+      font-weight: 400;
+      line-height: 1;
+    }
+
+    .inv-qty.low {
+      color: var(--danger);
+      font-weight: 600;
+    }
+
+    .inv-unit {
+      font-size: 10px;
+      color: var(--text-light);
+    }
+
+    .qty-row {
+      display: flex;
+      align-items: center;
+      gap: 4px;
+      margin-top: 3px;
+    }
+
+    .qty-btn {
+      width: 22px;
+      height: 22px;
+      border-radius: 50%;
+      border: 1px solid var(--border);
+      background: var(--bg);
+      font-size: 12px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      cursor: pointer;
+      color: var(--text);
+      transition: all 0.2s;
+    }
+
+    .qty-btn:hover {
+      border-color: var(--pink-main);
+      background: var(--pink-light);
+    }
+
+    /* 底部導覽 */
+    .bottom-nav {
+      position: fixed;
+      bottom: 0;
+      left: 0;
+      right: 0;
+      height: 60px;
+      background: rgba(253, 246, 247, 0.98);
+      backdrop-filter: blur(10px);
+      border-top: 1.5px solid var(--border);
+      display: flex;
+      align-items: center;
+      justify-content: space-around;
+      padding: 8px 0 4px;
+      z-index: 101;
+    }
+
+    .nav-item {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 4px;
+      opacity: 0.5;
+      cursor: pointer;
+      padding: 0 12px;
+      text-decoration: none;
+      color: inherit;
+      transition: all 0.2s;
+    }
+
+    .nav-item.active {
+      opacity: 1;
+    }
+
+    .ni-icon {
+      font-size: 20px;
+      line-height: 1;
+    }
+
+    .ni-label {
+      font-size: 10px;
+      letter-spacing: 0.05em;
+      color: var(--text-light);
+      font-weight: 500;
+    }
+
+    .nav-item.active .ni-label {
+      color: var(--pink-main);
+      font-weight: 700;
+    }
+
+    /* FAB */
+    .fab {
+      position: fixed;
+      bottom: 72px;
+      right: 16px;
+      width: 48px;
+      height: 48px;
+      border-radius: 50%;
+      background: var(--pink-main);
+      color: white;
+      font-size: 24px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      box-shadow: 0 4px 14px rgba(195, 109, 120, 0.3);
+      cursor: pointer;
+      transition: all 0.2s;
+      z-index: 50;
+    }
+
+    .fab:hover {
+      background: var(--pink-dark);
+    }
+  </style>
+  <script src="firebase-config.js"></script>
+</head>
+<body>
+  <div class="phone-container">
+    <div class="status-bar">
+      <span class="sb-time" id="currentTime">09:18</span>
+      <span>📶 🔋</span>
+    </div>
+
+    <div class="app-header">
+      <div class="ah-title">庫存管理</div>
+      <div class="ah-right">
+        <button class="hbtn" onclick="goHome()">🏡</button>
+        <button class="hbtn" onclick="openCSV()">CSV</button>
+      </div>
+    </div>
+
+    <div class="main-content">
+      <div class="screen-body">
+        <!-- 統計卡 -->
+        <div class="stats-grid">
+          <div class="stat-card">
+            <div class="stat-num">35</div>
+            <div class="stat-label">品項數</div>
+          </div>
+          <div class="stat-card">
+            <div class="stat-num danger">5</div>
+            <div class="stat-label">庫存不足</div>
+          </div>
+          <div class="stat-card">
+            <div class="stat-num">8</div>
+            <div class="stat-label">分類數</div>
+          </div>
+        </div>
+
+        <!-- Tab -->
+        <div class="tab-bar">
+          <button class="tab-btn active" onclick="switchTab('all')">📦 庫存總覽</button>
+          <button class="tab-btn" onclick="switchTab('toupay')">🛒 待買清單 <span class="badge">5</span></button>
+        </div>
+
+        <!-- 搜尋 -->
+        <input class="search-inp" placeholder="🔍 搜尋品項、條碼、位置…" id="searchInput" onkeyup="filterItems()">
+
+        <!-- 篩選 -->
+        <div class="filter-pills" id="filterPills"></div>
+
+        <!-- 分類列表 -->
+        <div id="categoryList"></div>
+
+        <div style="height: 20px;"></div>
+      </div>
+    </div>
+
+    <!-- 浮動按鈕 -->
+    <div class="fab" onclick="addItem()">＋</div>
+
+    <!-- 底部導覽 -->
+    <div class="bottom-nav">
+      <a href="javascript:void(0)" class="nav-item" onclick="goHome()">
+        <div class="ni-icon">🏡</div>
+        <div class="ni-label">首頁</div>
+      </a>
+      <a href="javascript:void(0)" class="nav-item" onclick="navigateTo('module-reminders.html')">
+        <div class="ni-icon">📋</div>
+        <div class="ni-label">提醒</div>
+      </a>
+      <a href="javascript:void(0)" class="nav-item active">
+        <div class="ni-icon">📦</div>
+        <div class="ni-label">庫存</div>
+      </a>
+      <a href="javascript:void(0)" class="nav-item" onclick="navigateTo('module-wardrobe.html')">
+        <div class="ni-icon">👗</div>
+        <div class="ni-label">衣櫥</div>
+      </a>
+      <a href="javascript:void(0)" class="nav-item" onclick="navigateTo('module-wiki.html')">
+        <div class="ni-icon">📖</div>
+        <div class="ni-label">百科</div>
+      </a>
+    </div>
+  </div>
+
+  <script>
+    let roomCode = new URLSearchParams(window.location.search).get('room') || 'MY0918';
+    let currentTab = 'all';
+
+    const categories = [
+      { icon: '🥫', name: '食品', color: '#E67E22' },
+      { icon: '🥤', name: '飲料', color: '#3498DB' },
+      { icon: '❄️', name: '冷凍', color: '#A8D8EA' },
+      { icon: '🧹', name: '清潔', color: '#2ECC71' },
+      { icon: '🚿', name: '浴室', color: '#E74C3C' },
+      { icon: '💊', name: '藥品', color: '#9B59B6' },
+      { icon: '🍼', name: '嬰幼兒', color: '#F39C12' },
+      { icon: '🥄', name: '廚房', color: '#1ABC9C' }
+    ];
+
+    const items = [
+      { id: 1, name: '雞蛋', category: '食品', qty: 10, unit: '顆', threshold: 5, loc: '冰箱', status: 'ok', icon: '🥚' },
+      { id: 2, name: '白米', category: '食品', qty: 1, unit: 'kg', threshold: 2, loc: '廚房', status: 'low', icon: '🍚' },
+      { id: 3, name: '衛生紙', category: '清潔', qty: 3, unit: '包', threshold: 2, loc: '浴室', status: 'ok', icon: '🧹' },
+      { id: 4, name: '洗碗精', category: '清潔', qty: 1, unit: '瓶', threshold: 1, loc: '廚房水槽', status: 'low', icon: '🧴' },
+      { id: 5, name: '牛奶', category: '食品', qty: 2, unit: '瓶', threshold: 1, loc: '冰箱', status: 'ok', icon: '🥛' }
+    ];
+
+    function init() {
+      updateTime();
+      loadInventory();
+      setInterval(updateTime, 1000);
+      
+      // 監聽 Firebase 更新
+      document.addEventListener('firebaseUpdate', (e) => {
+        if (e.detail.collection === 'inventory') {
+          items = e.detail.data;
+          renderItems();
+        }
+      });
+    }
+
+    async function loadInventory() {
+      const roomCode = await getRoomCode();
+      try {
+        items = await fbManager.read('inventory', roomCode);
+        if (items.length === 0) {
+          items = mockItems;
+        }
+      } catch (err) {
+        console.warn('Firebase 載入失敗，使用本地資料:', err);
+        items = mockItems;
+      }
+      renderItems();
+    }
+
+    function updateTime() {
+      const now = new Date();
+      const hours = String(now.getHours()).padStart(2, '0');
+      const mins = String(now.getMinutes()).padStart(2, '0');
+      document.getElementById('currentTime').textContent = `${hours}:${mins}`;
+    }
+
+    function renderFilters() {
+      const pills = document.getElementById('filterPills');
+      pills.innerHTML = categories.map((cat, idx) => `
+        <div class="pill ${idx === 0 ? 'active' : ''}" onclick="filterByCategory('${cat.name}')" style="--color: ${cat.color}">
+          ${cat.icon} ${cat.name}
+        </div>
+      `).join('');
+    }
+
+    function renderItems() {
+      const categoryGroups = {};
+
+      items.forEach(item => {
+        if (!categoryGroups[item.category]) {
+          categoryGroups[item.category] = [];
+        }
+        categoryGroups[item.category].push(item);
+      });
+
+      const catList = document.getElementById('categoryList');
+      catList.innerHTML = Object.entries(categoryGroups).map(([catName, catItems], idx) => {
+        const cat = categories.find(c => c.name === catName);
+        return `
+          <div class="acc-group">
+            <div class="acc-header open" onclick="toggleCategory(this)">
+              <span class="acc-arrow">▶</span>
+              <div class="acc-dot" style="background: ${cat?.color || '#999'}"></div>
+              <div class="acc-name">${cat?.icon || '📦'} ${catName}</div>
+              <div class="acc-count">${catItems.length}</div>
+            </div>
+            <div class="acc-items open">
+              ${catItems.map(item => `
+                <div class="inv-item ${item.status}">
+                  <div class="inv-icon">${item.icon}</div>
+                  <div class="inv-body">
+                    <div class="inv-name">${item.name}</div>
+                    <div class="inv-loc">📍 ${item.loc}</div>
+                  </div>
+                  <div class="inv-right">
+                    <div class="inv-qty ${item.status === 'low' ? 'low' : ''}">${item.qty}</div>
+                    <div class="inv-unit">${item.unit}</div>
+                    <div class="qty-row">
+                      <button class="qty-btn" onclick="updateQty(${item.id}, -1)">−</button>
+                      <button class="qty-btn" onclick="updateQty(${item.id}, +1)">+</button>
+                    </div>
+                  </div>
+                </div>
+              `).join('')}
+            </div>
+          </div>
+        `;
+      }).join('');
+    }
+
+    function toggleCategory(header) {
+      header.classList.toggle('open');
+      header.nextElementSibling.classList.toggle('open');
+    }
+
+    function filterByCategory(catName) {
+      document.querySelectorAll('.pill').forEach((p, idx) => {
+        p.classList.toggle('active', p.textContent.includes(catName));
+      });
+    }
+
+    function filterItems() {
+      // 實現搜尋邏輯
+    }
+
+    function updateQty(id, delta) {
+      const item = items.find(i => i.id === id);
+      if (item) {
+        item.qty = Math.max(0, item.qty + delta);
+        item.status = item.qty <= item.threshold ? 'low' : 'ok';
+        renderItems();
+      }
+    }
+
+    function switchTab(tab) {
+      currentTab = tab;
+      document.querySelectorAll('.tab-btn').forEach((b, i) => {
+        b.classList.toggle('active', (i === 0 && tab === 'all') || (i === 1 && tab === 'toupay'));
+      });
+    }
+
+    function addItem() {
+      alert('新增庫存 (示範版本)');
+    }
+
+    function openCSV() {
+      alert('CSV 匯入/匯出 (示範版本)');
+    }
+
+    function goHome() {
+      window.location.href = `index.html?room=${roomCode}`;
+    }
+
+    function navigateTo(page) {
+      window.location.href = `${page}?room=${roomCode}`;
+    }
+
+    init();
+  </script>
+</body>
+</html>

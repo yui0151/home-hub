@@ -1,0 +1,700 @@
+<!DOCTYPE html>
+<html lang="zh-TW">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>家庭數位管家 — 提醒系統</title>
+  <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+TC:wght@300;400;500;700&family=Noto+Serif+TC:wght@400;600&display=swap" rel="stylesheet">
+  <style>
+    :root {
+      --bg: #FDF6F7;
+      --white: #FFFFFF;
+      --pink-light: #F4C5C9;
+      --pink-mid: #EFA5A8;
+      --pink-main: #C36D78;
+      --pink-dark: #8C3A44;
+      --text: #2D1B1E;
+      --text-mid: #5C3D42;
+      --text-light: #9B6B72;
+      --border: #F4C5C9;
+      --card: #FFFFFF;
+      --success: #4CAF50;
+      --warning: #E65100;
+      --danger: #C62828;
+    }
+
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+    }
+
+    body {
+      background: var(--bg);
+      color: var(--text);
+      font-family: 'Noto Sans TC', sans-serif;
+      font-weight: 400;
+      -webkit-font-smoothing: antialiased;
+    }
+
+    .phone-container {
+      display: flex;
+      flex-direction: column;
+      height: 100vh;
+      overflow: hidden;
+    }
+
+    .status-bar {
+      height: 28px;
+      background: rgba(253, 246, 247, 0.95);
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 0 16px;
+      font-size: 11px;
+      color: var(--text);
+      border-bottom: 1px solid var(--border);
+    }
+
+    .sb-time {
+      font-size: 12px;
+      font-weight: 700;
+    }
+
+    .app-header {
+      background: rgba(253, 246, 247, 0.95);
+      border-bottom: 1px solid var(--border);
+      padding: 12px 16px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      position: sticky;
+      top: 0;
+      z-index: 99;
+    }
+
+    .ah-title {
+      font-family: 'Noto Serif TC', serif;
+      font-size: 18px;
+      font-weight: 600;
+    }
+
+    .ah-right {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+
+    .hbtn {
+      font-size: 12px;
+      background: var(--pink-light);
+      border: 1px solid var(--border);
+      border-radius: 8px;
+      padding: 4px 10px;
+      color: var(--text-mid);
+      font-weight: 500;
+      cursor: pointer;
+      transition: all 0.2s;
+    }
+
+    .hbtn:hover {
+      background: var(--pink-mid);
+      color: white;
+    }
+
+    .main-content {
+      flex: 1;
+      display: flex;
+      flex-direction: column;
+      overflow: hidden;
+      padding-bottom: 60px;
+    }
+
+    .screen-body {
+      flex: 1;
+      overflow-y: auto;
+      overflow-x: hidden;
+      scrollbar-width: thin;
+    }
+
+    /* 費用統計橫幅 */
+    .expense-banner {
+      margin: 12px 16px;
+      background: linear-gradient(135deg, var(--pink-light), #FCF0F1);
+      border: 1.5px solid var(--pink-light);
+      border-radius: 14px;
+      padding: 14px;
+    }
+
+    .eb-label {
+      font-size: 11px;
+      font-weight: 700;
+      letter-spacing: 0.15em;
+      color: var(--pink-main);
+      text-transform: uppercase;
+      margin-bottom: 6px;
+    }
+
+    .eb-amount {
+      font-family: 'Noto Serif TC', serif;
+      font-size: 28px;
+      font-weight: 400;
+      color: var(--text);
+      line-height: 1;
+    }
+
+    .eb-sub {
+      font-size: 11px;
+      color: var(--text-light);
+      margin-top: 4px;
+    }
+
+    .eb-breakdown {
+      margin-top: 12px;
+      padding-top: 12px;
+      border-top: 1px solid rgba(195, 109, 120, 0.2);
+    }
+
+    .eb-row {
+      display: flex;
+      justify-content: space-between;
+      font-size: 12px;
+      padding: 3px 0;
+      color: var(--text-mid);
+    }
+
+    .eb-row.paid {
+      text-decoration: line-through;
+      opacity: 0.5;
+    }
+
+    /* 提醒卡 */
+    .reminder-card {
+      background: var(--card);
+      border: 1.5px solid var(--border);
+      border-radius: 12px;
+      padding: 12px 14px;
+      margin: 0 16px 8px;
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      position: relative;
+      overflow: hidden;
+      transition: all 0.2s;
+    }
+
+    .reminder-card:hover {
+      border-color: var(--pink-main);
+      background: rgba(253, 246, 247, 0.5);
+    }
+
+    .reminder-card.overdue {
+      border-color: rgba(198, 40, 40, 0.2);
+      background: rgba(198, 40, 40, 0.05);
+    }
+
+    .rc-bar {
+      position: absolute;
+      left: 0;
+      top: 0;
+      bottom: 0;
+      width: 3px;
+      background: var(--pink-main);
+    }
+
+    .rc-bar.overdue {
+      background: var(--danger);
+    }
+
+    .rc-bar.warning {
+      background: var(--warning);
+    }
+
+    .rc-icon {
+      width: 32px;
+      height: 32px;
+      border-radius: 8px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 16px;
+      flex-shrink: 0;
+      background: var(--pink-light);
+    }
+
+    .rc-body {
+      flex: 1;
+      min-width: 0;
+    }
+
+    .rc-title {
+      font-size: 14px;
+      font-weight: 500;
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
+    }
+
+    .rc-meta {
+      font-size: 11px;
+      color: var(--text-light);
+      margin-top: 2px;
+    }
+
+    .rc-due {
+      font-size: 11px;
+      margin-top: 2px;
+      font-weight: 600;
+      color: var(--text-mid);
+    }
+
+    .rc-due.overdue {
+      color: var(--danger);
+    }
+
+    .rc-due.warning {
+      color: var(--warning);
+    }
+
+    .rc-check {
+      width: 28px;
+      height: 28px;
+      border-radius: 50%;
+      border: 1.5px solid var(--border);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      flex-shrink: 0;
+      font-size: 12px;
+      cursor: pointer;
+      transition: all 0.2s;
+      color: var(--text-light);
+    }
+
+    .rc-check:hover {
+      border-color: var(--pink-main);
+      background: var(--pink-light);
+    }
+
+    .rc-check.done {
+      background: var(--success);
+      border-color: var(--success);
+      color: white;
+    }
+
+    /* Tab */
+    .tab-bar {
+      display: flex;
+      background: var(--pink-light);
+      border: 1px solid var(--border);
+      border-radius: 12px;
+      padding: 3px;
+      margin: 12px 16px;
+      gap: 3px;
+    }
+
+    .tab-btn {
+      flex: 1;
+      padding: 8px;
+      border: none;
+      border-radius: 9px;
+      font-family: 'Noto Sans TC', sans-serif;
+      font-size: 12px;
+      font-weight: 500;
+      cursor: pointer;
+      background: transparent;
+      color: var(--text-light);
+      transition: all 0.2s;
+    }
+
+    .tab-btn.active {
+      background: var(--white);
+      color: var(--text);
+      box-shadow: 0 1px 4px rgba(195, 109, 120, 0.15);
+    }
+
+    /* 區塊標題 */
+    .section-header {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 12px 16px 8px;
+      margin-top: 8px;
+    }
+
+    .sec-title {
+      font-size: 11px;
+      font-weight: 700;
+      letter-spacing: 0.2em;
+      color: var(--text-light);
+      text-transform: uppercase;
+    }
+
+    /* 底部導覽 */
+    .bottom-nav {
+      position: fixed;
+      bottom: 0;
+      left: 0;
+      right: 0;
+      height: 60px;
+      background: rgba(253, 246, 247, 0.98);
+      backdrop-filter: blur(10px);
+      border-top: 1.5px solid var(--border);
+      display: flex;
+      align-items: center;
+      justify-content: space-around;
+      padding: 8px 0 4px;
+      z-index: 101;
+    }
+
+    .nav-item {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 4px;
+      opacity: 0.5;
+      cursor: pointer;
+      padding: 0 12px;
+      text-decoration: none;
+      color: inherit;
+      transition: all 0.2s;
+    }
+
+    .nav-item.active {
+      opacity: 1;
+    }
+
+    .ni-icon {
+      font-size: 20px;
+      line-height: 1;
+    }
+
+    .ni-label {
+      font-size: 10px;
+      letter-spacing: 0.05em;
+      color: var(--text-light);
+      font-weight: 500;
+    }
+
+    .nav-item.active .ni-label {
+      color: var(--pink-main);
+      font-weight: 700;
+    }
+
+    /* FAB */
+    .fab {
+      position: fixed;
+      bottom: 72px;
+      right: 16px;
+      width: 48px;
+      height: 48px;
+      border-radius: 50%;
+      background: var(--pink-main);
+      color: white;
+      font-size: 24px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      box-shadow: 0 4px 14px rgba(195, 109, 120, 0.3);
+      cursor: pointer;
+      transition: all 0.2s;
+      z-index: 50;
+    }
+
+    .fab:hover {
+      background: var(--pink-dark);
+      box-shadow: 0 6px 20px rgba(195, 109, 120, 0.4);
+    }
+
+    .empty-state {
+      text-align: center;
+      padding: 60px 16px;
+      color: var(--text-light);
+    }
+
+    .empty-icon {
+      font-size: 48px;
+      margin-bottom: 12px;
+    }
+
+    .empty-text {
+      font-size: 13px;
+    }
+  </style>
+  <script src="firebase-config.js"></script>
+</head>
+<body>
+  <div class="phone-container">
+    <div class="status-bar">
+      <span class="sb-time" id="currentTime">09:18</span>
+      <span>📶 🔋</span>
+    </div>
+
+    <div class="app-header">
+      <div class="ah-title">提醒系統</div>
+      <div class="ah-right">
+        <button class="hbtn" onclick="openCSV()">CSV</button>
+        <button class="hbtn" onclick="goHome()">🏡</button>
+      </div>
+    </div>
+
+    <div class="main-content">
+      <div class="screen-body">
+        <!-- 費用統計 -->
+        <div class="expense-banner">
+          <div class="eb-label">本月費用</div>
+          <div class="eb-amount">TWD <span id="totalExpense">2,980</span></div>
+          <div class="eb-sub">共 <span id="totalCount">3</span> 筆 · 已付 <span id="paidCount">1</span> 筆</div>
+          <div class="eb-breakdown" id="expenseBreakdown"></div>
+        </div>
+
+        <!-- Tab -->
+        <div class="tab-bar">
+          <button class="tab-btn active" onclick="switchTab('all')">📋 所有提醒</button>
+          <button class="tab-btn" onclick="switchTab('overdue')">⚠️ 逾期</button>
+        </div>
+
+        <!-- 提醒列表 -->
+        <div class="section-header">
+          <div class="sec-title" id="listTitle">提醒</div>
+        </div>
+        <div id="reminderList"></div>
+
+        <div style="height: 20px;"></div>
+      </div>
+    </div>
+
+    <!-- 浮動按鈕 -->
+    <div class="fab" onclick="addReminder()">＋</div>
+
+    <!-- 底部導覽 -->
+    <div class="bottom-nav">
+      <a href="javascript:void(0)" class="nav-item" onclick="goHome()">
+        <div class="ni-icon">🏡</div>
+        <div class="ni-label">首頁</div>
+      </a>
+      <a href="javascript:void(0)" class="nav-item active">
+        <div class="ni-icon">📋</div>
+        <div class="ni-label">提醒</div>
+      </a>
+      <a href="javascript:void(0)" class="nav-item" onclick="navigateTo('module-inventory.html')">
+        <div class="ni-icon">📦</div>
+        <div class="ni-label">庫存</div>
+      </a>
+      <a href="javascript:void(0)" class="nav-item" onclick="navigateTo('module-wardrobe.html')">
+        <div class="ni-icon">👗</div>
+        <div class="ni-label">衣櫥</div>
+      </a>
+      <a href="javascript:void(0)" class="nav-item" onclick="navigateTo('module-wiki.html')">
+        <div class="ni-icon">📖</div>
+        <div class="ni-label">百科</div>
+      </a>
+    </div>
+  </div>
+
+  <script>
+    let roomCode = new URLSearchParams(window.location.search).get('room') || 'MY0918';
+    let currentTab = 'all';
+    let reminders = [];
+
+    // 模擬提醒資料
+    const mockReminders = [
+      { id: 1, title: '水電費', type: 'financial', amount: 1200, recurrence: 'monthly', dueDate: '2026-04-12', status: 'pending' },
+      { id: 2, title: 'Netflix 訂閱', type: 'subscription', amount: 390, recurrence: 'monthly', dueDate: '2026-04-14', status: 'pending' },
+      { id: 3, title: '換濾芯', type: 'consumable', amount: 0, recurrence: 'quarterly', dueDate: '2026-04-27', status: 'pending' },
+      { id: 4, title: '手機費', type: 'financial', amount: 899, recurrence: 'monthly', dueDate: '2026-04-05', status: 'completed' }
+    ];
+
+    const typeIcons = {
+      financial: '💳',
+      subscription: '📱',
+      consumable: '🔄',
+      chore: '🧹',
+      health: '💊',
+      other: '📌'
+    };
+
+    const typeNames = {
+      financial: '財務',
+      subscription: '訂閱',
+      consumable: '耗材',
+      chore: '家務',
+      health: '健康',
+      other: '其他'
+    };
+
+    function init() {
+      updateTime();
+      loadReminders();
+      setInterval(updateTime, 1000);
+      
+      // 監聽 Firebase 更新事件
+      document.addEventListener('firebaseUpdate', (e) => {
+        if (e.detail.collection === 'reminders') {
+          reminders = e.detail.data;
+          renderReminders();
+          updateExpenseBanner();
+        }
+      });
+    }
+
+    async function loadReminders() {
+      const roomCode = await getRoomCode();
+      try {
+        // 從 Firebase 加載
+        reminders = await fbManager.read('reminders', roomCode);
+        if (reminders.length === 0) {
+          // 如果 Firebase 沒有資料，使用模擬資料
+          reminders = mockReminders;
+        }
+      } catch (err) {
+        console.warn('Firebase 載入失敗，使用本地資料:', err);
+        reminders = mockReminders;
+      }
+      renderReminders();
+      updateExpenseBanner();
+    }
+
+    function updateTime() {
+      const now = new Date();
+      const hours = String(now.getHours()).padStart(2, '0');
+      const mins = String(now.getMinutes()).padStart(2, '0');
+      document.getElementById('currentTime').textContent = `${hours}:${mins}`;
+    }
+
+    function getDaysUntilDue(dueDate) {
+      const due = new Date(dueDate);
+      const today = new Date();
+      today.setHours(0, 0, 0, 0);
+      due.setHours(0, 0, 0, 0);
+      return Math.ceil((due - today) / (1000 * 60 * 60 * 24));
+    }
+
+    function getDueStatus(daysUntil) {
+      if (daysUntil < 0) return 'overdue';
+      if (daysUntil === 0) return 'today';
+      if (daysUntil === 1) return 'tomorrow';
+      if (daysUntil <= 3) return 'soon';
+      return 'future';
+    }
+
+    function getDueText(daysUntil, status) {
+      if (status === 'overdue') return `${Math.abs(daysUntil)} 天前到期`;
+      if (status === 'today') return '今天到期';
+      if (status === 'tomorrow') return '明天到期';
+      return `${daysUntil} 天後`;
+    }
+
+    function updateExpenseBanner() {
+      const thisMonth = reminders.filter(r => {
+        const due = new Date(r.dueDate);
+        const today = new Date();
+        return due.getMonth() === today.getMonth() && due.getFullYear() === today.getFullYear();
+      });
+
+      const totalExpense = thisMonth.reduce((sum, r) => sum + (r.amount || 0), 0);
+      const paidCount = thisMonth.filter(r => r.status === 'completed').length;
+
+      document.getElementById('totalExpense').textContent = totalExpense;
+      document.getElementById('totalCount').textContent = thisMonth.length;
+      document.getElementById('paidCount').textContent = paidCount;
+
+      const breakdown = thisMonth
+        .filter(r => r.type === 'financial' || r.type === 'subscription')
+        .map(r => `
+          <div class="eb-row ${r.status === 'completed' ? 'paid' : ''}">
+            <span>${r.title}</span>
+            <span>TWD ${r.amount}</span>
+          </div>
+        `).join('');
+
+      document.getElementById('expenseBreakdown').innerHTML = breakdown;
+    }
+
+    function renderReminders() {
+      const filtered = currentTab === 'all' 
+        ? reminders 
+        : reminders.filter(r => {
+            const days = getDaysUntilDue(r.dueDate);
+            return days < 0 || (days === 0 && r.status === 'pending');
+          });
+
+      if (filtered.length === 0) {
+        document.getElementById('reminderList').innerHTML = `
+          <div class="empty-state">
+            <div class="empty-icon">${currentTab === 'all' ? '📋' : '✅'}</div>
+            <div class="empty-text">${currentTab === 'all' ? '還沒有提醒' : '沒有逾期項目'}</div>
+          </div>
+        `;
+        return;
+      }
+
+      document.getElementById('reminderList').innerHTML = filtered.map(r => {
+        const daysUntil = getDaysUntilDue(r.dueDate);
+        const status = getDueStatus(daysUntil);
+        const dueText = getDueText(daysUntil, status);
+        const isOverdue = status === 'overdue';
+
+        return `
+          <div class="reminder-card ${isOverdue ? 'overdue' : ''}">
+            <div class="rc-bar ${isOverdue ? 'overdue' : (status === 'soon' ? 'warning' : '')}"></div>
+            <div class="rc-icon">${typeIcons[r.type] || '📌'}</div>
+            <div class="rc-body">
+              <div class="rc-title">${r.title}</div>
+              <div class="rc-meta">${r.recurrence === 'once' ? '單次' : '週期'} · ${typeNames[r.type]}</div>
+              ${r.amount ? `<div class="rc-meta">TWD ${r.amount}</div>` : ''}
+              <div class="rc-due ${isOverdue ? 'overdue' : (status === 'soon' ? 'warning' : '')}">${dueText}</div>
+            </div>
+            <div class="rc-check ${r.status === 'completed' ? 'done' : ''}" onclick="toggleReminder(${r.id})">
+              ${r.status === 'completed' ? '✓' : '○'}
+            </div>
+          </div>
+        `;
+      }).join('');
+    }
+
+    function switchTab(tab) {
+      currentTab = tab;
+      document.querySelectorAll('.tab-btn').forEach((btn, i) => {
+        btn.classList.toggle('active', (i === 0 && tab === 'all') || (i === 1 && tab === 'overdue'));
+      });
+      document.getElementById('listTitle').textContent = tab === 'all' ? '提醒' : '逾期項目';
+      renderReminders();
+    }
+
+    function toggleReminder(id) {
+      const reminder = reminders.find(r => r.id === id);
+      if (reminder) {
+        reminder.status = reminder.status === 'completed' ? 'pending' : 'completed';
+        
+        // 保存到 Firebase
+        getRoomCode().then(roomCode => {
+          fbManager.write('reminders', roomCode, id, reminder)
+            .catch(err => console.warn('保存失敗，轉為本地模式:', err));
+        });
+        
+        renderReminders();
+        updateExpenseBanner();
+      }
+    }
+
+    function addReminder() {
+      alert('新增提醒 (透過 Google Sheet 編輯即可自動同步)');
+    }
+
+    function openCSV() {
+      alert('💡 提示：\n\n1. 編輯 Google Sheet\n2. 系統每分鐘自動同步\n\n無需手動匯入匯出！');
+    }
+
+    function goHome() {
+      window.location.href = `index.html?room=${roomCode}`;
+    }
+
+    function navigateTo(page) {
+      window.location.href = `${page}?room=${roomCode}`;
+    }
+
+    init();
+  </script>
+</body>
+</html>
