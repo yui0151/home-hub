@@ -200,7 +200,7 @@ function App(){
     await batch.commit();setShowCsv(false);setCsvText('');
   };
 
-  const moduleUrl=mod=>`${mod}?room=${room}`;
+  const moduleUrl=mod=>`./${mod}?room=${room}`;
 
   return(
     <div className="app">
@@ -306,7 +306,7 @@ function App(){
       <button className="fab" onClick={()=>setShowAdd(true)}>＋</button>
 
       <div className="bottom-nav">
-        <a className="nav-btn" href={`index.html?room=${room}`}><span className="nav-icon">🏡</span>首頁</a>
+        <a className="nav-btn" href={`./index.html?room=${room}`}><span className="nav-icon">🏡</span>首頁</a>
         <a className="nav-btn" href={moduleUrl('module-reminders.html')}><span className="nav-icon">📋</span>提醒</a>
         <a className="nav-btn" href={moduleUrl('module-inventory.html')}><span className="nav-icon">📦</span>庫存</a>
         <a className="nav-btn active" href="#"><span className="nav-icon">👗</span>衣櫥</a>

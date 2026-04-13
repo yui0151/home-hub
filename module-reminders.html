@@ -300,7 +300,7 @@ function App(){
 
   const groups=groupByDate(filtered);
 
-  const moduleUrl=mod=>`${mod}?room=${room}`;
+  const moduleUrl=mod=>`./${mod}?room=${room}`;
 
   return(
     <div className="app">
@@ -391,7 +391,7 @@ function App(){
 
       {/* Bottom Nav */}
       <div className="bottom-nav">
-        <a className="nav-btn" href={`index.html?room=${room}`}><span className="nav-icon">🏡</span>首頁</a>
+        <a className="nav-btn" href={`./index.html?room=${room}`}><span className="nav-icon">🏡</span>首頁</a>
         <a className="nav-btn active" href="#"><span className="nav-icon">📋</span>提醒</a>
         <a className="nav-btn" href={moduleUrl('module-inventory.html')}><span className="nav-icon">📦</span>庫存</a>
         <a className="nav-btn" href={moduleUrl('module-wardrobe.html')}><span className="nav-icon">👗</span>衣櫥</a>
