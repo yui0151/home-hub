@@ -1,0 +1,676 @@
+<!DOCTYPE html>
+<html lang="zh-TW">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Google Sheet 批量導入指南 · 嘟嘟一家</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Noto+Serif+TC:wght@400;500;700&family=Zen+Kaku+Gothic+New:wght@300;400;500&display=swap" rel="stylesheet">
+<style>
+:root{
+  --paper:#FDFBFA;--clay:#A68A7D;--clay-light:#C4A899;
+  --sage:#8FA68B;--wood:#4A423D;--sand:#EAE2D6;--highlight:#D99A84;
+  --card:#F9F7F4;--card2:#F4F0EB;--white:#FFFFFF;--text-muted:#9B8E87;
+  --green:#2e7d32;--green-bg:#e8f5e9;--green-border:#a5d6a7;
+  --serif:'Noto Serif TC',serif;--sans:'Zen Kaku Gothic New',sans-serif;
+}
+*{box-sizing:border-box;margin:0;padding:0;}
+html{font-size:16px;scroll-behavior:smooth;}
+body{background:var(--paper);color:var(--wood);font-family:var(--sans);line-height:1.7;}
+
+/* Cover */
+.cover{background:linear-gradient(160deg,#f0f7f0 0%,#e0ede0 100%);padding:48px 24px 36px;text-align:center;border-bottom:1px solid var(--sand);}
+.cover-icon{font-size:56px;display:block;margin-bottom:16px;}
+.cover-title{font-family:var(--serif);font-size:26px;font-weight:700;color:var(--wood);}
+.cover-sub{font-size:14px;color:var(--clay);margin-top:6px;}
+.cover-link{display:inline-flex;align-items:center;gap:8px;margin-top:20px;padding:10px 20px;background:var(--green);color:white;border-radius:30px;font-size:13px;font-weight:500;text-decoration:none;}
+
+/* Nav */
+.sticky-nav{position:sticky;top:0;background:rgba(253,251,250,.95);backdrop-filter:blur(8px);border-bottom:1px solid var(--sand);padding:8px 16px;display:flex;gap:8px;overflow-x:auto;z-index:10;}
+.sticky-nav::-webkit-scrollbar{display:none;}
+.snav{white-space:nowrap;padding:4px 12px;border-radius:20px;font-size:12px;border:1px solid var(--sand);background:var(--card);color:var(--clay);text-decoration:none;font-family:var(--sans);}
+
+/* Main */
+.main{max-width:760px;margin:0 auto;padding:0 16px 60px;}
+
+/* Section */
+.section{padding:36px 0 0;}
+.sec-anchor{display:block;height:0;visibility:hidden;margin-top:-60px;padding-top:60px;}
+.sec-hd{display:flex;align-items:center;gap:10px;margin-bottom:18px;}
+.sec-num{width:32px;height:32px;border-radius:50%;background:var(--green);color:white;font-size:14px;font-weight:700;display:flex;align-items:center;justify-content:center;flex-shrink:0;}
+.sec-title{font-family:var(--serif);font-size:20px;font-weight:700;}
+
+/* Steps */
+.steps{display:flex;flex-direction:column;gap:10px;margin:14px 0;}
+.step{background:var(--white);border:1px solid var(--sand);border-radius:12px;padding:14px 16px;display:flex;gap:12px;}
+.step-num{width:24px;height:24px;border-radius:50%;background:var(--wood);color:white;font-size:11px;font-weight:700;display:flex;align-items:center;justify-content:center;flex-shrink:0;margin-top:2px;}
+.step-body{flex:1;}
+.step-title{font-size:14px;font-weight:600;margin-bottom:3px;}
+.step-desc{font-size:13px;color:var(--text-muted);line-height:1.6;}
+.step-img{margin-top:8px;background:var(--card);border:1px solid var(--sand);border-radius:8px;padding:10px 12px;font-size:12px;font-family:monospace;color:var(--green);white-space:pre;}
+
+/* Info box */
+.info{background:var(--green-bg);border:1.5px solid var(--green-border);border-radius:12px;padding:14px 16px;margin:14px 0;font-size:13px;line-height:1.7;}
+.info .ib{font-weight:700;margin-bottom:4px;}
+.warn{background:#fff8e1;border:1.5px solid #ffe082;border-radius:12px;padding:14px 16px;margin:14px 0;font-size:13px;line-height:1.7;}
+.warn .ib{font-weight:700;margin-bottom:4px;}
+.err{background:#fce4ec;border:1.5px solid #f48fb1;border-radius:12px;padding:14px 16px;margin:14px 0;font-size:13px;}
+
+/* Sheet table */
+.sheet-wrap{overflow-x:auto;margin:16px 0;border-radius:12px;border:1.5px solid var(--green-border);box-shadow:0 2px 12px rgba(0,0,0,.06);}
+.sheet-table{width:100%;border-collapse:collapse;font-size:13px;min-width:600px;}
+.sheet-table .row-head{background:#1e8449;color:white;}
+.sheet-table .row-head th{padding:10px 12px;text-align:left;font-weight:700;font-size:12px;letter-spacing:.05em;border-right:1px solid rgba(255,255,255,.2);}
+.sheet-table .row-head th:last-child{border-right:none;}
+.sheet-table td{padding:9px 12px;border-bottom:1px solid #e8f5e9;border-right:1px solid #e8f5e9;vertical-align:top;}
+.sheet-table td:last-child{border-right:none;}
+.sheet-table tr:last-child td{border-bottom:none;}
+.sheet-table tr:nth-child(odd) td{background:#f9fdf9;}
+.sheet-table tr:nth-child(even) td{background:#f0f7f0;}
+/* Row numbers */
+.rn{background:#e0ede0!important;color:var(--text-muted);font-size:11px;text-align:center;font-weight:700;width:30px;}
+/* Col header row */
+.col-a{background:#e8f5e9!important;font-weight:700;color:var(--green);}
+
+/* Field spec table */
+.spec-table{width:100%;border-collapse:collapse;font-size:13px;margin:14px 0;}
+.spec-table th{background:var(--card2);padding:10px 12px;text-align:left;font-weight:700;font-size:12px;color:var(--clay);border:1px solid var(--sand);}
+.spec-table td{padding:10px 12px;border:1px solid var(--sand);line-height:1.6;vertical-align:top;}
+.spec-table tr:nth-child(even) td{background:var(--card);}
+.req{color:var(--highlight);font-weight:700;}
+.opt{color:var(--text-muted);}
+
+/* Tab pills */
+.tab-group{display:flex;gap:6px;margin-bottom:16px;flex-wrap:wrap;}
+.tab-pill{padding:6px 16px;border-radius:20px;font-size:13px;font-weight:600;border:1.5px solid var(--sand);color:var(--text-muted);background:var(--card);cursor:pointer;}
+.tab-pill.inv{border-color:#2196f3;color:#1565c0;background:#e3f2fd;}
+.tab-pill.war{border-color:#9c27b0;color:#6a1b9a;background:#f3e5f5;}
+.tab-pill.rem{border-color:#ff9800;color:#e65100;background:#fff3e0;}
+.tab-pill.wik{border-color:var(--sage);color:#2e7d32;background:var(--green-bg);}
+
+/* App button visual */
+.app-btn{display:inline-flex;align-items:center;gap:6px;padding:8px 16px;border-radius:8px;font-size:13px;font-weight:500;border:1.5px solid var(--green-border);background:var(--green-bg);color:var(--green);}
+.app-btn-dark{display:inline-flex;align-items:center;gap:6px;padding:8px 16px;border-radius:8px;font-size:13px;font-weight:500;background:var(--wood);color:white;}
+
+/* Divider */
+hr{border:none;border-top:1px solid var(--sand);margin:32px 0;}
+
+/* Allowed values */
+.vals{display:flex;gap:5px;flex-wrap:wrap;margin-top:4px;}
+.val-tag{font-size:11px;padding:2px 8px;border-radius:8px;background:var(--card2);color:var(--clay);font-family:monospace;}
+.val-tag.hi{background:#fdf1eb;color:var(--highlight);}
+
+/* App URL badge */
+.url-badge{display:inline-block;background:var(--wood);color:white;padding:4px 12px;border-radius:6px;font-size:12px;font-family:monospace;margin:4px 0;}
+</style>
+</head>
+<body>
+
+<div class="cover">
+  <span class="cover-icon">📊</span>
+  <div class="cover-title">Google Sheet 批量導入指南</div>
+  <div class="cover-sub">嘟嘟一家 Home Hub · 填好 Sheet 一鍵匯入</div>
+  <a class="cover-link" href="https://docs.google.com/spreadsheets/d/1U5eIIBD9B5z8yDfNOCBGjHYv1oODUX-HlI1CPbpO5UQ/edit" target="_blank">
+    📋 開啟家庭 Google Sheet 模板
+  </a>
+</div>
+
+<div class="sticky-nav">
+  <a class="snav" href="#setup">⚙️ Sheet 設定</a>
+  <a class="snav" href="#how">🚀 如何匯入</a>
+  <a class="snav" href="#inventory">📦 庫存格式</a>
+  <a class="snav" href="#wardrobe">👗 衣櫥格式</a>
+  <a class="snav" href="#reminders">📋 提醒格式</a>
+  <a class="snav" href="#wiki">📖 百科格式</a>
+  <a class="snav" href="#tips">💡 填寫技巧</a>
+</div>
+
+<div class="main">
+
+  <!-- ① Sheet 設定 -->
+  <div class="section">
+    <span class="sec-anchor" id="setup"></span>
+    <div class="sec-hd"><div class="sec-num">1</div><div class="sec-title">⚙️ Google Sheet 必要設定</div></div>
+
+    <div class="warn">
+      <div class="ib">⚠️ 重要！匯入前必須完成這個設定，否則 App 無法讀取 Sheet 資料。</div>
+      Google Sheet 預設只有你能看，需要改成「知道連結的人可以檢視」，API 才能抓到資料。
+    </div>
+
+    <div class="steps">
+      <div class="step">
+        <div class="step-num">1</div>
+        <div class="step-body">
+          <div class="step-title">打開 Google Sheet</div>
+          <div class="step-desc">點右上角「共用」按鈕（藍色）</div>
+        </div>
+      </div>
+      <div class="step">
+        <div class="step-num">2</div>
+        <div class="step-body">
+          <div class="step-title">更改存取權限</div>
+          <div class="step-desc">
+            下方找「一般存取權」→ 點擊「限制」旁的下拉選單 →<br>
+            選「<strong>知道連結的人</strong>」→ 確認右側是「<strong>檢視者</strong>」
+          </div>
+        </div>
+      </div>
+      <div class="step">
+        <div class="step-num">3</div>
+        <div class="step-body">
+          <div class="step-title">點「完成」，設定結束</div>
+          <div class="step-desc">不需要分享連結，只要改好權限就可以了。</div>
+        </div>
+      </div>
+    </div>
+
+    <div class="info">
+      <div class="ib">✅ 確認方法</div>
+      設好後，在瀏覽器「無痕視窗」貼上 Sheet 連結能正常開啟，表示設定成功。
+    </div>
+  </div>
+
+  <hr>
+
+  <!-- ② 如何匯入 -->
+  <div class="section">
+    <span class="sec-anchor" id="how"></span>
+    <div class="sec-hd"><div class="sec-num">2</div><div class="sec-title">🚀 如何匯入（操作步驟）</div></div>
+
+    <p style="font-size:14px;margin-bottom:14px;">App 網址：<span class="url-badge">https://yui0151.github.io/home-hub/</span></p>
+
+    <div class="steps">
+      <div class="step">
+        <div class="step-num">1</div>
+        <div class="step-body">
+          <div class="step-title">在 Google Sheet 填好資料</div>
+          <div class="step-desc">依照下方各模組的格式，在對應工作表填入資料（第 1 列是欄位標題，從第 2 列開始填資料）。</div>
+        </div>
+      </div>
+      <div class="step">
+        <div class="step-num">2</div>
+        <div class="step-body">
+          <div class="step-title">打開對應的 App 模組</div>
+          <div class="step-desc">
+            例如要匯入庫存 → 進入「📦 庫存管理」頁面<br>
+            要匯入衣物 → 進入「👗 電子衣櫥」頁面
+          </div>
+        </div>
+      </div>
+      <div class="step">
+        <div class="step-num">3</div>
+        <div class="step-body">
+          <div class="step-title">點右上角 <span style="background:var(--card2);padding:2px 8px;border-radius:6px;">📥</span> 按鈕</div>
+          <div class="step-desc">會出現匯入視窗</div>
+        </div>
+      </div>
+      <div class="step">
+        <div class="step-num">4</div>
+        <div class="step-body">
+          <div class="step-title">點「📊 從 Google Sheet 直接匯入」</div>
+          <div class="step-desc">
+            系統自動讀取 Sheet 資料，完成後會跳出「✅ 成功匯入 N 筆」的提示。<br>
+            <span style="color:var(--highlight);font-size:12px;">⚠️ 每次匯入是新增，不會覆蓋現有資料。若要重新整理，請先在 App 內刪除舊資料。</span>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <hr>
+
+  <!-- ③ 庫存格式 -->
+  <div class="section">
+    <span class="sec-anchor" id="inventory"></span>
+    <div class="sec-hd"><div class="sec-num">3</div><div class="sec-title">📦 庫存管理格式</div></div>
+
+    <div class="info">
+      <div class="ib">📋 工作表名稱：<code>inventory</code></div>
+      Sheet 底部的頁籤名稱必須是 <strong>inventory</strong>（英文小寫），App 才能找到正確的工作表。
+    </div>
+
+    <p style="font-size:14px;font-weight:600;margin-bottom:10px;">欄位說明（共 9 欄，A～I）</p>
+    <table class="spec-table">
+      <tr><th>欄</th><th>欄位名稱</th><th>必填</th><th>說明與範例</th></tr>
+      <tr>
+        <td><strong>A</strong></td><td>name</td><td class="req">必填</td>
+        <td>品項名稱<br><span style="color:var(--text-muted)">例：衛生紙、雞蛋、嬰兒濕巾</span></td>
+      </tr>
+      <tr>
+        <td><strong>B</strong></td><td>category</td><td class="opt">選填</td>
+        <td>
+          分類（留空預設為 other）
+          <div class="vals">
+            <span class="val-tag">food</span><span class="val-tag">drink</span><span class="val-tag">frozen</span>
+            <span class="val-tag">clean</span><span class="val-tag">bath</span><span class="val-tag">medical</span>
+            <span class="val-tag">baby</span><span class="val-tag">kitchen</span><span class="val-tag">office</span><span class="val-tag">other</span>
+          </div>
+        </td>
+      </tr>
+      <tr>
+        <td><strong>C</strong></td><td>quantity</td><td class="opt">選填</td>
+        <td>目前數量（數字）<br><span style="color:var(--text-muted)">例：10、3、0</span></td>
+      </tr>
+      <tr>
+        <td><strong>D</strong></td><td>unit</td><td class="opt">選填</td>
+        <td>
+          單位
+          <div class="vals">
+            <span class="val-tag">個</span><span class="val-tag">盒</span><span class="val-tag">包</span>
+            <span class="val-tag">袋</span><span class="val-tag">瓶</span><span class="val-tag">罐</span>
+            <span class="val-tag">條</span><span class="val-tag">片</span><span class="val-tag">顆</span>
+            <span class="val-tag">kg</span><span class="val-tag">g</span><span class="val-tag">L</span>
+            <span class="val-tag">ml</span><span class="val-tag">捲</span><span class="val-tag">組</span>
+          </div>
+        </td>
+      </tr>
+      <tr>
+        <td><strong>E</strong></td><td>threshold</td><td class="opt">選填</td>
+        <td>
+          警告值<br>
+          <strong>0</strong> = 用完才提醒（quantity 降到 0 才顯示紅色）<br>
+          <strong>2</strong> = 剩 2 個以下就提醒（推薦）
+        </td>
+      </tr>
+      <tr>
+        <td><strong>F</strong></td><td>imageUrl</td><td class="opt">選填</td>
+        <td>商品圖片網址（https://...）<br><span style="color:var(--text-muted)">從網路商城複製圖片連結，留空顯示 Emoji</span></td>
+      </tr>
+      <tr>
+        <td><strong>G</strong></td><td>barcode</td><td class="opt">選填</td>
+        <td>商品條碼<br><span style="color:var(--text-muted)">例：4710037082113</span></td>
+      </tr>
+      <tr>
+        <td><strong>H</strong></td><td>location</td><td class="opt">選填</td>
+        <td>擺放位置<br><span style="color:var(--text-muted)">例：廚房第二格、浴室、冰箱上層</span></td>
+      </tr>
+      <tr>
+        <td><strong>I</strong></td><td>note</td><td class="opt">選填</td>
+        <td>備註<br><span style="color:var(--text-muted)">例：寶寶用、有機、家人過敏勿買</span></td>
+      </tr>
+    </table>
+
+    <p style="font-size:14px;font-weight:600;margin:16px 0 10px;">Sheet 填寫範例（工作表名稱：<code style="background:var(--card2);padding:2px 8px;border-radius:4px;">inventory</code>）</p>
+    <div class="sheet-wrap">
+      <table class="sheet-table">
+        <tr class="row-head">
+          <th style="width:30px"></th>
+          <th>A</th><th>B</th><th>C</th><th>D</th><th>E</th><th>F</th><th>G</th><th>H</th><th>I</th>
+        </tr>
+        <tr>
+          <td class="rn">1</td>
+          <td class="col-a">name</td>
+          <td class="col-a">category</td>
+          <td class="col-a">quantity</td>
+          <td class="col-a">unit</td>
+          <td class="col-a">threshold</td>
+          <td class="col-a">imageUrl</td>
+          <td class="col-a">barcode</td>
+          <td class="col-a">location</td>
+          <td class="col-a">note</td>
+        </tr>
+        <tr>
+          <td class="rn">2</td>
+          <td>雞蛋</td><td>food</td><td>10</td><td>顆</td><td>0</td><td></td><td></td><td>冰箱</td><td></td>
+        </tr>
+        <tr>
+          <td class="rn">3</td>
+          <td>衛生紙</td><td>clean</td><td>3</td><td>包</td><td>2</td><td></td><td></td><td>浴室</td><td>抽取式</td>
+        </tr>
+        <tr>
+          <td class="rn">4</td>
+          <td>嬰兒濕巾</td><td>baby</td><td>5</td><td>包</td><td>2</td><td>https://i.imgur.com/abc.jpg</td><td></td><td>客廳</td><td>敏感膚質</td>
+        </tr>
+        <tr>
+          <td class="rn">5</td>
+          <td>洗碗精</td><td>kitchen</td><td>2</td><td>瓶</td><td>1</td><td></td><td>4710037082113</td><td>流理台下</td><td></td>
+        </tr>
+        <tr>
+          <td class="rn">6</td>
+          <td>感冒藥</td><td>medical</td><td>1</td><td>盒</td><td>0</td><td></td><td></td><td>醫藥箱</td><td>大人用</td>
+        </tr>
+      </table>
+    </div>
+  </div>
+
+  <hr>
+
+  <!-- ④ 衣櫥格式 -->
+  <div class="section">
+    <span class="sec-anchor" id="wardrobe"></span>
+    <div class="sec-hd"><div class="sec-num">4</div><div class="sec-title">👗 電子衣櫥格式</div></div>
+
+    <div class="info">
+      <div class="ib">📋 工作表名稱：<code>wardrobe</code></div>
+      Sheet 底部頁籤名稱必須是 <strong>wardrobe</strong>（英文小寫）。
+    </div>
+
+    <p style="font-size:14px;font-weight:600;margin-bottom:10px;">欄位說明（共 10 欄，A～J）</p>
+    <table class="spec-table">
+      <tr><th>欄</th><th>欄位名稱</th><th>必填</th><th>說明與範例</th></tr>
+      <tr>
+        <td><strong>A</strong></td><td>name</td><td class="req">必填</td>
+        <td>衣物名稱<br><span style="color:var(--text-muted)">例：粉色包屁衣、藍格子外套</span></td>
+      </tr>
+      <tr>
+        <td><strong>B</strong></td><td>type</td><td class="opt">選填</td>
+        <td>
+          類型（留空預設為其他）
+          <div class="vals">
+            <span class="val-tag">上衣</span><span class="val-tag">洋裝/連身</span><span class="val-tag">裙子/褲子</span>
+            <span class="val-tag">套裝</span><span class="val-tag">外套</span><span class="val-tag">居家</span>
+            <span class="val-tag">配件</span><span class="val-tag">其他</span>
+          </div>
+        </td>
+      </tr>
+      <tr>
+        <td><strong>C</strong></td><td>size</td><td class="opt">選填</td>
+        <td>尺碼（自由填寫）<br><span style="color:var(--text-muted)">例：80cm、90cm、S、M、Free</span></td>
+      </tr>
+      <tr>
+        <td><strong>D</strong></td><td>sleeve</td><td class="opt">選填</td>
+        <td>
+          袖長
+          <div class="vals">
+            <span class="val-tag">長袖</span><span class="val-tag">短袖</span><span class="val-tag">無袖</span><span class="val-tag">加厚</span>
+          </div>
+        </td>
+      </tr>
+      <tr>
+        <td><strong>E</strong></td><td>source</td><td class="opt">選填</td>
+        <td>
+          來源
+          <div class="vals">
+            <span class="val-tag">自購</span><span class="val-tag">恩典牌</span><span class="val-tag">二手</span><span class="val-tag">禮物</span>
+          </div>
+        </td>
+      </tr>
+      <tr>
+        <td><strong>F</strong></td><td>status</td><td class="opt">選填</td>
+        <td>
+          狀態（留空預設當季）
+          <div class="vals">
+            <span class="val-tag">當季</span><span class="val-tag">非當季</span><span class="val-tag">穿不下</span><span class="val-tag">已轉贈/售出</span>
+          </div>
+        </td>
+      </tr>
+      <tr>
+        <td><strong>G</strong></td><td>location</td><td class="opt">選填</td>
+        <td>擺放位置<br><span style="color:var(--text-muted)">例：臥室衣櫃第二格、儲藏室</span></td>
+      </tr>
+      <tr>
+        <td><strong>H</strong></td><td>worn</td><td class="opt">選填</td>
+        <td>
+          是否已穿過
+          <div class="vals"><span class="val-tag">true</span><span class="val-tag">false</span></div>
+          <span style="color:var(--text-muted)">true = 已穿過，false = 全新未穿</span>
+        </td>
+      </tr>
+      <tr>
+        <td><strong>I</strong></td><td>note</td><td class="opt">選填</td>
+        <td>備註<br><span style="color:var(--text-muted)">例：阿嬤買的、過年穿</span></td>
+      </tr>
+      <tr>
+        <td><strong>J</strong></td><td>imageUrl</td><td class="opt">選填</td>
+        <td>衣物照片網址<br><span style="color:var(--text-muted)">留空顯示 👗 Emoji</span></td>
+      </tr>
+    </table>
+
+    <p style="font-size:14px;font-weight:600;margin:16px 0 10px;">Sheet 填寫範例（工作表名稱：<code style="background:var(--card2);padding:2px 8px;border-radius:4px;">wardrobe</code>）</p>
+    <div class="sheet-wrap">
+      <table class="sheet-table">
+        <tr class="row-head">
+          <th style="width:30px"></th>
+          <th>A</th><th>B</th><th>C</th><th>D</th><th>E</th><th>F</th><th>G</th><th>H</th><th>I</th><th>J</th>
+        </tr>
+        <tr>
+          <td class="rn">1</td>
+          <td class="col-a">name</td><td class="col-a">type</td><td class="col-a">size</td>
+          <td class="col-a">sleeve</td><td class="col-a">source</td><td class="col-a">status</td>
+          <td class="col-a">location</td><td class="col-a">worn</td><td class="col-a">note</td><td class="col-a">imageUrl</td>
+        </tr>
+        <tr>
+          <td class="rn">2</td>
+          <td>粉色包屁衣</td><td>洋裝/連身</td><td>80cm</td><td>短袖</td><td>自購</td><td>當季</td><td>臥室衣櫃</td><td>true</td><td></td><td></td>
+        </tr>
+        <tr>
+          <td class="rn">3</td>
+          <td>藍格子外套</td><td>外套</td><td>90cm</td><td>長袖</td><td>恩典牌</td><td>非當季</td><td>儲藏室</td><td>false</td><td>阿嬤送的</td><td></td>
+        </tr>
+        <tr>
+          <td class="rn">4</td>
+          <td>白色居家服</td><td>居家</td><td>95cm</td><td>長袖</td><td>自購</td><td>當季</td><td>臥室抽屜</td><td>true</td><td></td><td>https://i.imgur.com/xyz.jpg</td>
+        </tr>
+        <tr>
+          <td class="rn">5</td>
+          <td>黃色連帽上衣</td><td>上衣</td><td>100cm</td><td>長袖</td><td>禮物</td><td>穿不下</td><td>儲藏室</td><td>true</td><td>生日禮物</td><td></td>
+        </tr>
+      </table>
+    </div>
+  </div>
+
+  <hr>
+
+  <!-- ⑤ 提醒格式 -->
+  <div class="section">
+    <span class="sec-anchor" id="reminders"></span>
+    <div class="sec-hd"><div class="sec-num">5</div><div class="sec-title">📋 提醒系統格式</div></div>
+
+    <div class="info">
+      <div class="ib">📋 工作表名稱：<code>reminders</code></div>
+      Sheet 底部頁籤名稱必須是 <strong>reminders</strong>（英文小寫）。
+    </div>
+
+    <div class="warn">
+      <div class="ib">📅 提醒模組目前使用 CSV 手動貼上方式匯入</div>
+      提醒系統的 Google Sheet 直接匯入功能尚未開放。請使用 App 內的「📥 匯入 CSV」功能，複製下方格式貼上即可。
+    </div>
+
+    <p style="font-size:14px;font-weight:600;margin-bottom:10px;">欄位說明（共 6 欄，A～F）</p>
+    <table class="spec-table">
+      <tr><th>欄</th><th>欄位名稱</th><th>必填</th><th>說明與範例</th></tr>
+      <tr>
+        <td><strong>A</strong></td><td>title</td><td class="req">必填</td>
+        <td>提醒名稱<br><span style="color:var(--text-muted)">例：水電費、Netflix、換濾水器</span></td>
+      </tr>
+      <tr>
+        <td><strong>B</strong></td><td>type</td><td class="opt">選填</td>
+        <td>
+          類型
+          <div class="vals">
+            <span class="val-tag">financial</span><span class="val-tag">subscription</span><span class="val-tag">consumable</span>
+            <span class="val-tag">chore</span><span class="val-tag">health</span><span class="val-tag">other</span>
+          </div>
+        </td>
+      </tr>
+      <tr>
+        <td><strong>C</strong></td><td>recurrence</td><td class="opt">選填</td>
+        <td>
+          週期
+          <div class="vals">
+            <span class="val-tag">once</span><span class="val-tag">daily</span><span class="val-tag">weekly</span>
+            <span class="val-tag">biweekly</span><span class="val-tag">monthly</span><span class="val-tag">bimonthly</span>
+            <span class="val-tag">quarterly</span><span class="val-tag">semiannual</span><span class="val-tag">yearly</span>
+          </div>
+        </td>
+      </tr>
+      <tr>
+        <td><strong>D</strong></td><td>dueDate</td><td class="opt">選填</td>
+        <td>到期日，格式：<strong>YYYY-MM-DD</strong><br><span style="color:var(--text-muted)">例：2026-05-10</span></td>
+      </tr>
+      <tr>
+        <td><strong>E</strong></td><td>amount</td><td class="opt">選填</td>
+        <td>金額（數字，不含 NT$）<br><span style="color:var(--text-muted)">例：1200、390、0</span></td>
+      </tr>
+      <tr>
+        <td><strong>F</strong></td><td>description</td><td class="opt">選填</td>
+        <td>備註<br><span style="color:var(--text-muted)">例：每月10號繳、台電帳單</span></td>
+      </tr>
+    </table>
+
+    <p style="font-size:14px;font-weight:600;margin:16px 0 10px;">CSV 複製貼上範例</p>
+    <div style="background:#1e2127;border-radius:10px;padding:16px;margin:10px 0;overflow-x:auto;">
+      <pre style="color:#98c379;font-size:12px;line-height:1.8;white-space:pre;">title,type,recurrence,dueDate,amount,description
+水電費,financial,monthly,2026-05-10,1200,每月10號繳
+網路費,financial,monthly,2026-05-15,599,中華電信
+Netflix,subscription,monthly,2026-05-20,390,家庭方案
+iCloud,subscription,monthly,2026-05-01,30,50GB方案
+健康保險,financial,monthly,2026-05-05,2800,
+換濾水器,chore,quarterly,2026-06-01,0,濾心在浴室下面
+寶寶回診,health,monthly,2026-05-28,0,成大醫院小兒科</pre>
+    </div>
+  </div>
+
+  <hr>
+
+  <!-- ⑥ 百科格式 -->
+  <div class="section">
+    <span class="sec-anchor" id="wiki"></span>
+    <div class="sec-hd"><div class="sec-num">6</div><div class="sec-title">📖 小百科格式</div></div>
+
+    <div class="info">
+      <div class="ib">📋 工作表名稱：<code>wiki</code></div>
+      Sheet 底部頁籤名稱必須是 <strong>wiki</strong>（英文小寫）。
+    </div>
+
+    <p style="font-size:14px;font-weight:600;margin-bottom:10px;">欄位說明（共 6 欄，A～F）</p>
+    <table class="spec-table">
+      <tr><th>欄</th><th>欄位名稱</th><th>必填</th><th>說明與範例</th></tr>
+      <tr>
+        <td><strong>A</strong></td><td>title</td><td class="req">必填</td>
+        <td>書籤標題<br><span style="color:var(--text-muted)">例：嬰兒推車比較 2026</span></td>
+      </tr>
+      <tr>
+        <td><strong>B</strong></td><td>category</td><td class="opt">選填</td>
+        <td>
+          分類
+          <div class="vals">
+            <span class="val-tag">recipe</span><span class="val-tag">health</span><span class="val-tag">baby</span>
+            <span class="val-tag">home</span><span class="val-tag">finance</span><span class="val-tag">travel</span>
+            <span class="val-tag">tool</span><span class="val-tag">memo</span><span class="val-tag">other</span>
+          </div>
+        </td>
+      </tr>
+      <tr>
+        <td><strong>C</strong></td><td>tags</td><td class="opt">選填</td>
+        <td>標籤（多個用<strong>空格</strong>分隔）<br><span style="color:var(--text-muted)">例：推車 育兒 比較</span></td>
+      </tr>
+      <tr>
+        <td><strong>D</strong></td><td>url</td><td class="opt">選填</td>
+        <td>網址（完整 https:// 開頭）<br><span style="color:var(--text-muted)">例：https://babycare.tw/stroller</span></td>
+      </tr>
+      <tr>
+        <td><strong>E</strong></td><td>imageUrl</td><td class="opt">選填</td>
+        <td>封面圖片網址<br><span style="color:var(--text-muted)">留空則嘗試抓取 OG 圖，再留空顯示 Emoji</span></td>
+      </tr>
+      <tr>
+        <td><strong>F</strong></td><td>note</td><td class="opt">選填</td>
+        <td>筆記（支援 Markdown）<br><span style="color:var(--text-muted)">例：輕便型首選，折疊方便</span></td>
+      </tr>
+    </table>
+
+    <p style="font-size:14px;font-weight:600;margin:16px 0 10px;">Sheet 填寫範例（工作表名稱：<code style="background:var(--card2);padding:2px 8px;border-radius:4px;">wiki</code>）</p>
+    <div class="sheet-wrap">
+      <table class="sheet-table">
+        <tr class="row-head">
+          <th style="width:30px"></th>
+          <th>A</th><th>B</th><th>C</th><th>D</th><th>E</th><th>F</th>
+        </tr>
+        <tr>
+          <td class="rn">1</td>
+          <td class="col-a">title</td><td class="col-a">category</td><td class="col-a">tags</td>
+          <td class="col-a">url</td><td class="col-a">imageUrl</td><td class="col-a">note</td>
+        </tr>
+        <tr>
+          <td class="rn">2</td>
+          <td>嬰兒推車比較</td><td>baby</td><td>推車 育兒</td><td>https://babycare.tw</td><td></td><td>輕便型首選</td>
+        </tr>
+        <tr>
+          <td class="rn">3</td>
+          <td>氣炸鍋雞翅食譜</td><td>recipe</td><td>雞肉 氣炸</td><td>https://cooking.tw</td><td></td><td>180度20分鐘</td>
+        </tr>
+        <tr>
+          <td class="rn">4</td>
+          <td>副食品開始時機</td><td>baby</td><td>副食品 寶寶</td><td>https://healthkids.tw</td><td></td><td>4-6個月觀察</td>
+        </tr>
+        <tr>
+          <td class="rn">5</td>
+          <td>家庭理財記帳法</td><td>finance</td><td>理財 記帳</td><td>https://money101.tw</td><td></td><td></td>
+        </tr>
+      </table>
+    </div>
+  </div>
+
+  <hr>
+
+  <!-- ⑦ 填寫技巧 -->
+  <div class="section">
+    <span class="sec-anchor" id="tips"></span>
+    <div class="sec-hd"><div class="sec-num">7</div><div class="sec-title">💡 填寫技巧 & 常見問題</div></div>
+
+    <div class="steps">
+      <div class="step">
+        <div class="step-num">✓</div>
+        <div class="step-body">
+          <div class="step-title">第一列必須是英文欄位標題，不能改名</div>
+          <div class="step-desc">App 用欄位名稱識別資料，標題列寫錯或多空格都會匯入失敗。</div>
+        </div>
+      </div>
+      <div class="step">
+        <div class="step-num">✓</div>
+        <div class="step-body">
+          <div class="step-title">一個 Sheet 可以有多個工作表頁籤</div>
+          <div class="step-desc">同一份 Google Sheet 裡建立 inventory、wardrobe、wiki 三個頁籤，分開管理各模組資料。</div>
+        </div>
+      </div>
+      <div class="step">
+        <div class="step-num">✓</div>
+        <div class="step-body">
+          <div class="step-title">選填欄位留空即可，不用填「無」或「-」</div>
+          <div class="step-desc">留空格子 App 會自動忽略，填「無」反而會當成資料存進去。</div>
+        </div>
+      </div>
+      <div class="step">
+        <div class="step-num">✓</div>
+        <div class="step-body">
+          <div class="step-title">每次匯入是「新增」，不是「覆蓋」</div>
+          <div class="step-desc">如果 Sheet 改了一筆資料，重新匯入不會更新舊的，而是再新增一筆。建議初次建立資料時用匯入，之後在 App 內直接編輯。</div>
+        </div>
+      </div>
+      <div class="step">
+        <div class="step-num">✓</div>
+        <div class="step-body">
+          <div class="step-title">category 值必須是英文，不能用中文</div>
+          <div class="step-desc">例如庫存分類要填 <code style="background:var(--card2);padding:1px 6px;border-radius:4px;">baby</code>，不能填「嬰幼兒」，否則系統不認識。</div>
+        </div>
+      </div>
+    </div>
+
+    <div class="err">
+      <strong>❌ 匯入失敗常見原因</strong><br>
+      1. Sheet 沒有設定「知道連結的人可以檢視」<br>
+      2. 工作表頁籤名稱不是英文小寫（例如寫成 Inventory 而非 inventory）<br>
+      3. 第一列欄位名稱有錯字或多了空格<br>
+      4. 手機網路不穩，重試一次即可
+    </div>
+
+    <div class="info" style="margin-top:16px;">
+      <div class="ib">🔗 你的 Google Sheet</div>
+      <a href="https://docs.google.com/spreadsheets/d/1U5eIIBD9B5z8yDfNOCBGjHYv1oODUX-HlI1CPbpO5UQ/edit" target="_blank" style="color:var(--green);font-weight:600;">
+        點此開啟 → 家庭管家 Sheet 模板
+      </a><br>
+      <span style="font-size:12px;color:var(--text-muted);">Sheet ID：1U5eIIBD9B5z8yDfNOCBGjHYv1oODUX-HlI1CPbpO5UQ</span>
+    </div>
+  </div>
+
+  <!-- Footer -->
+  <div style="text-align:center;padding:40px 0 20px;color:var(--text-muted);font-size:12px;">
+    嘟嘟一家 Home Hub · Google Sheet 匯入指南<br>
+    <a href="https://yui0151.github.io/home-hub/" style="color:var(--clay);margin-top:4px;display:block;">
+      → 回到 App
+    </a>
+  </div>
+
+</div>
+</body>
+</html>
