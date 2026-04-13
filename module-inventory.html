@@ -1,0 +1,500 @@
+<!DOCTYPE html>
+<html lang="zh-TW">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+<title>庫存管理 · 家庭數位管家</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Noto+Serif+TC:wght@400;500;700&family=Zen+Kaku+Gothic+New:wght@300;400;500&display=swap" rel="stylesheet">
+<script src="https://unpkg.com/react@18/umd/react.production.min.js"></script>
+<script src="https://unpkg.com/react-dom@18/umd/react-dom.production.min.js"></script>
+<script src="https://unpkg.com/@babel/standalone/babel.min.js"></script>
+<script src="https://www.gstatic.com/firebasejs/9.22.2/firebase-app-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/9.22.2/firebase-firestore-compat.js"></script>
+<style>
+:root{
+  --paper:#FDFBFA;--clay:#A68A7D;--clay-light:#C4A899;--clay-dark:#8A7268;
+  --sage:#8FA68B;--wood:#4A423D;--sand:#EAE2D6;--highlight:#D99A84;
+  --card:#F9F7F4;--card2:#F4F0EB;--white:#FFFFFF;--text-muted:#9B8E87;
+  --serif:'Noto Serif TC',serif;--sans:'Zen Kaku Gothic New',sans-serif;
+  --radius:16px;--radius-sm:10px;
+}
+*{box-sizing:border-box;margin:0;padding:0;-webkit-tap-highlight-color:transparent;}
+html{font-size:16px;}
+body{background:var(--paper);color:var(--wood);font-family:var(--sans);min-height:100dvh;padding-bottom:env(safe-area-inset-bottom);padding-top:env(safe-area-inset-top);}
+button{border:none;background:none;cursor:pointer;font-family:var(--sans);}
+input,textarea,select{font-family:var(--sans);font-size:16px;}
+.app{max-width:480px;margin:0 auto;}
+.header{position:sticky;top:0;z-index:50;background:rgba(253,251,250,.92);backdrop-filter:blur(12px);padding:12px 16px 0;border-bottom:1px solid var(--sand);}
+.header-row{display:flex;align-items:center;justify-content:space-between;padding-bottom:10px;}
+.header-title{font-family:var(--serif);font-size:17px;font-weight:700;}
+.header-actions{display:flex;gap:8px;}
+.icon-btn{width:36px;height:36px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:17px;background:var(--card2);}
+/* Tab switcher */
+.tab-switch{display:flex;background:var(--card2);border-radius:10px;padding:3px;margin:0 16px 10px;}
+.tsw{flex:1;padding:7px;border-radius:8px;font-size:13px;font-weight:500;color:var(--text-muted);text-align:center;transition:all .15s;}
+.tsw.active{background:var(--white);color:var(--wood);box-shadow:0 1px 4px rgba(74,66,61,.1);}
+/* Stats */
+.stats-row{display:grid;grid-template-columns:repeat(3,1fr);gap:8px;padding:12px 16px 0;}
+.stat-card{background:var(--card);border:1px solid var(--sand);border-radius:var(--radius-sm);padding:10px 12px;text-align:center;}
+.stat-num{font-family:var(--serif);font-size:20px;font-weight:700;}
+.stat-num.alert{color:var(--highlight);}
+.stat-label{font-size:11px;color:var(--text-muted);margin-top:2px;}
+/* Search + filter */
+.search-row{padding:10px 16px 4px;position:relative;}
+.search-input{width:100%;padding:10px 14px 10px 38px;border:1.5px solid var(--sand);border-radius:50px;font-size:14px;color:var(--wood);background:var(--card);outline:none;}
+.search-input:focus{border-color:var(--clay);}
+.search-icon{position:absolute;left:28px;top:50%;transform:translateY(-50%);font-size:16px;pointer-events:none;}
+.cat-pills{display:flex;gap:6px;padding:6px 16px;overflow-x:auto;}
+.cat-pills::-webkit-scrollbar{display:none;}
+.cpill{white-space:nowrap;padding:5px 12px;border-radius:20px;font-size:12px;border:1.5px solid var(--sand);color:var(--text-muted);background:var(--card);}
+.cpill.active{background:var(--wood);border-color:var(--wood);color:white;font-weight:500;}
+/* Content */
+.content{padding:8px 16px 120px;display:flex;flex-direction:column;gap:6px;}
+/* Accordion group */
+.acc-group{background:var(--white);border:1px solid var(--sand);border-radius:var(--radius-sm);overflow:hidden;}
+.acc-header{display:flex;align-items:center;justify-content:space-between;padding:12px 14px;cursor:pointer;}
+.acc-header-left{display:flex;align-items:center;gap:8px;}
+.acc-icon{font-size:18px;}
+.acc-name{font-size:14px;font-weight:500;}
+.acc-count{font-size:11px;color:var(--text-muted);background:var(--card2);border-radius:10px;padding:1px 8px;}
+.acc-arrow{font-size:12px;color:var(--text-muted);transition:transform .2s;}
+.acc-arrow.open{transform:rotate(180deg);}
+/* Inventory Item */
+.inv-item{display:flex;align-items:center;gap:10px;padding:10px 14px;border-top:1px solid var(--sand);cursor:pointer;transition:background .15s;}
+.inv-item:active{background:var(--card2);}
+.inv-img{width:40px;height:40px;border-radius:8px;object-fit:cover;background:var(--sand);flex-shrink:0;}
+.inv-img-ph{width:40px;height:40px;border-radius:8px;background:var(--card2);flex-shrink:0;display:flex;align-items:center;justify-content:center;font-size:18px;}
+.inv-body{flex:1;min-width:0;}
+.inv-name{font-size:14px;font-weight:500;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;}
+.inv-meta{font-size:11px;color:var(--text-muted);margin-top:2px;}
+.inv-right{display:flex;align-items:center;gap:8px;flex-shrink:0;}
+.qty-ctrl{display:flex;align-items:center;gap:4px;}
+.qty-btn{width:28px;height:28px;border-radius:50%;background:var(--card2);font-size:16px;display:flex;align-items:center;justify-content:center;font-weight:700;color:var(--wood);}
+.qty-btn:active{background:var(--sand);}
+.qty-num{font-family:var(--serif);font-size:15px;font-weight:700;min-width:24px;text-align:center;}
+.qty-num.low{color:var(--highlight);}
+/* Low stock warning */
+.low-badge{font-size:10px;padding:1px 6px;border-radius:8px;background:#fdf1eb;color:var(--highlight);}
+/* Free shopping list */
+.shopping-section{padding:0 16px 120px;}
+.shop-card{background:var(--white);border:1.5px dashed var(--highlight);border-radius:var(--radius-sm);overflow:hidden;}
+.shop-header{background:#fdf1eb;padding:10px 14px;display:flex;align-items:center;gap:6px;}
+.shop-header-title{font-size:13px;font-weight:700;color:var(--highlight);}
+.shop-add-row{display:flex;gap:8px;padding:10px 12px;border-bottom:1px solid #f5e5de;}
+.shop-input{flex:1;padding:8px 12px;border:1.5px solid #f5e5de;border-radius:50px;font-size:14px;background:var(--paper);outline:none;}
+.shop-input:focus{border-color:var(--highlight);}
+.shop-add-btn{width:36px;height:36px;border-radius:50%;background:var(--highlight);color:white;font-size:18px;display:flex;align-items:center;justify-content:center;flex-shrink:0;}
+.shop-item{display:flex;align-items:center;gap:10px;padding:10px 14px;border-bottom:1px solid #f5e5de;}
+.shop-item:last-child{border-bottom:none;}
+.shop-ck{width:22px;height:22px;border-radius:6px;border:2px solid #f5c6ad;background:transparent;flex-shrink:0;display:flex;align-items:center;justify-content:center;font-size:12px;}
+.shop-ck.done{background:var(--highlight);border-color:var(--highlight);color:white;}
+.shop-text{flex:1;font-size:14px;}
+.shop-text.done{text-decoration:line-through;color:var(--text-muted);}
+.shop-del{width:26px;height:26px;border-radius:50%;background:transparent;color:var(--text-muted);font-size:14px;}
+/* Low stock auto-list */
+.low-stock-section{margin-bottom:14px;}
+.ls-title{font-size:12px;font-weight:700;color:var(--text-muted);letter-spacing:.1em;margin-bottom:8px;}
+.ls-item{display:flex;align-items:center;justify-content:space-between;padding:8px 12px;background:var(--card);border:1px solid var(--sand);border-left:3px solid var(--highlight);border-radius:var(--radius-sm);margin-bottom:5px;font-size:13px;}
+.ls-qty{font-size:11px;color:var(--highlight);}
+/* FAB */
+.fab{position:fixed;bottom:calc(72px + env(safe-area-inset-bottom));right:20px;width:52px;height:52px;border-radius:50%;background:var(--wood);color:white;font-size:24px;display:flex;align-items:center;justify-content:center;box-shadow:0 4px 16px rgba(74,66,61,.3);z-index:40;}
+/* Bottom nav */
+.bottom-nav{position:fixed;bottom:0;left:0;right:0;background:rgba(253,251,250,.95);backdrop-filter:blur(12px);border-top:1px solid var(--sand);padding:8px 0 calc(8px + env(safe-area-inset-bottom));display:flex;max-width:480px;margin:0 auto;}
+.nav-btn{flex:1;display:flex;flex-direction:column;align-items:center;gap:3px;font-size:10px;color:var(--text-muted);text-decoration:none;}
+.nav-btn.active{color:var(--clay);}
+.nav-icon{font-size:22px;}
+/* Modal */
+.modal-overlay{position:fixed;inset:0;z-index:100;background:rgba(74,66,61,.5);display:flex;align-items:flex-end;animation:fadeIn .2s;}
+@keyframes fadeIn{from{opacity:0}to{opacity:1}}
+.modal-sheet{width:100%;max-width:480px;margin:0 auto;background:var(--white);border-radius:24px 24px 0 0;padding:0 0 calc(16px + env(safe-area-inset-bottom));max-height:92dvh;display:flex;flex-direction:column;animation:slideUp .25s ease;}
+@keyframes slideUp{from{transform:translateY(100%)}to{transform:translateY(0)}}
+.modal-handle{width:40px;height:4px;background:var(--sand);border-radius:2px;margin:14px auto 0;}
+.modal-header{padding:14px 20px 12px;border-bottom:1px solid var(--sand);display:flex;align-items:center;justify-content:space-between;}
+.modal-title{font-family:var(--serif);font-size:18px;font-weight:700;}
+.modal-close{width:32px;height:32px;border-radius:50%;background:var(--card2);display:flex;align-items:center;justify-content:center;font-size:16px;color:var(--text-muted);}
+.modal-body{flex:1;overflow-y:auto;padding:16px 20px;}
+.modal-footer{padding:12px 20px 0;display:flex;gap:10px;border-top:1px solid var(--sand);}
+.form-label{font-size:12px;font-weight:700;color:var(--clay);letter-spacing:.05em;margin-bottom:6px;margin-top:14px;display:block;}
+.form-label:first-child{margin-top:0;}
+.form-input{width:100%;padding:11px 14px;border:1.5px solid var(--sand);border-radius:var(--radius-sm);font-size:15px;color:var(--wood);background:var(--card);outline:none;}
+.form-input:focus{border-color:var(--clay);}
+.form-select{width:100%;padding:11px 14px;border:1.5px solid var(--sand);border-radius:var(--radius-sm);font-size:15px;color:var(--wood);background:var(--card);outline:none;appearance:none;background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='8' viewBox='0 0 12 8'%3E%3Cpath d='M1 1l5 5 5-5' stroke='%239B8E87' stroke-width='1.5' fill='none' stroke-linecap='round'/%3E%3C/svg%3E");background-repeat:no-repeat;background-position:right 14px center;}
+.form-row{display:grid;grid-template-columns:1fr 1fr;gap:10px;}
+.form-row3{display:grid;grid-template-columns:2fr 1fr 1fr;gap:8px;}
+.btn-primary{flex:1;padding:13px;background:var(--wood);color:white;border-radius:var(--radius-sm);font-size:15px;font-weight:500;}
+.btn-secondary{flex:1;padding:13px;background:var(--card2);color:var(--wood);border-radius:var(--radius-sm);font-size:15px;}
+.btn-danger{padding:13px;background:#fff0ee;color:#c0392b;border-radius:var(--radius-sm);font-size:14px;border:1.5px solid #f5c6c0;}
+.detail-field{padding:12px 0;border-bottom:1px solid var(--sand);}
+.detail-field:last-child{border-bottom:none;}
+.detail-label{font-size:11px;color:var(--text-muted);margin-bottom:4px;}
+.detail-val{font-size:15px;font-weight:500;}
+.readonly-badge{display:inline-flex;align-items:center;gap:4px;font-size:11px;color:var(--text-muted);background:var(--card2);border-radius:20px;padding:2px 10px;}
+.empty{text-align:center;padding:48px 16px;color:var(--text-muted);}
+.csv-area{width:100%;min-height:100px;padding:10px;border:1.5px dashed var(--sand);border-radius:var(--radius-sm);font-size:13px;color:var(--wood);background:var(--card);outline:none;resize:none;}
+</style>
+</head>
+<body>
+<div id="root"></div>
+<script type="text/babel">
+const {useState,useEffect,useRef}=React;
+const firebaseConfig={apiKey:"AIzaSyD-example-replace-with-real-key",authDomain:"home-hub-be41f.firebaseapp.com",projectId:"home-hub-be41f",storageBucket:"home-hub-be41f.appspot.com",messagingSenderId:"000000000000",appId:"1:000000000000:web:000000000000000000"};
+let db;
+try{if(!firebase.apps.length)firebase.initializeApp(firebaseConfig);db=firebase.firestore();db.enablePersistence().catch(()=>{});}catch(e){}
+
+const ROOM_KEY='hh_roomCode';
+const SHOP_KEY_INV='hh_inv_shop';
+const CATS=[
+  {key:'food',label:'食品',icon:'🥫'},{key:'drink',label:'飲料',icon:'🧃'},
+  {key:'frozen',label:'冷凍',icon:'🧊'},{key:'clean',label:'清潔',icon:'🧹'},
+  {key:'bath',label:'沐浴',icon:'🛁'},{key:'medical',label:'醫療',icon:'💊'},
+  {key:'baby',label:'嬰幼兒',icon:'🍼'},{key:'kitchen',label:'廚房',icon:'🍳'},
+  {key:'pet',label:'寵物',icon:'🐾'},{key:'office',label:'文具',icon:'📎'},
+  {key:'other',label:'其他',icon:'📦'},
+];
+const UNITS=['個','盒','包','袋','瓶','罐','條','片','顆','kg','g','L','ml','捲','組','雙','件','份'];
+function catInfo(key){return CATS.find(c=>c.key===key)||CATS[CATS.length-1];}
+function isLow(r){if(r.threshold===0||r.threshold==='0')return Number(r.quantity)===0;return Number(r.quantity)<=Number(r.threshold);}
+
+function App(){
+  const [roomCode]=useState(()=>localStorage.getItem(ROOM_KEY)||'');
+  const [items,setItems]=useState([]);
+  const [mainTab,setMainTab]=useState('inventory'); // inventory | shopping
+  const [search,setSearch]=useState('');
+  const [catFilter,setCatFilter]=useState('all');
+  const [openCats,setOpenCats]=useState({});
+  const [showAdd,setShowAdd]=useState(false);
+  const [showDetail,setShowDetail]=useState(null);
+  const [editMode,setEditMode]=useState(false);
+  const [showCsv,setShowCsv]=useState(false);
+  const [csvText,setCsvText]=useState('');
+  const [shopping,setShopping]=useState(()=>JSON.parse(localStorage.getItem(SHOP_KEY_INV+'_'+(localStorage.getItem(ROOM_KEY)||''))||'[]'));
+  const [shopInput,setShopInput]=useState('');
+  const room=roomCode;
+
+  useEffect(()=>{
+    if(!room||!db)return;
+    const u=db.collection('inventory').doc(room).collection('items')
+      .onSnapshot(snap=>{setItems(snap.docs.map(d=>({id:d.id,...d.data()})));},()=>{});
+    return()=>u();
+  },[room]);
+
+  useEffect(()=>{if(!room)return;localStorage.setItem(SHOP_KEY_INV+'_'+room,JSON.stringify(shopping));},[shopping,room]);
+
+  const filtered=items.filter(r=>{
+    const q=search.toLowerCase();
+    const matchSearch=!q||r.name?.toLowerCase().includes(q)||r.barcode?.includes(q)||r.location?.toLowerCase().includes(q);
+    const matchCat=catFilter==='all'||r.category===catFilter;
+    return matchSearch&&matchCat;
+  });
+
+  const byCategory=CATS.map(c=>({...c,items:filtered.filter(r=>r.category===c.key)})).filter(c=>c.items.length>0);
+  const lowItems=items.filter(isLow);
+
+  const updateQty=async(item,delta)=>{
+    if(!db)return;
+    const newQty=Math.max(0,Number(item.quantity)+delta);
+    await db.collection('inventory').doc(room).collection('items').doc(item.id).update({quantity:newQty,updatedAt:Date.now()});
+  };
+
+  const handleSave=async(data)=>{
+    if(!db)return;
+    const col=db.collection('inventory').doc(room).collection('items');
+    if(data.id){
+      await col.doc(data.id).update({...data,updatedAt:Date.now()});
+      setShowDetail({...showDetail,...data});setEditMode(false);
+    }else{
+      await col.add({...data,createdAt:Date.now(),updatedAt:Date.now()});
+      setShowAdd(false);
+    }
+  };
+
+  const handleDelete=async(item)=>{
+    if(!db||!window.confirm('確定刪除？'))return;
+    await db.collection('inventory').doc(room).collection('items').doc(item.id).delete();
+    setShowDetail(null);
+  };
+
+  const importCsv=async()=>{
+    if(!csvText.trim()||!db)return;
+    const lines=csvText.trim().split('\n').slice(1);
+    const batch=db.batch();
+    const col=db.collection('inventory').doc(room).collection('items');
+    lines.forEach(line=>{
+      const [name,category,quantity,unit,threshold,imageUrl,barcode,location,note]=line.split(',').map(s=>s.trim());
+      if(!name)return;
+      batch.set(col.doc(),{name,category:category||'other',quantity:Number(quantity)||0,unit:unit||'個',threshold:Number(threshold)||0,imageUrl:imageUrl||'',barcode:barcode||'',location:location||'',note:note||'',createdAt:Date.now(),updatedAt:Date.now()});
+    });
+    await batch.commit();setShowCsv(false);setCsvText('');
+  };
+
+  const addShop=()=>{if(!shopInput.trim())return;setShopping(p=>[...p,{id:Date.now(),text:shopInput.trim(),done:false}]);setShopInput('');};
+  const toggleShop=id=>setShopping(p=>p.map(t=>t.id===id?{...t,done:!t.done}:t));
+  const delShop=id=>setShopping(p=>p.filter(t=>t.id!==id));
+
+  const moduleUrl=mod=>`${mod}?room=${room}`;
+  const toggleCat=key=>setOpenCats(p=>({...p,[key]:!p[key]}));
+
+  return(
+    <div className="app">
+      <div className="header">
+        <div className="header-row">
+          <div style={{display:'flex',alignItems:'center',gap:8}}>
+            <a href={`index.html?room=${room}`} style={{textDecoration:'none'}}>
+              <button className="icon-btn" style={{fontSize:16}}>🏡</button>
+            </a>
+            <div className="header-title">📦 庫存管理</div>
+          </div>
+          <div className="header-actions">
+            {lowItems.length>0&&<span style={{background:'#fdf1eb',color:'var(--highlight)',borderRadius:20,padding:'4px 10px',fontSize:12,fontWeight:600}}>⚠️{lowItems.length}不足</span>}
+            <button className="icon-btn" onClick={()=>setShowCsv(true)}>📥</button>
+          </div>
+        </div>
+        <div className="tab-switch">
+          <button className={`tsw ${mainTab==='inventory'?'active':''}`} onClick={()=>setMainTab('inventory')}>📦 庫存清單</button>
+          <button className={`tsw ${mainTab==='shopping'?'active':''}`} onClick={()=>setMainTab('shopping')}>🛒 待買清單</button>
+        </div>
+      </div>
+
+      {mainTab==='inventory'&&(
+        <>
+          <div className="stats-row">
+            <div className="stat-card"><div className="stat-num">{items.length}</div><div className="stat-label">品項總數</div></div>
+            <div className="stat-card"><div className={`stat-num ${lowItems.length>0?'alert':''}`}>{lowItems.length}</div><div className="stat-label">庫存不足</div></div>
+            <div className="stat-card"><div className="stat-num">{byCategory.length}</div><div className="stat-label">分類數</div></div>
+          </div>
+          <div className="search-row">
+            <span className="search-icon">🔍</span>
+            <input className="search-input" placeholder="搜尋名稱、條碼、位置..." value={search} onChange={e=>setSearch(e.target.value)}/>
+          </div>
+          <div className="cat-pills">
+            <button className={`cpill ${catFilter==='all'?'active':''}`} onClick={()=>setCatFilter('all')}>全部</button>
+            {CATS.map(c=>(
+              <button key={c.key} className={`cpill ${catFilter===c.key?'active':''}`} onClick={()=>setCatFilter(c.key)}>{c.icon} {c.label}</button>
+            ))}
+          </div>
+          <div className="content">
+            {byCategory.length===0&&<div className="empty"><div style={{fontSize:40}}>📦</div><div style={{marginTop:8}}>還沒有庫存品項</div></div>}
+            {byCategory.map(c=>(
+              <div key={c.key} className="acc-group">
+                <div className="acc-header" onClick={()=>toggleCat(c.key)}>
+                  <div className="acc-header-left">
+                    <span className="acc-icon">{c.icon}</span>
+                    <span className="acc-name">{c.label}</span>
+                    <span className="acc-count">{c.items.length}</span>
+                    {c.items.some(isLow)&&<span style={{fontSize:10,color:'var(--highlight)'}}>⚠️</span>}
+                  </div>
+                  <span className={`acc-arrow ${openCats[c.key]!==false?'open':''}`}>▼</span>
+                </div>
+                {openCats[c.key]!==false&&c.items.map(r=>(
+                  <div key={r.id} className="inv-item" onClick={()=>{setShowDetail(r);setEditMode(false);}}>
+                    {r.imageUrl
+                      ?<img className="inv-img" src={r.imageUrl} alt="" onError={e=>{e.target.style.display='none';}}/>
+                      :<div className="inv-img-ph">{catInfo(r.category).icon}</div>
+                    }
+                    <div className="inv-body">
+                      <div className="inv-name">{r.name}</div>
+                      <div className="inv-meta">
+                        {r.location&&<span>{r.location} · </span>}
+                        {isLow(r)&&<span className="low-badge">⚠️ 庫存不足</span>}
+                      </div>
+                    </div>
+                    <div className="inv-right">
+                      <div className="qty-ctrl" onClick={e=>e.stopPropagation()}>
+                        <button className="qty-btn" onClick={()=>updateQty(r,-1)}>−</button>
+                        <span className={`qty-num ${isLow(r)?'low':''}`}>{r.quantity}</span>
+                        <button className="qty-btn" onClick={()=>updateQty(r,1)}>＋</button>
+                      </div>
+                      <span style={{fontSize:12,color:'var(--text-muted)'}}>{r.unit}</span>
+                    </div>
+                  </div>
+                ))}
+              </div>
+            ))}
+          </div>
+        </>
+      )}
+
+      {mainTab==='shopping'&&(
+        <div className="shopping-section">
+          {lowItems.length>0&&(
+            <div className="low-stock-section" style={{padding:'12px 0 0'}}>
+              <div className="ls-title">📦 庫存自動加入（{lowItems.length} 項不足）</div>
+              {lowItems.map(r=>(
+                <div key={r.id} className="ls-item">
+                  <span>{r.name}</span>
+                  <span className="ls-qty">剩 {r.quantity} {r.unit}</span>
+                </div>
+              ))}
+            </div>
+          )}
+          <div className="shop-card" style={{marginTop:12}}>
+            <div className="shop-header">
+              <span>✏️</span>
+              <span className="shop-header-title">自由新增待買清單</span>
+              <span style={{fontSize:11,color:'var(--highlight)',marginLeft:'auto'}}>{shopping.filter(s=>!s.done).length} 項待買</span>
+            </div>
+            <div className="shop-add-row">
+              <input className="shop-input" placeholder="新增待買項目..." value={shopInput} onChange={e=>setShopInput(e.target.value)} onKeyDown={e=>e.key==='Enter'&&addShop()}/>
+              <button className="shop-add-btn" onClick={addShop}>＋</button>
+            </div>
+            {shopping.length===0&&<div style={{textAlign:'center',padding:'20px',color:'var(--text-muted)',fontSize:14}}>清單是空的，快來新增！</div>}
+            {shopping.map(t=>(
+              <div key={t.id} className="shop-item">
+                <button className={`shop-ck ${t.done?'done':''}`} onClick={()=>toggleShop(t.id)}>{t.done?'✓':''}</button>
+                <span className={`shop-text ${t.done?'done':''}`}>{t.text}</span>
+                <button className="shop-del" onClick={()=>delShop(t.id)}>✕</button>
+              </div>
+            ))}
+          </div>
+        </div>
+      )}
+
+      {mainTab==='inventory'&&<button className="fab" onClick={()=>setShowAdd(true)}>＋</button>}
+
+      <div className="bottom-nav">
+        <a className="nav-btn" href={`index.html?room=${room}`}><span className="nav-icon">🏡</span>首頁</a>
+        <a className="nav-btn" href={moduleUrl('module-reminders.html')}><span className="nav-icon">📋</span>提醒</a>
+        <a className="nav-btn active" href="#"><span className="nav-icon">📦</span>庫存</a>
+        <a className="nav-btn" href={moduleUrl('module-wardrobe.html')}><span className="nav-icon">👗</span>衣櫥</a>
+        <a className="nav-btn" href={moduleUrl('module-wiki.html')}><span className="nav-icon">📖</span>百科</a>
+      </div>
+
+      {showAdd&&(
+        <div className="modal-overlay" onClick={()=>setShowAdd(false)}>
+          <div className="modal-sheet" onClick={e=>e.stopPropagation()}>
+            <div className="modal-handle"/>
+            <div className="modal-header">
+              <div className="modal-title">新增庫存</div>
+              <button className="modal-close" onClick={()=>setShowAdd(false)}>✕</button>
+            </div>
+            <div className="modal-body"><InventoryForm data={{}} onSave={handleSave} onCancel={()=>setShowAdd(false)}/></div>
+          </div>
+        </div>
+      )}
+
+      {showDetail&&(
+        <div className="modal-overlay" onClick={()=>setShowDetail(null)}>
+          <div className="modal-sheet" onClick={e=>e.stopPropagation()}>
+            <div className="modal-handle"/>
+            <div className="modal-header">
+              <div style={{display:'flex',alignItems:'center',gap:8}}>
+                <div className="modal-title">{showDetail.name}</div>
+                {!editMode&&<span className="readonly-badge">🔒 唯讀</span>}
+              </div>
+              <div style={{display:'flex',gap:6}}>
+                {!editMode&&<button className="icon-btn" onClick={()=>setEditMode(true)}>✏️</button>}
+                <button className="modal-close" onClick={()=>setShowDetail(null)}>✕</button>
+              </div>
+            </div>
+            <div className="modal-body">
+              {editMode
+                ?<InventoryForm data={showDetail} onSave={handleSave} onCancel={()=>setEditMode(false)} onDelete={()=>handleDelete(showDetail)}/>
+                :<InvDetail item={showDetail} onQty={(d)=>{updateQty(showDetail,d);setShowDetail(p=>({...p,quantity:Math.max(0,Number(p.quantity)+d)}));}}/>
+              }
+            </div>
+          </div>
+        </div>
+      )}
+
+      {showCsv&&(
+        <div className="modal-overlay" onClick={()=>setShowCsv(false)}>
+          <div className="modal-sheet" onClick={e=>e.stopPropagation()}>
+            <div className="modal-handle"/>
+            <div className="modal-header"><div className="modal-title">📥 匯入 CSV</div><button className="modal-close" onClick={()=>setShowCsv(false)}>✕</button></div>
+            <div className="modal-body">
+              <div style={{fontSize:12,color:'var(--text-muted)',marginBottom:10}}>格式：name, category, quantity, unit, threshold, imageUrl, barcode, location, note</div>
+              <textarea className="csv-area" value={csvText} onChange={e=>setCsvText(e.target.value)} placeholder={'name,category,quantity,unit,threshold,imageUrl,barcode,location,note\n雞蛋,food,10,顆,0,,,冰箱,\n衛生紙,clean,3,包,2,,,浴室,'}/>
+            </div>
+            <div className="modal-footer">
+              <button className="btn-secondary" onClick={()=>setShowCsv(false)}>取消</button>
+              <button className="btn-primary" onClick={importCsv}>匯入</button>
+            </div>
+          </div>
+        </div>
+      )}
+    </div>
+  );
+}
+
+function InvDetail({item,onQty}){
+  const c=catInfo(item.category);
+  return(
+    <div>
+      {item.imageUrl&&<img src={item.imageUrl} alt="" style={{width:'100%',height:160,objectFit:'cover',borderRadius:12,marginBottom:12}}/>}
+      <div style={{display:'flex',alignItems:'center',justifyContent:'space-between',marginBottom:16}}>
+        <div style={{display:'flex',alignItems:'center',gap:8}}>
+          <span style={{fontSize:28}}>{c.icon}</span>
+          <div>
+            <div style={{fontSize:12,color:'var(--text-muted)'}}>{c.label}</div>
+            <div style={{fontFamily:'var(--serif)',fontSize:22,fontWeight:700}}>{item.quantity} <span style={{fontSize:14}}>{item.unit}</span></div>
+          </div>
+        </div>
+        <div style={{display:'flex',alignItems:'center',gap:8}}>
+          <button onClick={()=>onQty(-1)} style={{width:36,height:36,borderRadius:'50%',background:'var(--card2)',fontSize:20,display:'flex',alignItems:'center',justifyContent:'center'}}>−</button>
+          <button onClick={()=>onQty(1)} style={{width:36,height:36,borderRadius:'50%',background:'var(--wood)',color:'white',fontSize:20,display:'flex',alignItems:'center',justifyContent:'center'}}>＋</button>
+        </div>
+      </div>
+      {[
+        {label:'警告值',val:item.threshold===0||item.threshold==='0'?'用完才提醒':`≤ ${item.threshold} ${item.unit}`},
+        {label:'條碼',val:item.barcode||'—'},
+        {label:'擺放位置',val:item.location||'—'},
+        {label:'備註',val:item.note||'—'},
+      ].map(f=>(
+        <div key={f.label} className="detail-field">
+          <div className="detail-label">{f.label}</div>
+          <div className="detail-val">{f.val}</div>
+        </div>
+      ))}
+    </div>
+  );
+}
+
+function InventoryForm({data,onSave,onCancel,onDelete}){
+  const [form,setForm]=useState({name:'',category:'food',quantity:1,unit:'個',threshold:0,imageUrl:'',barcode:'',location:'',note:'',...data});
+  const set=(k,v)=>setForm(f=>({...f,[k]:v}));
+  const save=()=>{if(!form.name.trim())return;onSave({...form,quantity:Number(form.quantity),threshold:Number(form.threshold)});};
+  return(
+    <div>
+      <label className="form-label">分類</label>
+      <div style={{display:'grid',gridTemplateColumns:'repeat(4,1fr)',gap:5,marginBottom:4}}>
+        {CATS.map(c=>(
+          <button key={c.key} onClick={()=>set('category',c.key)}
+            style={{padding:'8px 4px',borderRadius:8,border:`1.5px solid ${form.category===c.key?'var(--wood)':'var(--sand)'}`,background:form.category===c.key?'var(--wood)':'var(--card)',color:form.category===c.key?'white':'var(--wood)',fontSize:11,textAlign:'center'}}>
+            {c.icon}<br/>{c.label}
+          </button>
+        ))}
+      </div>
+      <label className="form-label">品項名稱 *</label>
+      <input className="form-input" value={form.name} onChange={e=>set('name',e.target.value)} placeholder="例：衛生紙、雞蛋"/>
+      <label className="form-label">照片網址 ✨</label>
+      <input className="form-input" value={form.imageUrl} onChange={e=>set('imageUrl',e.target.value)} placeholder="https://...（選填）"/>
+      <div className="form-row3">
+        <div><label className="form-label">數量</label><input className="form-input" type="number" value={form.quantity} onChange={e=>set('quantity',e.target.value)}/></div>
+        <div><label className="form-label">單位</label>
+          <select className="form-select" value={form.unit} onChange={e=>set('unit',e.target.value)}>
+            {UNITS.map(u=><option key={u}>{u}</option>)}
+          </select>
+        </div>
+        <div><label className="form-label">警告值</label><input className="form-input" type="number" value={form.threshold} onChange={e=>set('threshold',e.target.value)}/></div>
+      </div>
+      <div style={{fontSize:11,color:'var(--text-muted)',marginTop:-8,marginBottom:8}}>警告值 0 = 用完才提醒</div>
+      <div className="form-row">
+        <div><label className="form-label">條碼</label><input className="form-input" value={form.barcode} onChange={e=>set('barcode',e.target.value)} placeholder="選填"/></div>
+        <div><label className="form-label">擺放位置</label><input className="form-input" value={form.location} onChange={e=>set('location',e.target.value)} placeholder="選填"/></div>
+      </div>
+      <label className="form-label">備註</label>
+      <input className="form-input" value={form.note} onChange={e=>set('note',e.target.value)} placeholder="選填"/>
+      <div style={{display:'flex',gap:10,marginTop:16}}>
+        {onDelete&&<button className="btn-danger" onClick={onDelete}>刪除</button>}
+        <button className="btn-secondary" onClick={onCancel}>取消</button>
+        <button className="btn-primary" onClick={save}>儲存</button>
+      </div>
+    </div>
+  );
+}
+
+ReactDOM.createRoot(document.getElementById('root')).render(<App/>);
+</script>
+</body>
+</html>

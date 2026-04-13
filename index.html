@@ -1,0 +1,1013 @@
+<!DOCTYPE html>
+<html lang="zh-TW">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+<title>家庭數位管家</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Noto+Serif+TC:wght@400;500;700&family=Zen+Kaku+Gothic+New:wght@300;400;500&display=swap" rel="stylesheet">
+<script src="https://unpkg.com/react@18/umd/react.production.min.js"></script>
+<script src="https://unpkg.com/react-dom@18/umd/react-dom.production.min.js"></script>
+<script src="https://unpkg.com/@babel/standalone/babel.min.js"></script>
+<script src="https://www.gstatic.com/firebasejs/9.22.2/firebase-app-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/9.22.2/firebase-firestore-compat.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/dayjs@1/dayjs.min.js"></script>
+<style>
+  :root {
+    --paper: #FDFBFA;
+    --clay: #A68A7D;
+    --clay-light: #C4A899;
+    --clay-dark: #8A7268;
+    --sage: #8FA68B;
+    --wood: #4A423D;
+    --sand: #EAE2D6;
+    --highlight: #D99A84;
+    --card: #F9F7F4;
+    --card2: #F4F0EB;
+    --white: #FFFFFF;
+    --text-muted: #9B8E87;
+    --serif: 'Noto Serif TC', serif;
+    --sans: 'Zen Kaku Gothic New', sans-serif;
+    --radius: 16px;
+    --radius-sm: 10px;
+    --shadow: 0 2px 12px rgba(74,66,61,0.08);
+    --shadow-md: 0 4px 20px rgba(74,66,61,0.12);
+  }
+  * { box-sizing: border-box; margin: 0; padding: 0; -webkit-tap-highlight-color: transparent; }
+  html { font-size: 16px; }
+  body {
+    background: var(--paper);
+    color: var(--wood);
+    font-family: var(--sans);
+    min-height: 100dvh;
+    padding-bottom: env(safe-area-inset-bottom);
+    padding-top: env(safe-area-inset-top);
+  }
+  button { border: none; background: none; cursor: pointer; font-family: var(--sans); }
+  input, textarea { font-family: var(--sans); font-size: 16px; }
+  /* Login */
+  .login-wrap {
+    min-height: 100dvh;
+    display: flex; align-items: center; justify-content: center;
+    padding: 24px;
+    background: linear-gradient(160deg, #fdf8f3 0%, #f4ede4 100%);
+  }
+  .login-card {
+    width: 100%; max-width: 360px;
+    background: var(--white);
+    border-radius: 24px;
+    padding: 40px 32px;
+    box-shadow: var(--shadow-md);
+  }
+  .login-logo {
+    text-align: center;
+    margin-bottom: 32px;
+  }
+  .login-logo .emoji { font-size: 48px; display: block; margin-bottom: 12px; }
+  .login-logo h1 {
+    font-family: var(--serif);
+    font-size: 22px;
+    font-weight: 700;
+    color: var(--wood);
+    letter-spacing: 0.05em;
+  }
+  .login-logo p {
+    font-size: 13px;
+    color: var(--text-muted);
+    margin-top: 4px;
+  }
+  .login-input {
+    width: 100%;
+    padding: 14px 16px;
+    border: 1.5px solid var(--sand);
+    border-radius: var(--radius-sm);
+    font-size: 18px;
+    letter-spacing: 0.15em;
+    text-align: center;
+    color: var(--wood);
+    background: var(--card);
+    outline: none;
+    transition: border-color 0.2s;
+  }
+  .login-input:focus { border-color: var(--clay); }
+  .login-btn {
+    width: 100%; margin-top: 16px;
+    padding: 14px;
+    background: var(--clay);
+    color: white;
+    border-radius: var(--radius-sm);
+    font-size: 15px;
+    font-weight: 500;
+    letter-spacing: 0.05em;
+    transition: background 0.2s;
+  }
+  .login-btn:active { background: var(--clay-dark); }
+  .login-hint { text-align: center; margin-top: 20px; font-size: 13px; color: var(--text-muted); }
+  /* Layout */
+  .app-wrap { max-width: 480px; margin: 0 auto; }
+  /* Header */
+  .header {
+    position: sticky; top: 0; z-index: 50;
+    background: rgba(253,251,250,0.92);
+    backdrop-filter: blur(12px);
+    padding: 12px 20px 10px;
+    border-bottom: 1px solid var(--sand);
+    display: flex; align-items: center; justify-content: space-between;
+  }
+  .header-left h2 {
+    font-family: var(--serif);
+    font-size: 14px; font-weight: 500;
+    color: var(--text-muted);
+    line-height: 1;
+  }
+  .header-left h1 {
+    font-family: var(--serif);
+    font-size: 18px; font-weight: 700;
+    color: var(--wood);
+    margin-top: 2px;
+  }
+  .header-right { display: flex; gap: 8px; }
+  .icon-btn {
+    width: 36px; height: 36px;
+    border-radius: 50%;
+    display: flex; align-items: center; justify-content: center;
+    font-size: 18px;
+    background: var(--card2);
+    transition: background 0.2s;
+  }
+  .icon-btn:active { background: var(--sand); }
+  /* Scroll Content */
+  .content { padding: 16px 16px 120px; display: flex; flex-direction: column; gap: 16px; }
+  /* Section header */
+  .sec-head {
+    display: flex; align-items: center; justify-content: space-between;
+    margin-bottom: 10px;
+  }
+  .sec-title {
+    font-family: var(--serif);
+    font-size: 15px; font-weight: 700;
+    color: var(--wood);
+    display: flex; align-items: center; gap: 6px;
+  }
+  .sec-more {
+    font-size: 12px; color: var(--clay);
+    font-weight: 500;
+  }
+  /* Weather Card */
+  .weather-card {
+    background: linear-gradient(135deg, #f0e8e0 0%, #e8ddd4 100%);
+    border-radius: var(--radius);
+    padding: 16px 18px;
+    display: flex; align-items: center; gap: 16px;
+  }
+  .weather-icon { font-size: 44px; line-height: 1; }
+  .weather-info { flex: 1; }
+  .weather-temp { font-family: var(--serif); font-size: 28px; font-weight: 700; color: var(--wood); line-height: 1; }
+  .weather-range { font-size: 12px; color: var(--text-muted); margin-top: 4px; }
+  .weather-tip {
+    margin-top: 6px;
+    font-size: 12px; color: var(--clay-dark);
+    background: rgba(255,255,255,0.5);
+    border-radius: 20px;
+    padding: 3px 10px; display: inline-block;
+  }
+  /* Stats Grid */
+  .stats-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; }
+  .stat-card {
+    background: var(--card);
+    border: 1px solid var(--sand);
+    border-radius: var(--radius-sm);
+    padding: 14px 16px;
+    cursor: pointer;
+    transition: background 0.15s;
+  }
+  .stat-card:active { background: var(--sand); }
+  .stat-icon { font-size: 20px; }
+  .stat-num {
+    font-family: var(--serif);
+    font-size: 24px; font-weight: 700;
+    color: var(--wood);
+    margin-top: 4px;
+  }
+  .stat-num.alert { color: var(--highlight); }
+  .stat-label { font-size: 12px; color: var(--text-muted); margin-top: 2px; }
+  /* Quick Record */
+  .quick-card {
+    background: var(--white);
+    border: 1px solid var(--sand);
+    border-radius: var(--radius);
+    overflow: hidden;
+    box-shadow: var(--shadow);
+  }
+  .quick-tabs {
+    display: flex;
+    border-bottom: 1px solid var(--sand);
+    background: var(--card2);
+  }
+  .quick-tab {
+    flex: 1;
+    padding: 11px 4px 10px;
+    font-size: 13px;
+    font-weight: 500;
+    color: var(--text-muted);
+    text-align: center;
+    position: relative;
+    transition: color 0.2s;
+  }
+  .quick-tab.active { color: var(--wood); }
+  .quick-tab.active::after {
+    content: '';
+    position: absolute;
+    bottom: -1px; left: 20%; right: 20%;
+    height: 2px;
+    background: var(--wood);
+    border-radius: 2px;
+  }
+  .quick-body { padding: 14px; }
+  /* Memo */
+  .memo-area {
+    width: 100%; min-height: 100px;
+    border: none; outline: none; resize: none;
+    font-size: 14px; line-height: 1.7;
+    color: var(--wood);
+    background: transparent;
+  }
+  .memo-area::placeholder { color: var(--text-muted); }
+  .memo-status {
+    font-size: 12px;
+    color: var(--sage);
+    display: flex; align-items: center; gap: 4px;
+    margin-top: 6px;
+  }
+  /* Todo / Shopping List */
+  .list-add-row {
+    display: flex; gap: 8px;
+    margin-bottom: 12px;
+  }
+  .list-add-input {
+    flex: 1;
+    padding: 10px 14px;
+    border: 1.5px solid var(--sand);
+    border-radius: 50px;
+    font-size: 14px; color: var(--wood);
+    background: var(--card);
+    outline: none;
+    transition: border-color 0.2s;
+  }
+  .list-add-input:focus { border-color: var(--clay); }
+  .list-add-btn {
+    width: 44px; height: 44px;
+    border-radius: 50%;
+    background: var(--wood);
+    color: white;
+    font-size: 20px;
+    display: flex; align-items: center; justify-content: center;
+    flex-shrink: 0;
+    transition: background 0.2s;
+  }
+  .list-add-btn:active { background: var(--clay); }
+  .list-empty { text-align: center; color: var(--text-muted); font-size: 14px; padding: 20px 0; }
+  .list-item {
+    display: flex; align-items: center; gap: 10px;
+    padding: 9px 0;
+    border-bottom: 1px solid var(--sand);
+    animation: slideIn 0.2s ease;
+  }
+  .list-item:last-child { border-bottom: none; }
+  @keyframes slideIn { from { opacity: 0; transform: translateY(-6px); } to { opacity: 1; transform: translateY(0); } }
+  .list-check {
+    width: 22px; height: 22px; border-radius: 50%;
+    border: 2px solid var(--sand);
+    background: transparent;
+    flex-shrink: 0;
+    display: flex; align-items: center; justify-content: center;
+    font-size: 12px;
+    transition: all 0.15s;
+    cursor: pointer;
+  }
+  .list-check.done { border-color: var(--sage); background: var(--sage); color: white; }
+  .list-text { flex: 1; font-size: 14px; color: var(--wood); }
+  .list-text.done { text-decoration: line-through; color: var(--text-muted); }
+  .list-del {
+    width: 28px; height: 28px;
+    border-radius: 50%;
+    background: transparent;
+    color: var(--text-muted);
+    font-size: 16px;
+    display: flex; align-items: center; justify-content: center;
+    opacity: 0;
+    transition: opacity 0.15s;
+  }
+  .list-item:hover .list-del { opacity: 1; }
+  /* Urgent reminders */
+  .urgent-list { display: flex; flex-direction: column; gap: 8px; }
+  .urgent-item {
+    background: var(--card);
+    border: 1px solid var(--sand);
+    border-left: 3px solid var(--highlight);
+    border-radius: var(--radius-sm);
+    padding: 10px 14px;
+    display: flex; align-items: center; justify-content: space-between;
+  }
+  .urgent-name { font-size: 14px; font-weight: 500; }
+  .urgent-date { font-size: 12px; color: var(--highlight); }
+  .urgent-amount { font-size: 12px; color: var(--text-muted); }
+  /* Finance summary */
+  .finance-card {
+    background: var(--card);
+    border: 1px solid var(--sand);
+    border-radius: var(--radius-sm);
+    overflow: hidden;
+  }
+  .finance-banner {
+    background: linear-gradient(90deg, var(--clay) 0%, var(--clay-light) 100%);
+    padding: 12px 16px;
+    display: flex; align-items: center; justify-content: space-between;
+  }
+  .finance-banner-label { font-size: 12px; color: rgba(255,255,255,0.8); }
+  .finance-banner-amount { font-family: var(--serif); font-size: 22px; font-weight: 700; color: white; }
+  .finance-list { padding: 4px 0; }
+  .finance-item {
+    display: flex; align-items: center; justify-content: space-between;
+    padding: 10px 16px;
+    border-bottom: 1px solid var(--sand);
+    font-size: 13px;
+  }
+  .finance-item:last-child { border-bottom: none; }
+  .finance-item.paid .fi-name, .finance-item.paid .fi-amt { text-decoration: line-through; color: var(--text-muted); }
+  .fi-name { display: flex; align-items: center; gap: 6px; }
+  .fi-amt { font-weight: 500; }
+  .fi-badge {
+    font-size: 10px; padding: 1px 7px;
+    border-radius: 20px;
+    background: var(--sand);
+    color: var(--text-muted);
+  }
+  .fi-badge.paid { background: #e8f0e8; color: var(--sage); }
+  /* Low stock */
+  .stock-list { display: flex; flex-direction: column; gap: 8px; }
+  .stock-item {
+    background: var(--card);
+    border: 1px solid var(--sand);
+    border-radius: var(--radius-sm);
+    padding: 10px 14px;
+    display: flex; align-items: center; gap: 12px;
+  }
+  .stock-icon { font-size: 22px; }
+  .stock-info { flex: 1; }
+  .stock-name { font-size: 14px; font-weight: 500; }
+  .stock-qty { font-size: 12px; color: var(--highlight); margin-top: 2px; }
+  /* Pinned bookmarks */
+  .bookmark-scroll { display: flex; gap: 10px; overflow-x: auto; padding-bottom: 4px; }
+  .bookmark-scroll::-webkit-scrollbar { display: none; }
+  .bookmark-item {
+    flex-shrink: 0; width: 140px;
+    background: var(--card);
+    border: 1px solid var(--sand);
+    border-radius: var(--radius-sm);
+    overflow: hidden;
+    cursor: pointer;
+  }
+  .bookmark-img { width: 100%; height: 80px; object-fit: cover; background: var(--sand); }
+  .bookmark-img-ph { width: 100%; height: 80px; background: var(--sand); display: flex; align-items: center; justify-content: center; font-size: 28px; }
+  .bookmark-meta { padding: 8px 10px; }
+  .bookmark-title { font-size: 12px; font-weight: 500; line-height: 1.4; display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical; overflow: hidden; }
+  .bookmark-domain { font-size: 11px; color: var(--text-muted); margin-top: 3px; }
+  /* Module Cards */
+  .module-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; }
+  .module-card {
+    background: var(--card);
+    border: 1px solid var(--sand);
+    border-radius: var(--radius);
+    padding: 20px 16px 16px;
+    cursor: pointer;
+    transition: all 0.15s;
+    text-decoration: none;
+  }
+  .module-card:active { background: var(--sand); transform: scale(0.97); }
+  .module-emoji { font-size: 28px; display: block; margin-bottom: 10px; }
+  .module-name { font-family: var(--serif); font-size: 15px; font-weight: 700; color: var(--wood); }
+  .module-desc { font-size: 12px; color: var(--text-muted); margin-top: 4px; }
+  /* Bottom nav */
+  .bottom-nav {
+    position: fixed; bottom: 0; left: 0; right: 0;
+    background: rgba(253,251,250,0.95);
+    backdrop-filter: blur(12px);
+    border-top: 1px solid var(--sand);
+    padding: 8px 0 calc(8px + env(safe-area-inset-bottom));
+    display: flex;
+  }
+  .nav-btn {
+    flex: 1; display: flex; flex-direction: column; align-items: center; gap: 3px;
+    font-size: 10px; color: var(--text-muted);
+    cursor: pointer;
+    transition: color 0.15s;
+    text-decoration: none;
+  }
+  .nav-btn.active { color: var(--clay); }
+  .nav-icon { font-size: 22px; }
+  /* Settings Modal */
+  .modal-overlay {
+    position: fixed; inset: 0; z-index: 100;
+    background: rgba(74,66,61,0.5);
+    display: flex; align-items: flex-end;
+    animation: fadeIn 0.2s;
+  }
+  @keyframes fadeIn { from { opacity: 0; } to { opacity: 1; } }
+  .modal-sheet {
+    width: 100%; max-width: 480px; margin: 0 auto;
+    background: var(--white);
+    border-radius: 24px 24px 0 0;
+    padding: 16px 20px calc(24px + env(safe-area-inset-bottom));
+    animation: slideUp 0.25s ease;
+  }
+  @keyframes slideUp { from { transform: translateY(100%); } to { transform: translateY(0); } }
+  .modal-handle { width: 40px; height: 4px; background: var(--sand); border-radius: 2px; margin: 0 auto 20px; }
+  .modal-title { font-family: var(--serif); font-size: 18px; font-weight: 700; margin-bottom: 20px; }
+  .settings-row {
+    display: flex; align-items: center; justify-content: space-between;
+    padding: 14px 0; border-bottom: 1px solid var(--sand);
+  }
+  .settings-row:last-child { border-bottom: none; }
+  .settings-label { font-size: 14px; color: var(--wood); }
+  .settings-val { font-size: 13px; color: var(--text-muted); }
+  .settings-badge {
+    font-size: 12px; padding: 3px 10px;
+    border-radius: 20px; background: #e8f0e8; color: var(--sage);
+  }
+  .logout-btn {
+    width: 100%; margin-top: 16px;
+    padding: 13px;
+    border: 1.5px solid var(--sand);
+    border-radius: var(--radius-sm);
+    font-size: 14px; color: var(--highlight);
+    background: transparent;
+  }
+  /* Loading */
+  .loading-dot {
+    display: inline-block; width: 6px; height: 6px;
+    background: var(--clay); border-radius: 50%;
+    animation: pulse 1.2s ease-in-out infinite;
+  }
+  @keyframes pulse { 0%,100% { opacity: 0.3; } 50% { opacity: 1; } }
+  /* Misc */
+  .tag { display: inline-block; padding: 2px 8px; border-radius: 20px; font-size: 11px; background: var(--sand); color: var(--text-muted); }
+  .empty-state { text-align: center; padding: 24px 16px; color: var(--text-muted); font-size: 14px; }
+</style>
+</head>
+<body>
+<div id="root"></div>
+
+<script type="text/babel">
+const { useState, useEffect, useRef, useCallback } = React;
+
+// ─── Firebase 設定 ─────────────────────────────────
+const firebaseConfig = {
+  apiKey: "AIzaSyAFGSQOvAp1thZkWBZ-nLHe-uR8llDQDI8",
+  authDomain: "home-hub-be41f.firebaseapp.com",
+  projectId: "home-hub-be41f",
+  storageBucket: "home-hub-be41f.firebasestorage.app",
+  messagingSenderId: "286497032414",
+  appId: "1:286497032414:web:16d3f0242a400d0de85a4f"
+};
+
+let db;
+try {
+  if (!firebase.apps.length) firebase.initializeApp(firebaseConfig);
+  db = firebase.firestore();
+  db.enablePersistence().catch(() => {});
+} catch(e) {}
+
+// ─── 常數 ──────────────────────────────────────────
+const VERSION = "v3.0";
+const ROOM_KEY = "hh_roomCode";
+const MEMO_KEY = "hh_memo";
+const TODO_KEY = "hh_todo";
+const SHOP_KEY = "hh_shop";
+
+const categoryIcon = {
+  food:'🍱', drink:'🧴', frozen:'🧊', clean:'🧹', bath:'🛁',
+  medical:'💊', baby:'🍼', kitchen:'🍳', pet:'🐾', office:'📎', other:'📦'
+};
+
+// ─── 天氣 Hook ─────────────────────────────────────
+function useWeather() {
+  const [weather, setWeather] = useState(null);
+  useEffect(() => {
+    if (!navigator.geolocation) return;
+    navigator.geolocation.getCurrentPosition(async pos => {
+      try {
+        const { latitude: lat, longitude: lon } = pos.coords;
+        const res = await fetch(`https://api.open-meteo.com/v1/forecast?latitude=${lat}&longitude=${lon}&current=temperature_2m,weathercode&daily=temperature_2m_max,temperature_2m_min&timezone=Asia%2FTaipei&forecast_days=1`);
+        const d = await res.json();
+        const code = d.current.weathercode;
+        const temp = Math.round(d.current.temperature_2m);
+        const max = Math.round(d.daily.temperature_2m_max[0]);
+        const min = Math.round(d.daily.temperature_2m_min[0]);
+        const getIcon = c => {
+          if (c === 0) return '☀️';
+          if (c <= 3) return '⛅';
+          if (c <= 48) return '🌫️';
+          if (c <= 67) return '🌧️';
+          if (c <= 77) return '❄️';
+          if (c <= 82) return '🌦️';
+          return '⛈️';
+        };
+        const getTip = t => {
+          if (t >= 30) return '天氣炎熱，注意防曬補水';
+          if (t >= 25) return '舒適溫暖，輕薄衣物即可';
+          if (t >= 18) return '微涼，建議帶件薄外套';
+          if (t >= 12) return '偏涼，記得穿外套';
+          return '天氣寒冷，注意保暖';
+        };
+        setWeather({ temp, max, min, icon: getIcon(code), tip: getTip(temp) });
+      } catch(e) {}
+    }, () => {});
+  }, []);
+  return weather;
+}
+
+// ─── 主 App ────────────────────────────────────────
+function App() {
+  const [roomCode, setRoomCode] = useState(() => localStorage.getItem(ROOM_KEY) || '');
+  const [inputCode, setInputCode] = useState('');
+  const [showSettings, setShowSettings] = useState(false);
+
+  // Firebase data
+  const [reminders, setReminders] = useState([]);
+  const [inventory, setInventory] = useState([]);
+  const [wardrobe, setWardrobe] = useState([]);
+  const [wiki, setWiki] = useState([]);
+  const [loading, setLoading] = useState(false);
+
+  // Quick record
+  const [activeTab, setActiveTab] = useState('memo');
+  const [memo, setMemo] = useState(() => localStorage.getItem(MEMO_KEY + '_' + (localStorage.getItem(ROOM_KEY) || '')) || '');
+  const [todos, setTodos] = useState(() => JSON.parse(localStorage.getItem(TODO_KEY + '_' + (localStorage.getItem(ROOM_KEY) || '')) || '[]'));
+  const [shopping, setShopping] = useState(() => JSON.parse(localStorage.getItem(SHOP_KEY + '_' + (localStorage.getItem(ROOM_KEY) || '')) || '[]'));
+  const [todoInput, setTodoInput] = useState('');
+  const [shopInput, setShopInput] = useState('');
+  const [memoSaved, setMemoSaved] = useState(true);
+  const memoTimer = useRef(null);
+
+  const weather = useWeather();
+
+  // ── 登入 ──
+  const login = () => {
+    const code = inputCode.trim().toUpperCase();
+    if (!code) return;
+    localStorage.setItem(ROOM_KEY, code);
+    setRoomCode(code);
+  };
+
+  const logout = () => {
+    localStorage.removeItem(ROOM_KEY);
+    setRoomCode('');
+    setShowSettings(false);
+  };
+
+  // ── Firebase 訂閱 ──
+  useEffect(() => {
+    if (!roomCode || !db) return;
+    setLoading(true);
+    const unsubs = [];
+
+    const sub = (col, setter) => {
+      const u = db.collection(col).doc(roomCode).collection('items')
+        .onSnapshot(snap => {
+          setter(snap.docs.map(d => ({ id: d.id, ...d.data() })));
+          setLoading(false);
+        }, () => setLoading(false));
+      unsubs.push(u);
+    };
+
+    sub('reminders', setReminders);
+    sub('inventory', setInventory);
+    sub('wardrobe', setWardrobe);
+
+    const wikiUnsub = db.collection('wiki').doc(roomCode).collection('articles')
+      .onSnapshot(snap => {
+        setWiki(snap.docs.map(d => ({ id: d.id, ...d.data() })));
+      }, () => {});
+    unsubs.push(wikiUnsub);
+
+    return () => unsubs.forEach(u => u());
+  }, [roomCode]);
+
+  // ── 備忘錄自動儲存 ──
+  useEffect(() => {
+    if (!roomCode) return;
+    setMemoSaved(false);
+    clearTimeout(memoTimer.current);
+    memoTimer.current = setTimeout(() => {
+      localStorage.setItem(MEMO_KEY + '_' + roomCode, memo);
+      setMemoSaved(true);
+    }, 800);
+  }, [memo, roomCode]);
+
+  // ── Todo 儲存 ──
+  useEffect(() => {
+    if (!roomCode) return;
+    localStorage.setItem(TODO_KEY + '_' + roomCode, JSON.stringify(todos));
+  }, [todos, roomCode]);
+
+  // ── Shopping 儲存 ──
+  useEffect(() => {
+    if (!roomCode) return;
+    localStorage.setItem(SHOP_KEY + '_' + roomCode, JSON.stringify(shopping));
+  }, [shopping, roomCode]);
+
+  // ── 計算資料 ──
+  const today = dayjs();
+  const urgentItems = reminders.filter(r => {
+    if (r.status === 'completed') return false;
+    if (!r.dueDate) return false;
+    const diff = dayjs(r.dueDate).diff(today, 'day');
+    return diff >= 0 && diff <= 3;
+  }).sort((a,b) => dayjs(a.dueDate).diff(dayjs(b.dueDate)));
+
+  const thisMonth = today.format('YYYY-MM');
+  const financeItems = reminders.filter(r =>
+    (r.type === 'financial' || r.type === 'subscription') && r.dueDate?.startsWith(thisMonth)
+  ).sort((a,b) => dayjs(a.dueDate).diff(dayjs(b.dueDate)));
+  const financeTotal = financeItems.reduce((s, r) => s + (Number(r.amount) || 0), 0);
+  const financePaid = financeItems.filter(r => r.status === 'completed').reduce((s,r) => s + (Number(r.amount)||0), 0);
+
+  const lowStock = inventory.filter(r => {
+    if (r.threshold === 0 || r.threshold === '0') return Number(r.quantity) === 0;
+    return Number(r.quantity) <= Number(r.threshold);
+  });
+
+  const pinnedWiki = wiki.filter(w => w.pinned);
+
+  // ── Todo 操作 ──
+  const addTodo = () => {
+    if (!todoInput.trim()) return;
+    setTodos(p => [...p, { id: Date.now(), text: todoInput.trim(), done: false }]);
+    setTodoInput('');
+  };
+  const toggleTodo = id => setTodos(p => p.map(t => t.id === id ? { ...t, done: !t.done } : t));
+  const delTodo = id => setTodos(p => p.filter(t => t.id !== id));
+
+  const addShop = () => {
+    if (!shopInput.trim()) return;
+    setShopping(p => [...p, { id: Date.now(), text: shopInput.trim(), done: false }]);
+    setShopInput('');
+  };
+  const toggleShop = id => setShopping(p => p.map(t => t.id === id ? { ...t, done: !t.done } : t));
+  const delShop = id => setShopping(p => p.filter(t => t.id !== id));
+
+  // ── 問候語 ──
+  const hour = today.hour();
+  const greeting = hour < 6 ? '夜深了，注意休息' : hour < 12 ? '早安' : hour < 18 ? '午安' : '晚安';
+  const dateStr = today.format('MM月DD日');
+  const weekDays = ['日','一','二','三','四','五','六'];
+  const weekStr = `週${weekDays[today.day()]}`;
+
+  // ── URL helper ──
+  const moduleUrl = mod => `./${mod}.html?room=${roomCode}`;
+
+  // ── 未登入 ──
+  if (!roomCode) {
+    return (
+      <div className="login-wrap">
+        <div className="login-card">
+          <div className="login-logo">
+            <span className="emoji">🏡</span>
+            <h1>家庭數位管家</h1>
+            <p>輸入家庭房間碼，開始使用</p>
+          </div>
+          <input
+            className="login-input"
+            placeholder="輸入房間碼"
+            value={inputCode}
+            onChange={e => setInputCode(e.target.value.toUpperCase())}
+            onKeyDown={e => e.key === 'Enter' && login()}
+            maxLength={10}
+          />
+          <button className="login-btn" onClick={login}>進入我的家庭 →</button>
+          <p className="login-hint">房間碼由家庭成員共享<br/>資料存儲於雲端，跨裝置同步</p>
+        </div>
+      </div>
+    );
+  }
+
+  return (
+    <div className="app-wrap">
+      {/* Header */}
+      <div className="header">
+        <div className="header-left">
+          <h2>{dateStr} {weekStr} · {greeting}</h2>
+          <h1>嘟嘟一家 🏡</h1>
+        </div>
+        <div className="header-right">
+          {loading && <div style={{display:'flex',alignItems:'center',gap:3,padding:'0 8px'}}>
+            <div className="loading-dot" style={{animationDelay:'0s'}}/>
+            <div className="loading-dot" style={{animationDelay:'0.2s'}}/>
+            <div className="loading-dot" style={{animationDelay:'0.4s'}}/>
+          </div>}
+          <button className="icon-btn" onClick={() => setShowSettings(true)}>⚙️</button>
+        </div>
+      </div>
+
+      <div className="content">
+
+        {/* 天氣 */}
+        {weather && (
+          <div className="weather-card">
+            <div className="weather-icon">{weather.icon}</div>
+            <div className="weather-info">
+              <div className="weather-temp">{weather.temp}°C</div>
+              <div className="weather-range">最高 {weather.max}° · 最低 {weather.min}°</div>
+              <div className="weather-tip">{weather.tip}</div>
+            </div>
+          </div>
+        )}
+
+        {/* 四格統計 */}
+        <div className="stats-grid">
+          <a className="stat-card" href={moduleUrl('module-reminders')} style={{textDecoration:'none',color:'inherit'}}>
+            <div className="stat-icon">⚡</div>
+            <div className={`stat-num ${urgentItems.length > 0 ? 'alert' : ''}`}>{urgentItems.length}</div>
+            <div className="stat-label">急件提醒</div>
+          </a>
+          <a className="stat-card" href={moduleUrl('module-inventory')} style={{textDecoration:'none',color:'inherit'}}>
+            <div className="stat-icon">📦</div>
+            <div className={`stat-num ${lowStock.length > 0 ? 'alert' : ''}`}>{lowStock.length}</div>
+            <div className="stat-label">低庫存品項</div>
+          </a>
+          <a className="stat-card" href={moduleUrl('module-wardrobe')} style={{textDecoration:'none',color:'inherit'}}>
+            <div className="stat-icon">👗</div>
+            <div className="stat-num">{wardrobe.length}</div>
+            <div className="stat-label">衣物總數</div>
+          </a>
+          <a className="stat-card" href={moduleUrl('module-wiki')} style={{textDecoration:'none',color:'inherit'}}>
+            <div className="stat-icon">📖</div>
+            <div className="stat-num">{wiki.length}</div>
+            <div className="stat-label">知識書籤</div>
+          </a>
+        </div>
+
+        {/* ⚡ 快速記錄 */}
+        <div>
+          <div className="sec-head">
+            <span className="sec-title">📌 快速記錄</span>
+          </div>
+          <div className="quick-card">
+            <div className="quick-tabs">
+              {[
+                { key: 'memo', label: '📝 備忘錄' },
+                { key: 'todo', label: '✅ 待辦' },
+                { key: 'shop', label: '🛍️ 待買' },
+              ].map(t => (
+                <button
+                  key={t.key}
+                  className={`quick-tab ${activeTab === t.key ? 'active' : ''}`}
+                  onClick={() => setActiveTab(t.key)}
+                >
+                  {t.label}
+                </button>
+              ))}
+            </div>
+
+            <div className="quick-body">
+              {activeTab === 'memo' && (
+                <div>
+                  <textarea
+                    className="memo-area"
+                    placeholder="隨手記下任何事情..."
+                    value={memo}
+                    onChange={e => setMemo(e.target.value)}
+                    rows={5}
+                  />
+                  <div className="memo-status">
+                    {memoSaved ? <><span>✓</span> 已儲存</> : <><span className="loading-dot" style={{width:5,height:5}}/> 儲存中</>}
+                  </div>
+                </div>
+              )}
+
+              {activeTab === 'todo' && (
+                <div>
+                  <div className="list-add-row">
+                    <input
+                      className="list-add-input"
+                      placeholder="新增待辦事項..."
+                      value={todoInput}
+                      onChange={e => setTodoInput(e.target.value)}
+                      onKeyDown={e => e.key === 'Enter' && addTodo()}
+                    />
+                    <button className="list-add-btn" onClick={addTodo}>＋</button>
+                  </div>
+                  {todos.length === 0
+                    ? <div className="list-empty">沒有待辦事項</div>
+                    : todos.map(t => (
+                        <div key={t.id} className="list-item">
+                          <button
+                            className={`list-check ${t.done ? 'done' : ''}`}
+                            onClick={() => toggleTodo(t.id)}
+                          >{t.done ? '✓' : ''}</button>
+                          <span className={`list-text ${t.done ? 'done' : ''}`}>{t.text}</span>
+                          <button className="list-del" onClick={() => delTodo(t.id)}>✕</button>
+                        </div>
+                    ))
+                  }
+                </div>
+              )}
+
+              {activeTab === 'shop' && (
+                <div>
+                  <div className="list-add-row">
+                    <input
+                      className="list-add-input"
+                      placeholder="新增待買項目..."
+                      value={shopInput}
+                      onChange={e => setShopInput(e.target.value)}
+                      onKeyDown={e => e.key === 'Enter' && addShop()}
+                    />
+                    <button className="list-add-btn" onClick={addShop}>＋</button>
+                  </div>
+                  {shopping.length === 0
+                    ? <div className="list-empty">沒有待買項目</div>
+                    : shopping.map(t => (
+                        <div key={t.id} className="list-item">
+                          <button
+                            className={`list-check ${t.done ? 'done' : ''}`}
+                            onClick={() => toggleShop(t.id)}
+                          >{t.done ? '✓' : ''}</button>
+                          <span className={`list-text ${t.done ? 'done' : ''}`}>{t.text}</span>
+                          <button className="list-del" onClick={() => delShop(t.id)}>✕</button>
+                        </div>
+                    ))
+                  }
+                </div>
+              )}
+            </div>
+          </div>
+        </div>
+
+        {/* ⚡ 急件提醒 */}
+        {urgentItems.length > 0 && (
+          <div>
+            <div className="sec-head">
+              <span className="sec-title">⚡ 急件提醒</span>
+              <a href={moduleUrl('module-reminders')} className="sec-more">查看全部 →</a>
+            </div>
+            <div className="urgent-list">
+              {urgentItems.slice(0, 4).map(r => {
+                const diff = dayjs(r.dueDate).diff(today, 'day');
+                return (
+                  <div key={r.id} className="urgent-item">
+                    <div>
+                      <div className="urgent-name">{r.title}</div>
+                      <div className="urgent-date">
+                        {diff === 0 ? '今天到期' : diff === 1 ? '明天到期' : `${diff} 天後到期`}
+                      </div>
+                    </div>
+                    {r.amount && <div className="urgent-amount">NT${Number(r.amount).toLocaleString()}</div>}
+                  </div>
+                );
+              })}
+            </div>
+          </div>
+        )}
+
+        {/* 💰 本月財務 */}
+        {financeItems.length > 0 && (
+          <div>
+            <div className="sec-head">
+              <span className="sec-title">💰 本月費用</span>
+              <a href={moduleUrl('module-reminders')} className="sec-more">查看全部 →</a>
+            </div>
+            <div className="finance-card">
+              <div className="finance-banner">
+                <div>
+                  <div className="finance-banner-label">本月應付 · 已付 NT${financePaid.toLocaleString()}</div>
+                  <div className="finance-banner-amount">NT${financeTotal.toLocaleString()}</div>
+                </div>
+              </div>
+              <div className="finance-list">
+                {financeItems.map(r => (
+                  <div key={r.id} className={`finance-item ${r.status === 'completed' ? 'paid' : ''}`}>
+                    <div className="fi-name">
+                      <span>{r.title}</span>
+                      <span className={`fi-badge ${r.status === 'completed' ? 'paid' : ''}`}>
+                        {r.status === 'completed' ? '已付' : dayjs(r.dueDate).format('MM/DD')}
+                      </span>
+                    </div>
+                    <span className="fi-amt">NT${Number(r.amount||0).toLocaleString()}</span>
+                  </div>
+                ))}
+              </div>
+            </div>
+          </div>
+        )}
+
+        {/* 📦 低庫存 */}
+        {lowStock.length > 0 && (
+          <div>
+            <div className="sec-head">
+              <span className="sec-title">📦 庫存不足</span>
+              <a href={moduleUrl('module-inventory')} className="sec-more">查看全部 →</a>
+            </div>
+            <div className="stock-list">
+              {lowStock.slice(0, 4).map(r => (
+                <div key={r.id} className="stock-item">
+                  <span className="stock-icon">{categoryIcon[r.category] || '📦'}</span>
+                  <div className="stock-info">
+                    <div className="stock-name">{r.name}</div>
+                    <div className="stock-qty">剩 {r.quantity} {r.unit} · 警告值 {r.threshold}</div>
+                  </div>
+                </div>
+              ))}
+            </div>
+          </div>
+        )}
+
+        {/* 📌 精選書籤 */}
+        {pinnedWiki.length > 0 && (
+          <div>
+            <div className="sec-head">
+              <span className="sec-title">📌 精選書籤</span>
+              <a href={moduleUrl('module-wiki')} className="sec-more">查看全部 →</a>
+            </div>
+            <div className="bookmark-scroll">
+              {pinnedWiki.map(w => (
+                <a
+                  key={w.id}
+                  className="bookmark-item"
+                  href={w.url || '#'}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                >
+                  {(w.imageUrl || w.og?.ogImage)
+                    ? <img className="bookmark-img" src={w.imageUrl || w.og?.ogImage} alt="" onError={e => { e.target.style.display='none'; }} />
+                    : <div className="bookmark-img-ph">📖</div>
+                  }
+                  <div className="bookmark-meta">
+                    <div className="bookmark-title">{w.title}</div>
+                    {w.domain && <div className="bookmark-domain">{w.domain}</div>}
+                  </div>
+                </a>
+              ))}
+            </div>
+          </div>
+        )}
+
+
+      </div>
+
+      {/* Bottom Nav */}
+      <div className="bottom-nav">
+        <span className="nav-btn active">
+          <span className="nav-icon">🏡</span>首頁
+        </span>
+        <a className="nav-btn" href={moduleUrl('module-reminders')}>
+          <span className="nav-icon">📋</span>提醒
+        </a>
+        <a className="nav-btn" href={moduleUrl('module-inventory')}>
+          <span className="nav-icon">📦</span>庫存
+        </a>
+        <a className="nav-btn" href={moduleUrl('module-wardrobe')}>
+          <span className="nav-icon">👗</span>衣櫥
+        </a>
+        <a className="nav-btn" href={moduleUrl('module-wiki')}>
+          <span className="nav-icon">📖</span>百科
+        </a>
+      </div>
+
+      {/* Settings Modal */}
+      {showSettings && (
+        <div className="modal-overlay" onClick={() => setShowSettings(false)}>
+          <div className="modal-sheet" onClick={e => e.stopPropagation()}>
+            <div className="modal-handle"/>
+            <div className="modal-title">⚙️ 設定</div>
+
+            <div className="settings-row">
+              <span className="settings-label">家庭房間碼</span>
+              <span className="settings-val" style={{fontWeight:600,letterSpacing:'0.1em'}}>{roomCode}</span>
+            </div>
+            <div className="settings-row">
+              <span className="settings-label">雲端連線</span>
+              <span className="settings-badge">已連線</span>
+            </div>
+            <div className="settings-row">
+              <span className="settings-label">版本</span>
+              <span className="settings-val">{VERSION}</span>
+            </div>
+            <div className="settings-row">
+              <span className="settings-label">Firebase 專案</span>
+              <span className="settings-val">home-hub-be41f</span>
+            </div>
+
+            <button className="logout-btn" onClick={logout}>登出此裝置</button>
+          </div>
+        </div>
+      )}
+    </div>
+  );
+}
+
+ReactDOM.createRoot(document.getElementById('root')).render(<App/>);
+</script>
+</body>
+</html>
