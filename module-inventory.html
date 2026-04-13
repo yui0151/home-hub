@@ -162,7 +162,7 @@ function catInfo(key){return CATS.find(c=>c.key===key)||CATS[CATS.length-1];}
 function isLow(r){if(r.threshold===0||r.threshold==='0')return Number(r.quantity)===0;return Number(r.quantity)<=Number(r.threshold);}
 
 function App(){
-  const [roomCode]=useState(()=>localStorage.getItem(ROOM_KEY)||'');
+  const [roomCode]=useState(()=>{const p=new URLSearchParams(window.location.search);const u=p.get('room');if(u){localStorage.setItem(ROOM_KEY,u);return u;}return localStorage.getItem(ROOM_KEY)||'';});
   const [items,setItems]=useState([]);
   const [mainTab,setMainTab]=useState(()=>{const p=new URLSearchParams(window.location.search);return p.get('tab')||'inventory'});
   const [search,setSearch]=useState('');

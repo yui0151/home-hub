@@ -178,7 +178,7 @@ async function fetchOg(url){
 }
 
 function App(){
-  const [roomCode]=useState(()=>localStorage.getItem(ROOM_KEY)||'');
+  const [roomCode]=useState(()=>{const p=new URLSearchParams(window.location.search);const u=p.get('room');if(u){localStorage.setItem(ROOM_KEY,u);return u;}return localStorage.getItem(ROOM_KEY)||'';});
   const [items,setItems]=useState([]);
   const [viewMode,setViewMode]=useState('grid');
   const [search,setSearch]=useState('');
