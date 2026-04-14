@@ -243,16 +243,13 @@ function App(){
 
   const importSheet=async()=>{
     if(!db)return;
-    if(!window.confirm('確定要從 Google Sheet 同步資料嗎？
-這將會新增目前 Sheet 的數據。'))return;
+    if(!window.confirm('確定要從 Google Sheet 同步資料嗎？\n這將會新增目前 Sheet 的數據。'))return;
     const BASE=`https://sheets.googleapis.com/v4/spreadsheets/1U5eIIBD9B5z8yDfNOCBGjHYv1oODUX-HlI1CPbpO5UQ`;
     const KEY='AIzaSyA6q7i6U6I0jHcRmrIAuvPZf3lOJhklvDg';
     try{
       const metaRes=await fetch(`${BASE}?key=${KEY}&fields=sheets.properties`);
       const meta=await metaRes.json();
-      if(meta.error)throw new Error(meta.error.message+'
-
-📌 請先將 Google Sheet 設定為「知道連結的人可以檢視」');
+      if(meta.error)throw new Error(meta.error.message+'\n\n📌 請先將 Google Sheet 設定為「知道連結的人可以檢視」');
       const sheetNames=(meta.sheets||[]).map(s=>s.properties.title);
       const sheetName=sheetNames.find(t=>t.toLowerCase().includes('inventory'))||sheetNames[0];
       if(!sheetName)throw new Error('找不到工作表，請確認 Sheet 有資料且已公開');
@@ -263,9 +260,7 @@ function App(){
       const allRows=d.values||[];
       const headerIdx=allRows.findIndex(r=>r[0]&&r[0].toLowerCase().includes('name'));
       const rows=headerIdx>=0?allRows.slice(headerIdx+1):allRows.slice(1);
-      if(!rows.length)throw new Error('工作表「'+sheetName+'」沒有找到資料列
-
-偵測到工作表：'+sheetNames.join('、'));
+      if(!rows.length)throw new Error('工作表「'+sheetName+'」沒有找到資料列\n\n偵測到工作表：'+sheetNames.join('、'));
       const batch=db.batch();
       const col=db.collection('inventory').doc(room).collection('items');
       let count=0;
@@ -277,11 +272,7 @@ function App(){
       });
       await batch.commit();
       alert('✅ 成功從「'+sheetName+'」匯入 '+count+' 筆');
-    }catch(e){alert('❌ 匯入失敗
-
-'+e.message+'
-
-請參考 sheet-guide.html 的操作說明');}
+    }catch(e){alert('❌ 匯入失敗\n\n'+e.message+'\n\n請參考 sheet-guide.html 的操作說明');}
   };
   const addShop=()=>{if(!shopInput.trim())return;setShopping(p=>[...p,{id:Date.now(),text:shopInput.trim(),done:false}]);setShopInput('');};
   const toggleShop=id=>setShopping(p=>p.map(t=>t.id===id?{...t,done:!t.done}:t));
