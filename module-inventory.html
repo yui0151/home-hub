@@ -470,9 +470,12 @@ function App(){
         <div className="modal-overlay" onClick={()=>setShowCsv(false)}>
           <div className="modal-sheet" onClick={e=>e.stopPropagation()}>
             <div className="modal-handle"/>
-            <div className="modal-header"><div className="modal-title">📥 匯入 CSV</div><button className="modal-close" onClick={()=>setShowCsv(false)}>✕</button></div>
+            <div className="modal-header"><div className="modal-title">📥 匯入庫存</div><button className="modal-close" onClick={()=>setShowCsv(false)}>✕</button></div>
             <div className="modal-body">
-              <div style={{fontSize:12,color:'var(--text-muted)',marginBottom:10}}>格式：name, category, quantity, unit, threshold, imageUrl, barcode, location, note</div>
+              <button onClick={importSheet} style={{width:'100%',padding:'11px',marginBottom:10,background:'#e8f5e9',color:'#2e7d32',border:'1.5px solid #a5d6a7',borderRadius:'var(--radius-sm)',fontSize:14,fontWeight:500,display:'flex',alignItems:'center',justifyContent:'center',gap:6,cursor:'pointer',fontFamily:'var(--sans)'}}>
+                📊 從 Google Sheet 直接匯入
+              </button>
+              <div style={{fontSize:12,color:'var(--text-muted)',marginBottom:10}}>或手動貼上 CSV（name, category, quantity, unit, threshold, imageUrl, barcode, location, note</div>
               <textarea className="csv-area" value={csvText} onChange={e=>setCsvText(e.target.value)} placeholder={'name,category,quantity,unit,threshold,imageUrl,barcode,location,note\n雞蛋,food,10,顆,0,,,冰箱,\n衛生紙,clean,3,包,2,,,浴室,'}/>
             </div>
             <div className="modal-footer">

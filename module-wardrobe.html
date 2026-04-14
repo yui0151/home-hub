@@ -194,6 +194,39 @@ function App(){
     setShowDetail(d=>d&&d.id===item.id?{...d,pinned:!d.pinned}:d);
   };
 
+
+  const importSheet = async () => {
+    if (!window.confirm('確定要從 Google Sheet 同步資料嗎？\n這將新增 Sheet 的數據到衣櫥。')) return;
+    const BASE = 'https://sheets.googleapis.com/v4/spreadsheets/1U5eIIBD9B5z8yDfNOCBGjHYv1oODUX-HlI1CPbpO5UQ';
+    const KEY = 'AIzaSyA6q7i6U6I0jHcRmrIAuvPZf3lOJhklvDg';
+    try {
+      const meta = await (await fetch(`${BASE}?key=${KEY}&fields=sheets.properties`)).json();
+      if (meta.error) throw new Error(meta.error.message + '\n\n請確認 Sheet 已設定「知道連結的人可以檢視」');
+      const names = (meta.sheets || []).map(s => s.properties.title);
+      const name = names.find(t => t.toLowerCase().includes('wardrobe')) || names.find(t => t.toLowerCase().includes('衣')) || names[0];
+      if (!name) throw new Error('找不到工作表');
+      const d = await (await fetch(`${BASE}/values/${encodeURIComponent(name + '!A:J')}?key=${KEY}`)).json();
+      if (d.error) throw new Error(d.error.message);
+      const all = d.values || [];
+      const hi = all.findIndex(r => r[0] && r[0].toLowerCase().includes('name'));
+      const rows = hi >= 0 ? all.slice(hi + 1) : all.slice(1);
+      if (!rows.length) throw new Error('工作表「' + name + '」沒有資料\n偵測到：' + names.join('、'));
+      const batch = db.batch();
+      const col = db.collection('wardrobe').doc(room).collection('items');
+      let count = 0;
+      rows.forEach(r => {
+        const [name2, type, size, sleeve, source, status, location, worn, note, imageUrl] = r;
+        if (!name2 || name2.toLowerCase() === 'name') return;
+        batch.set(col.doc(), {name: name2, type: type||'其他', size: size||'', sleeve: sleeve||'', source: source||'自購', status: status||'當季', location: location||'', worn: worn==='true', note: note||'', imageUrl: imageUrl||'', pinned: false, createdAt: Date.now(), updatedAt: Date.now()});
+        count++;
+      });
+      await batch.commit();
+      alert('✅ 成功從「' + name + '」匯入 ' + count + ' 筆衣物');
+      setShowCsv(false);
+    } catch(e) {
+      alert('❌ 匯入失敗\n\n' + e.message);
+    }
+  };
   const importCsv=async()=>{
     if(!csvText.trim()||!db)return;
     const lines=csvText.trim().split('\n').slice(1);
@@ -367,7 +400,10 @@ function App(){
             <div className="modal-handle"/>
             <div className="modal-header"><div className="modal-title">📥 匯入 CSV</div><button className="modal-close" onClick={()=>setShowCsv(false)}>✕</button></div>
             <div className="modal-body">
-              <div style={{fontSize:12,color:'var(--text-muted)',marginBottom:10}}>格式：name, type, size, sleeve, source, status, location, worn, note, imageUrl</div>
+              <button onClick={importSheet} style={{width:'100%',padding:'11px',marginBottom:10,background:'#e8f5e9',color:'#2e7d32',border:'1.5px solid #a5d6a7',borderRadius:'var(--radius-sm)',fontSize:14,fontWeight:500,display:'flex',alignItems:'center',justifyContent:'center',gap:6,cursor:'pointer',fontFamily:'var(--sans)'}}>
+                📊 從 Google Sheet 直接匯入
+              </button>
+              <div style={{fontSize:12,color:'var(--text-muted)',marginBottom:10}}>或手動貼上 CSV（name, type, size, sleeve, source, status, location, worn, note, imageUrl）</div>
               <textarea className="csv-area" value={csvText} onChange={e=>setCsvText(e.target.value)} placeholder={'name,type,size,sleeve,source,status,location,worn,note,imageUrl\n粉色包屁衣,洋裝/連身,80cm,短袖,自購,當季,臥室衣櫃,true,,'}/>
             </div>
             <div className="modal-footer">
