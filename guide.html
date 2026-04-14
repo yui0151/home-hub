@@ -3,112 +3,208 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>家庭數位管家 · 使用說明書</title>
+<title>使用說明書 · 嘟嘟一家🌙</title>
 <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>🌙</text></svg>">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link href="https://fonts.googleapis.com/css2?family=Noto+Serif+TC:wght@400;500;700&family=Zen+Kaku+Gothic+New:wght@300;400;500&display=swap" rel="stylesheet">
 <style>
-:root{
-  --paper:#FDFBFA;--clay:#A68A7D;--clay-light:#C4A899;
-  --sage:#8FA68B;--wood:#4A423D;--sand:#EAE2D6;--highlight:#D99A84;
-  --card:#F9F7F4;--card2:#F4F0EB;--white:#FFFFFF;--text-muted:#9B8E87;
-  --serif:'Noto Serif TC',serif;--sans:'Zen Kaku Gothic New',sans-serif;
+:root {
+  --paper: #FDFBFA; --clay: #A68A7D; --clay-light: #C4A899;
+  --sage: #8FA68B; --wood: #4A423D; --sand: #EAE2D6; --hi: #D99A84;
+  --card: #F9F7F4; --card2: #F4F0EB; --white: #FFFFFF; --muted: #9B8E87;
+  --serif: 'Noto Serif TC', serif; --sans: 'Zen Kaku Gothic New', sans-serif;
 }
-*{box-sizing:border-box;margin:0;padding:0;}
-html{font-size:16px;scroll-behavior:smooth;}
-body{background:var(--paper);color:var(--wood);font-family:var(--sans);line-height:1.7;}
+*, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+html { font-size: 16px; scroll-behavior: smooth; }
+body { background: var(--paper); color: var(--wood); font-family: var(--sans); line-height: 1.75; }
 
-/* Cover */
-.cover{
-  background:linear-gradient(160deg,#fdf3ec 0%,#ede3d8 100%);
-  text-align:center;padding:60px 24px 48px;
-  border-bottom:1px solid var(--sand);
+/* ── Cover ── */
+.cover {
+  background: linear-gradient(150deg, #fdf3ec 0%, #ede0d4 50%, #e0d0c4 100%);
+  padding: 56px 24px 44px;
+  text-align: center;
+  border-bottom: 1px solid var(--sand);
+  position: relative;
+  overflow: hidden;
 }
-.cover-emoji{font-size:64px;display:block;margin-bottom:20px;}
-.cover-title{font-family:var(--serif);font-size:28px;font-weight:700;color:var(--wood);letter-spacing:.06em;}
-.cover-sub{font-size:15px;color:var(--clay);margin-top:8px;}
-.cover-badge{display:inline-block;margin-top:20px;padding:8px 20px;background:var(--wood);color:white;border-radius:30px;font-size:13px;font-weight:500;letter-spacing:.05em;}
-
-/* TOC */
-.toc{background:var(--card);border-top:1px solid var(--sand);border-bottom:1px solid var(--sand);padding:24px;}
-.toc-title{font-family:var(--serif);font-size:16px;font-weight:700;margin-bottom:14px;color:var(--clay);}
-.toc-grid{display:grid;grid-template-columns:1fr 1fr;gap:8px;}
-.toc-item{display:flex;align-items:center;gap:8px;padding:8px 12px;background:var(--white);border:1px solid var(--sand);border-radius:10px;text-decoration:none;color:var(--wood);font-size:13px;transition:background .15s;}
-.toc-item:hover{background:var(--sand);}
-.toc-icon{font-size:18px;}
-
-/* Main */
-.main{max-width:680px;margin:0 auto;padding:0 16px 60px;}
-
-/* Section */
-.section{padding:36px 0 0;}
-.sec-anchor{display:block;height:0;visibility:hidden;margin-top:-60px;padding-top:60px;}
-.sec-header{display:flex;align-items:center;gap:12px;margin-bottom:20px;}
-.sec-num{width:36px;height:36px;border-radius:50%;background:var(--clay);color:white;font-family:var(--serif);font-size:15px;font-weight:700;display:flex;align-items:center;justify-content:center;flex-shrink:0;}
-.sec-title{font-family:var(--serif);font-size:22px;font-weight:700;}
-.sec-desc{font-size:14px;color:var(--text-muted);margin-top:-4px;}
-
-/* Steps */
-.steps{display:flex;flex-direction:column;gap:12px;margin:16px 0;}
-.step{background:var(--white);border:1px solid var(--sand);border-radius:12px;padding:14px 16px;display:flex;gap:12px;align-items:flex-start;}
-.step-num{width:26px;height:26px;border-radius:50%;background:var(--wood);color:white;font-size:12px;font-weight:700;display:flex;align-items:center;justify-content:center;flex-shrink:0;margin-top:1px;}
-.step-body{flex:1;}
-.step-title{font-size:14px;font-weight:500;margin-bottom:3px;}
-.step-desc{font-size:13px;color:var(--text-muted);line-height:1.6;}
-
-/* Info box */
-.info-box{background:var(--card2);border:1.5px solid var(--sand);border-radius:12px;padding:14px 16px;margin:14px 0;font-size:13px;line-height:1.7;}
-.info-box.tip{border-color:#c8e0c8;background:#f0f7f0;}
-.info-box.warn{border-color:#f5c6ad;background:#fdf5f0;}
-.info-box .ib-title{font-weight:700;margin-bottom:4px;}
-
-/* Feature grid */
-.feature-grid{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin:14px 0;}
-.feature-card{background:var(--white);border:1px solid var(--sand);border-radius:12px;padding:14px;}
-.feature-icon{font-size:24px;margin-bottom:8px;display:block;}
-.feature-title{font-size:13px;font-weight:700;margin-bottom:4px;}
-.feature-desc{font-size:12px;color:var(--text-muted);line-height:1.6;}
-
-/* Module strip */
-.module-strip{display:grid;grid-template-columns:repeat(4,1fr);gap:8px;margin:14px 0;}
-.module-item{background:var(--white);border:1px solid var(--sand);border-radius:12px;padding:12px 8px;text-align:center;}
-.module-item-icon{font-size:24px;display:block;margin-bottom:6px;}
-.module-item-name{font-size:12px;font-weight:500;}
-.module-item-desc{font-size:11px;color:var(--text-muted);margin-top:2px;}
-
-/* Table */
-.table-wrap{overflow-x:auto;margin:14px 0;}
-table{width:100%;border-collapse:collapse;font-size:13px;}
-th{background:var(--card2);padding:10px 12px;text-align:left;font-weight:700;border:1px solid var(--sand);font-size:12px;color:var(--clay);}
-td{padding:10px 12px;border:1px solid var(--sand);line-height:1.6;}
-tr:nth-child(even) td{background:var(--card);}
-
-/* Badge inline */
-.badge{display:inline-block;padding:1px 8px;border-radius:10px;font-size:11px;font-weight:500;margin:1px;}
-.badge-clay{background:var(--card2);color:var(--clay);}
-.badge-sage{background:#edf2ec;color:var(--sage);}
-.badge-hi{background:#fdf1eb;color:var(--highlight);}
-
-/* Divider */
-.divider{border:none;border-top:1px solid var(--sand);margin:32px 0;}
-
-/* Nav hint */
-.nav-hint{position:sticky;top:0;background:rgba(253,251,250,.95);backdrop-filter:blur(8px);border-bottom:1px solid var(--sand);padding:8px 16px;display:flex;gap:8px;overflow-x:auto;z-index:10;}
-.nav-hint::-webkit-scrollbar{display:none;}
-.nh-btn{white-space:nowrap;padding:4px 12px;border-radius:20px;font-size:12px;border:1px solid var(--sand);background:var(--card);color:var(--clay);text-decoration:none;font-family:var(--sans);}
-.nh-btn:hover{background:var(--sand);}
-
-/* Print */
-@media print{
-  .nav-hint{display:none;}
-  .cover{page-break-after:always;}
-  .section{page-break-inside:avoid;}
+.cover::before {
+  content: '🌙';
+  position: absolute;
+  font-size: 200px;
+  opacity: .05;
+  top: -30px;
+  right: -20px;
+  pointer-events: none;
+}
+.cover-moon { font-size: 52px; display: block; margin-bottom: 16px; }
+.cover-title { font-family: var(--serif); font-size: 26px; font-weight: 700; color: var(--wood); letter-spacing: .08em; }
+.cover-sub { font-size: 14px; color: var(--clay); margin-top: 6px; }
+.cover-url {
+  display: inline-block; margin-top: 18px;
+  padding: 8px 20px; border-radius: 30px;
+  background: var(--wood); color: white;
+  font-size: 13px; text-decoration: none;
+  letter-spacing: .04em;
+}
+.cover-meta {
+  display: flex; justify-content: center; gap: 16px;
+  margin-top: 20px; flex-wrap: wrap;
+}
+.cover-badge {
+  font-size: 12px; padding: 4px 12px; border-radius: 20px;
+  background: rgba(255,255,255,.6); color: var(--clay);
+  border: 1px solid rgba(166,138,125,.3);
 }
 
-@media(max-width:480px){
-  .feature-grid,.module-strip{grid-template-columns:1fr 1fr;}
-  .toc-grid{grid-template-columns:1fr;}
-  .cover-title{font-size:22px;}
+/* ── Sticky Nav ── */
+.nav {
+  position: sticky; top: 0; z-index: 50;
+  background: rgba(253,251,250,.95); backdrop-filter: blur(10px);
+  border-bottom: 1px solid var(--sand);
+  padding: 8px 16px;
+  display: flex; gap: 6px; overflow-x: auto;
+}
+.nav::-webkit-scrollbar { display: none; }
+.nav a {
+  white-space: nowrap; padding: 5px 14px; border-radius: 20px;
+  font-size: 12px; font-weight: 500; text-decoration: none;
+  background: var(--card); color: var(--clay);
+  border: 1px solid var(--sand);
+  transition: all .15s;
+}
+.nav a:hover { background: var(--sand); }
+
+/* ── Layout ── */
+.wrap { max-width: 720px; margin: 0 auto; padding: 0 20px 80px; }
+
+/* ── Section ── */
+.sec { padding-top: 44px; }
+.anchor { display: block; height: 0; visibility: hidden; margin-top: -60px; padding-top: 60px; }
+.sec-hd { display: flex; align-items: center; gap: 12px; margin-bottom: 20px; }
+.sec-dot {
+  width: 34px; height: 34px; border-radius: 50%;
+  background: var(--clay); color: white;
+  font-size: 15px; font-weight: 700;
+  display: flex; align-items: center; justify-content: center;
+  flex-shrink: 0;
+}
+.sec-title { font-family: var(--serif); font-size: 21px; font-weight: 700; }
+.sec-desc { font-size: 13px; color: var(--muted); margin-top: 2px; }
+hr.div { border: none; border-top: 1px solid var(--sand); margin: 36px 0; }
+
+/* ── Steps ── */
+.steps { display: flex; flex-direction: column; gap: 10px; margin: 14px 0; }
+.step {
+  background: var(--white); border: 1px solid var(--sand);
+  border-radius: 14px; padding: 14px 16px;
+  display: flex; gap: 12px; align-items: flex-start;
+}
+.step-n {
+  width: 26px; height: 26px; border-radius: 50%;
+  background: var(--wood); color: white;
+  font-size: 11px; font-weight: 700;
+  display: flex; align-items: center; justify-content: center;
+  flex-shrink: 0; margin-top: 2px;
+}
+.step-body { flex: 1; }
+.step-t { font-size: 14px; font-weight: 600; margin-bottom: 3px; }
+.step-d { font-size: 13px; color: var(--muted); line-height: 1.65; }
+
+/* ── Info boxes ── */
+.info, .warn, .tip, .err {
+  border-radius: 12px; padding: 14px 16px;
+  margin: 14px 0; font-size: 13px; line-height: 1.7;
+}
+.info { background: #f0f7f0; border: 1.5px solid #b8dcb8; }
+.warn { background: #fff8e1; border: 1.5px solid #ffe082; }
+.tip  { background: var(--card2); border: 1.5px solid var(--sand); }
+.err  { background: #fce4ec; border: 1.5px solid #f48fb1; }
+.box-t { font-weight: 700; margin-bottom: 4px; }
+
+/* ── Feature grid ── */
+.feat-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; margin: 14px 0; }
+.feat {
+  background: var(--white); border: 1px solid var(--sand);
+  border-radius: 14px; padding: 16px 14px;
+}
+.feat-icon { font-size: 26px; margin-bottom: 8px; display: block; }
+.feat-t { font-size: 13px; font-weight: 700; margin-bottom: 4px; }
+.feat-d { font-size: 12px; color: var(--muted); line-height: 1.6; }
+
+/* ── Module cards ── */
+.mod-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; margin: 14px 0; }
+.mod {
+  background: var(--white); border: 1px solid var(--sand);
+  border-radius: 14px; padding: 18px 16px;
+  text-decoration: none; color: inherit;
+  transition: background .15s;
+}
+.mod:hover { background: var(--card2); }
+.mod-icon { font-size: 28px; display: block; margin-bottom: 8px; }
+.mod-t { font-size: 14px; font-weight: 700; }
+.mod-d { font-size: 12px; color: var(--muted); margin-top: 3px; }
+
+/* ── Table ── */
+.tbl-wrap { overflow-x: auto; margin: 14px 0; border-radius: 12px; border: 1.5px solid var(--sand); }
+table { width: 100%; border-collapse: collapse; font-size: 13px; min-width: 460px; }
+th {
+  background: var(--card2); padding: 10px 14px;
+  text-align: left; font-weight: 700;
+  font-size: 12px; color: var(--clay);
+  border-bottom: 1px solid var(--sand);
+}
+td { padding: 10px 14px; border-bottom: 1px solid var(--sand); vertical-align: top; line-height: 1.6; }
+tr:last-child td { border-bottom: none; }
+tr:nth-child(even) td { background: var(--card); }
+
+/* ── Sheet table ── */
+.sheet-wrap { overflow-x: auto; margin: 14px 0; border-radius: 12px; border: 1.5px solid #b8dcb8; }
+.sheet-tbl { width: 100%; border-collapse: collapse; font-size: 12px; min-width: 480px; }
+.sheet-tbl .th-row th { background: #1e8449; color: white; padding: 9px 12px; text-align: left; font-size: 11px; letter-spacing: .04em; border-right: 1px solid rgba(255,255,255,.2); }
+.sheet-tbl .th-row th:last-child { border-right: none; }
+.sheet-tbl .hd td { background: #e8f5e9; font-weight: 700; color: #2e7d32; padding: 8px 12px; border-bottom: 1px solid #c8e6c9; }
+.sheet-tbl td { padding: 8px 12px; border-bottom: 1px solid #e8f5e9; }
+.sheet-tbl tr:last-child td { border-bottom: none; }
+.sheet-tbl tr:nth-child(odd) td { background: #f9fdf9; }
+.sheet-tbl tr:nth-child(even) td { background: #f0f7f0; }
+.rn { background: #e0ede0 !important; color: var(--muted); font-size: 11px; text-align: center; font-weight: 700; width: 28px; }
+
+/* ── Tags / badges ── */
+.tags { display: flex; gap: 5px; flex-wrap: wrap; margin-top: 6px; }
+.tag { font-size: 11px; padding: 2px 9px; border-radius: 10px; background: var(--card2); color: var(--clay); font-family: monospace; }
+.badge { display: inline-block; padding: 1px 8px; border-radius: 10px; font-size: 11px; font-weight: 600; margin: 1px; }
+.b-clay { background: var(--card2); color: var(--clay); }
+.b-sage { background: #edf2ec; color: var(--sage); }
+.b-hi   { background: #fdf1eb; color: var(--hi); }
+.b-ok   { background: #e8f5e9; color: #2e7d32; }
+
+/* ── Code ── */
+code { background: var(--card2); padding: 1px 6px; border-radius: 5px; font-size: 12px; font-family: monospace; }
+.code-block {
+  background: #1e2127; border-radius: 10px;
+  padding: 14px 16px; margin: 10px 0;
+  overflow-x: auto;
+}
+.code-block pre { color: #98c379; font-size: 12px; line-height: 1.8; white-space: pre; }
+
+/* ── FAQ ── */
+.faq-item { margin-bottom: 12px; }
+.faq-q { font-size: 14px; font-weight: 600; color: var(--wood); margin-bottom: 4px; display: flex; gap: 8px; }
+.faq-q::before { content: 'Q.'; color: var(--clay); flex-shrink: 0; }
+.faq-a { font-size: 13px; color: var(--muted); padding-left: 22px; line-height: 1.65; }
+
+/* ── Footer ── */
+.footer { text-align: center; padding: 48px 0 24px; color: var(--muted); font-size: 12px; }
+.footer a { color: var(--clay); text-decoration: none; }
+
+@media (max-width: 480px) {
+  .feat-grid, .mod-grid { grid-template-columns: 1fr 1fr; }
+  .cover-title { font-size: 22px; }
+  .sec-title { font-size: 18px; }
+}
+@media print {
+  .nav { display: none; }
+  .cover { page-break-after: always; }
 }
 </style>
 </head>
@@ -116,496 +212,542 @@ tr:nth-child(even) td{background:var(--card);}
 
 <!-- Cover -->
 <div class="cover">
-  <span class="cover-emoji">🏡</span>
-  <div class="cover-title">家庭數位管家</div>
-  <div class="cover-sub">嘟嘟一家 · 使用說明書</div>
-  <div class="cover-badge">手機版操作指南 2026</div>
+  <span class="cover-moon">🌙</span>
+  <div class="cover-title">嘟嘟一家 · 家庭數位管家</div>
+  <div class="cover-sub">使用說明書 · 2026</div>
+  <a class="cover-url" href="https://yui0151.github.io/home-hub/" target="_blank">
+    yui0151.github.io/home-hub
+  </a>
+  <div class="cover-meta">
+    <span class="cover-badge">🏡 首頁</span>
+    <span class="cover-badge">📋 提醒</span>
+    <span class="cover-badge">📦 庫存</span>
+    <span class="cover-badge">👗 衣櫥</span>
+    <span class="cover-badge">📖 百科</span>
+  </div>
 </div>
 
 <!-- Nav -->
-<div class="nav-hint">
-  <a class="nh-btn" href="#start">🚀 開始使用</a>
-  <a class="nh-btn" href="#home">🏡 首頁</a>
-  <a class="nh-btn" href="#reminders">📋 提醒</a>
-  <a class="nh-btn" href="#inventory">📦 庫存</a>
-  <a class="nh-btn" href="#wardrobe">👗 衣櫥</a>
-  <a class="nh-btn" href="#wiki">📖 百科</a>
-  <a class="nh-btn" href="#tips">💡 小技巧</a>
-  <a class="nh-btn" href="#faq">❓ 常見問題</a>
-</div>
+<nav class="nav">
+  <a href="#start">🚀 開始使用</a>
+  <a href="#home">🏡 首頁</a>
+  <a href="#reminders">📋 提醒</a>
+  <a href="#inventory">📦 庫存</a>
+  <a href="#wardrobe">👗 衣櫥</a>
+  <a href="#wiki">📖 百科</a>
+  <a href="#sheet">📊 Google Sheet</a>
+  <a href="#faq">❓ 常見問題</a>
+</nav>
 
-<!-- TOC -->
-<div class="toc">
-  <div class="toc-title">📑 目錄</div>
-  <div class="toc-grid">
-    <a class="toc-item" href="#start"><span class="toc-icon">🚀</span>開始使用（登入）</a>
-    <a class="toc-item" href="#home"><span class="toc-icon">🏡</span>首頁儀表板</a>
-    <a class="toc-item" href="#reminders"><span class="toc-icon">📋</span>提醒系統</a>
-    <a class="toc-item" href="#inventory"><span class="toc-icon">📦</span>庫存管理</a>
-    <a class="toc-item" href="#wardrobe"><span class="toc-icon">👗</span>電子衣櫥</a>
-    <a class="toc-item" href="#wiki"><span class="toc-icon">📖</span>小百科書籤</a>
-    <a class="toc-item" href="#tips"><span class="toc-icon">💡</span>使用技巧</a>
-    <a class="toc-item" href="#faq"><span class="toc-icon">❓</span>常見問題</a>
+<div class="wrap">
+
+<!-- ① 開始使用 -->
+<div class="sec">
+  <span class="anchor" id="start"></span>
+  <div class="sec-hd">
+    <div class="sec-dot">1</div>
+    <div>
+      <div class="sec-title">🚀 開始使用</div>
+      <div class="sec-desc">第一次登入只需要輸入家庭房間碼</div>
+    </div>
+  </div>
+
+  <div class="steps">
+    <div class="step">
+      <div class="step-n">1</div>
+      <div class="step-body">
+        <div class="step-t">打開 App 網址</div>
+        <div class="step-d">在手機瀏覽器（Safari 或 Chrome）開啟：<br><code>yui0151.github.io/home-hub/</code></div>
+      </div>
+    </div>
+    <div class="step">
+      <div class="step-n">2</div>
+      <div class="step-body">
+        <div class="step-t">輸入家庭房間碼</div>
+        <div class="step-d">全家人共用同一組房間碼，輸入後點「進入我的家庭」。登入後不需要重複輸入。</div>
+      </div>
+    </div>
+    <div class="step">
+      <div class="step-n">3</div>
+      <div class="step-body">
+        <div class="step-t">加到手機桌面（推薦）</div>
+        <div class="step-d">
+          <strong>iPhone：</strong>Safari → 分享按鈕 →「加入主畫面」<br>
+          <strong>Android：</strong>Chrome → 右上選單 →「加到主畫面」<br>
+          之後像 App 一樣一鍵開啟。
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div class="info">
+    <div class="box-t">✅ 即時同步</div>
+    爸爸在超市更新庫存，媽媽的手機馬上看到。所有資料存在雲端，換手機也不怕。
+  </div>
+
+  <div class="tip">
+    <div class="box-t">📱 底部導覽列</div>
+    畫面下方五個按鈕（首頁 / 提醒 / 庫存 / 衣櫥 / 百科），任何時候都可以切換，不需要返回上一頁。
   </div>
 </div>
 
-<div class="main">
+<hr class="div">
 
-  <!-- 1. 開始使用 -->
-  <div class="section">
-    <span class="sec-anchor" id="start"></span>
-    <div class="sec-header">
-      <div class="sec-num">1</div>
-      <div>
-        <div class="sec-title">開始使用</div>
-        <div class="sec-desc">第一次打開 App，只需要輸入家庭房間碼</div>
-      </div>
-    </div>
-
-    <div class="steps">
-      <div class="step">
-        <div class="step-num">1</div>
-        <div class="step-body">
-          <div class="step-title">打開網址</div>
-          <div class="step-desc">在手機瀏覽器（Safari 或 Chrome）輸入家庭的 App 網址，或點選家人分享的連結。</div>
-        </div>
-      </div>
-      <div class="step">
-        <div class="step-num">2</div>
-        <div class="step-body">
-          <div class="step-title">輸入房間碼</div>
-          <div class="step-desc">輸入家庭專屬的房間碼（全家人共用同一組），點「進入我的家庭」。</div>
-        </div>
-      </div>
-      <div class="step">
-        <div class="step-num">3</div>
-        <div class="step-body">
-          <div class="step-title">完成！自動同步</div>
-          <div class="step-desc">登入後資料會自動載入，之後打開都不需要重新輸入。所有家庭成員的操作都會即時同步。</div>
-        </div>
-      </div>
-    </div>
-
-    <div class="info-box tip">
-      <div class="ib-title">💡 小提醒</div>
-      房間碼就像家庭的密碼，請妥善保管，不要分享給陌生人。加到手機桌面書籤，下次一鍵開啟更方便！
-    </div>
-
-    <div class="info-box">
-      <div class="ib-title">📱 如何加到手機桌面</div>
-      <strong>iPhone：</strong>Safari → 下方分享按鈕 →「加入主畫面」<br>
-      <strong>Android：</strong>Chrome → 右上角選單 →「加到主畫面」
+<!-- ② 首頁 -->
+<div class="sec">
+  <span class="anchor" id="home"></span>
+  <div class="sec-hd">
+    <div class="sec-dot">2</div>
+    <div>
+      <div class="sec-title">🏡 首頁儀表板</div>
+      <div class="sec-desc">家庭總覽，重要事項一目了然</div>
     </div>
   </div>
 
-  <hr class="divider">
-
-  <!-- 2. 首頁 -->
-  <div class="section">
-    <span class="sec-anchor" id="home"></span>
-    <div class="sec-header">
-      <div class="sec-num">2</div>
-      <div>
-        <div class="sec-title">🏡 首頁儀表板</div>
-        <div class="sec-desc">家庭總覽，一眼看到最重要的資訊</div>
-      </div>
+  <div class="feat-grid">
+    <div class="feat">
+      <span class="feat-icon">☀️</span>
+      <div class="feat-t">即時天氣</div>
+      <div class="feat-d">自動定位顯示氣溫與穿衣建議，今天穿幾件這裡看</div>
     </div>
-
-    <div class="feature-grid">
-      <div class="feature-card">
-        <span class="feature-icon">☀️</span>
-        <div class="feature-title">即時天氣</div>
-        <div class="feature-desc">自動抓取當地天氣，附帶穿衣建議，今天要穿幾件看這裡</div>
-      </div>
-      <div class="feature-card">
-        <span class="feature-icon">📊</span>
-        <div class="feature-title">四格統計</div>
-        <div class="feature-desc">急件提醒、低庫存、衣物數、書籤數，點格子直接跳到對應模組</div>
-      </div>
-      <div class="feature-card">
-        <span class="feature-icon">⚡</span>
-        <div class="feature-title">急件提醒</div>
-        <div class="feature-desc">3天內到期的事項自動浮出，帳單到期不會漏繳</div>
-      </div>
-      <div class="feature-card">
-        <span class="feature-icon">📌</span>
-        <div class="feature-title">精選書籤</div>
-        <div class="feature-desc">在小百科釘選的書籤會顯示在這裡，重要連結快速取用</div>
-      </div>
+    <div class="feat">
+      <span class="feat-icon">📊</span>
+      <div class="feat-t">四格統計</div>
+      <div class="feat-d">急件 / 低庫存 / 衣物數 / 書籤數，點格子直接跳到對應模組</div>
     </div>
-
-    <p style="font-size:14px;margin-top:8px;font-weight:600;">📌 快速記錄專區（首頁最實用的功能！）</p>
-    <div class="steps" style="margin-top:10px;">
-      <div class="step">
-        <div class="step-num" style="background:var(--clay);">📝</div>
-        <div class="step-body">
-          <div class="step-title">備忘錄</div>
-          <div class="step-desc">隨手記下任何事，自動儲存，不需要按儲存鍵。適合臨時想到的事情、購物提醒、待辦事項草稿。</div>
-        </div>
-      </div>
-      <div class="step">
-        <div class="step-num" style="background:var(--clay);">✅</div>
-        <div class="step-body">
-          <div class="step-title">待辦事項</div>
-          <div class="step-desc">打勾代表完成，點 ✕ 可刪除。適合今天要做的事：帶小孩打疫苗、繳費、叫快遞等。</div>
-        </div>
-      </div>
-      <div class="step">
-        <div class="step-num" style="background:var(--clay);">🛍️</div>
-        <div class="step-body">
-          <div class="step-title">待買清單</div>
-          <div class="step-desc">快速記下要買的東西，出門前看一眼。與庫存系統的待買清單分開，可以自由填寫。</div>
-        </div>
-      </div>
+    <div class="feat">
+      <span class="feat-icon">⚡</span>
+      <div class="feat-t">急件提醒</div>
+      <div class="feat-d">3 天內到期的事項自動浮出，帳單到期不漏繳</div>
     </div>
-
-    <div class="info-box">
-      <div class="ib-title">🔄 底部導覽列</div>
-      畫面下方有五個按鈕：首頁、提醒、庫存、衣櫥、百科。任何時候都可以點選切換，不需要返回上一頁。
+    <div class="feat">
+      <span class="feat-icon">💰</span>
+      <div class="feat-t">本月費用</div>
+      <div class="feat-d">顯示當月月份，已付金額以刪除線區分，一眼看清楚</div>
+    </div>
+    <div class="feat">
+      <span class="feat-icon">📦</span>
+      <div class="feat-t">庫存不足</div>
+      <div class="feat-d">點擊直接跳到待買清單，出門購物前快速確認</div>
+    </div>
+    <div class="feat">
+      <span class="feat-icon">📌</span>
+      <div class="feat-t">精選書籤</div>
+      <div class="feat-d">在小百科釘選的書籤同步顯示，重要連結快速取用</div>
     </div>
   </div>
 
-  <hr class="divider">
-
-  <!-- 3. 提醒系統 -->
-  <div class="section">
-    <span class="sec-anchor" id="reminders"></span>
-    <div class="sec-header">
-      <div class="sec-num">3</div>
-      <div>
-        <div class="sec-title">📋 提醒系統</div>
-        <div class="sec-desc">帳單、訂閱、家務、健康等各種週期性提醒</div>
+  <p style="font-size:14px;font-weight:700;margin:20px 0 10px;">📌 快速記錄專區（首頁最實用功能）</p>
+  <div class="steps">
+    <div class="step">
+      <div class="step-n" style="background:var(--clay);">📝</div>
+      <div class="step-body">
+        <div class="step-t">備忘錄</div>
+        <div class="step-d">隨手記下任何事，自動儲存，不需按儲存鍵。Tab 旁無數字時代表沒有內容。</div>
       </div>
     </div>
-
-    <p style="font-size:14px;margin-bottom:12px;">適合記錄：水電費、保費、Netflix 訂閱、每月定期家務、健康檢查提醒等。</p>
-
-    <p style="font-size:13px;font-weight:700;color:var(--clay);margin-bottom:8px;">6 種提醒類型</p>
-    <div class="table-wrap">
-      <table>
-        <tr><th>類型</th><th>適合記錄</th></tr>
-        <tr><td>💰 帳單費用</td><td>水電費、房租、保費、電話費</td></tr>
-        <tr><td>📱 訂閱服務</td><td>Netflix、Spotify、Apple iCloud、雜誌訂閱</td></tr>
-        <tr><td>🧴 消耗品</td><td>定期補貨提醒（尿布、牛奶等）</td></tr>
-        <tr><td>🧹 家務</td><td>洗冷氣、換濾水器、清冰箱</td></tr>
-        <tr><td>💊 健康醫療</td><td>健康檢查、預防針、回診時間</td></tr>
-        <tr><td>📌 其他</td><td>不屬於以上分類的提醒</td></tr>
-      </table>
-    </div>
-
-    <div class="steps">
-      <div class="step">
-        <div class="step-num">1</div>
-        <div class="step-body">
-          <div class="step-title">新增提醒</div>
-          <div class="step-desc">點右下角 <span class="badge badge-clay">＋</span> 按鈕，選擇類型、輸入名稱、設定到期日和週期。</div>
-        </div>
-      </div>
-      <div class="step">
-        <div class="step-num">2</div>
-        <div class="step-body">
-          <div class="step-title">標為完成（自動產生下次！）</div>
-          <div class="step-desc">點擊任一提醒卡片 → 進入詳情 → 按「標為完成」。若有金額，會先詢問本次實際金額（可以改，方便記錄真實花費）。完成後，系統自動新增下一次的提醒。</div>
-        </div>
-      </div>
-      <div class="step">
-        <div class="step-num">3</div>
-        <div class="step-body">
-          <div class="step-title">編輯提醒</div>
-          <div class="step-desc">進入詳情後，右上角按 ✏️ 編輯。預設是唯讀模式，防止不小心誤改。</div>
-        </div>
+    <div class="step">
+      <div class="step-n" style="background:var(--clay);">✅</div>
+      <div class="step-body">
+        <div class="step-t">待辦事項</div>
+        <div class="step-d">打勾完成，點 ✕ 刪除。Tab 旁的數字 = 未完成項目數量，一眼看還有幾件事沒做。</div>
       </div>
     </div>
-
-    <div class="info-box tip">
-      <div class="ib-title">💡 自動計算下次日期的規則</div>
-      例如：水電費設定每月 10 號到期，5 月 10 號標為完成後，系統會自動新增 6 月 10 號的提醒。
-      帳單金額可能每期不同（如電費夏天較高），因此完成時可以輸入本次的實際金額，歷史記錄會分開保存。
-    </div>
-
-    <p style="font-size:13px;font-weight:700;color:var(--clay);margin-top:16px;margin-bottom:8px;">9 種週期設定</p>
-    <div style="display:flex;gap:6px;flex-wrap:wrap;">
-      <span class="badge badge-clay">單次</span>
-      <span class="badge badge-clay">每天</span>
-      <span class="badge badge-clay">每週</span>
-      <span class="badge badge-clay">每兩週</span>
-      <span class="badge badge-clay">每月</span>
-      <span class="badge badge-clay">每兩月</span>
-      <span class="badge badge-clay">每季</span>
-      <span class="badge badge-clay">每半年</span>
-      <span class="badge badge-clay">每年</span>
+    <div class="step">
+      <div class="step-n" style="background:var(--clay);">🛍️</div>
+      <div class="step-body">
+        <div class="step-t">待買清單</div>
+        <div class="step-d">快速記下要買的東西，Tab 旁顯示未購買數量。這裡是個人隨手清單，庫存不足的會另外在庫存模組管理。</div>
+      </div>
     </div>
   </div>
-
-  <hr class="divider">
-
-  <!-- 4. 庫存管理 -->
-  <div class="section">
-    <span class="sec-anchor" id="inventory"></span>
-    <div class="sec-header">
-      <div class="sec-num">4</div>
-      <div>
-        <div class="sec-title">📦 庫存管理</div>
-        <div class="sec-desc">家中所有物品的數量管理，快速加減</div>
-      </div>
-    </div>
-
-    <p style="font-size:14px;margin-bottom:12px;">適合管理：衛生紙、食材、清潔用品、嬰兒用品、常備藥品等各種家用品。</p>
-
-    <div class="steps">
-      <div class="step">
-        <div class="step-num">1</div>
-        <div class="step-body">
-          <div class="step-title">新增品項</div>
-          <div class="step-desc">點右下角 <span class="badge badge-clay">＋</span>，選擇分類，輸入名稱、數量、單位。<br>
-          「警告值」是提醒的門檻：設 <strong>0</strong> = 完全用完才提醒；設 <strong>2</strong> = 剩 2 個以下就提醒。</div>
-        </div>
-      </div>
-      <div class="step">
-        <div class="step-num">2</div>
-        <div class="step-body">
-          <div class="step-title">快速加減數量</div>
-          <div class="step-desc">在品項卡片右側，直接點 <span class="badge badge-clay">－</span> 或 <span class="badge badge-clay">＋</span> 按鈕調整數量，不需要進入詳情。</div>
-        </div>
-      </div>
-      <div class="step">
-        <div class="step-num">3</div>
-        <div class="step-body">
-          <div class="step-title">查看待買清單</div>
-          <div class="step-desc">切換到「待買清單」頁籤。上方會自動列出庫存不足的品項，下方可以自由新增臨時要買的東西（例如：蛋糕、禮物盒）。</div>
-        </div>
-      </div>
-    </div>
-
-    <div class="info-box">
-      <div class="ib-title">📸 品項照片</div>
-      新增或編輯品項時，可以貼上「照片網址」，品項卡片就會顯示商品圖片，一眼認出是哪個產品。
-      （照片網址可以從網路商城商品頁面複製圖片連結）
-    </div>
-
-    <p style="font-size:13px;font-weight:700;color:var(--clay);margin-top:16px;margin-bottom:8px;">11 種分類</p>
-    <div style="display:flex;gap:6px;flex-wrap:wrap;">
-      <span class="badge badge-clay">🥫 食品</span>
-      <span class="badge badge-clay">🧃 飲料</span>
-      <span class="badge badge-clay">🧊 冷凍</span>
-      <span class="badge badge-clay">🧹 清潔</span>
-      <span class="badge badge-clay">🛁 沐浴</span>
-      <span class="badge badge-clay">💊 醫療</span>
-      <span class="badge badge-clay">🍼 嬰幼兒</span>
-      <span class="badge badge-clay">🍳 廚房</span>
-      <span class="badge badge-clay">🐾 寵物</span>
-      <span class="badge badge-clay">📎 文具</span>
-      <span class="badge badge-clay">📦 其他</span>
-    </div>
-  </div>
-
-  <hr class="divider">
-
-  <!-- 5. 電子衣櫥 -->
-  <div class="section">
-    <span class="sec-anchor" id="wardrobe"></span>
-    <div class="sec-header">
-      <div class="sec-num">5</div>
-      <div>
-        <div class="sec-title">👗 電子衣櫥</div>
-        <div class="sec-desc">管理孩子的衣物尺碼與換季收納</div>
-      </div>
-    </div>
-
-    <p style="font-size:14px;margin-bottom:12px;">特別適合用來管理小孩衣物！尺碼換得快，很容易忘記哪件穿不下了。</p>
-
-    <div class="steps">
-      <div class="step">
-        <div class="step-num">1</div>
-        <div class="step-body">
-          <div class="step-title">新增衣物</div>
-          <div class="step-desc">點 <span class="badge badge-clay">＋</span>，填寫名稱、尺碼、類型、來源（自購、恩典牌、禮物等）、狀態（當季、非當季）。</div>
-        </div>
-      </div>
-      <div class="step">
-        <div class="step-num">2</div>
-        <div class="step-body">
-          <div class="step-title">更新狀態</div>
-          <div class="step-desc">孩子長大衣物穿不下？點進詳情 → ✏️ 編輯 → 把狀態改成「穿不下」或「已轉贈/售出」。</div>
-        </div>
-      </div>
-      <div class="step">
-        <div class="step-num">3</div>
-        <div class="step-body">
-          <div class="step-title">釘選常用衣物</div>
-          <div class="step-desc">進入詳情，點右上角 📍 釘選，最常穿的衣服會出現在頁面頂部的「快速查找」橫向捲動區，不用翻找。</div>
-        </div>
-      </div>
-    </div>
-
-    <div class="info-box tip">
-      <div class="ib-title">📊 四格統計卡</div>
-      頁面頂部會顯示：總計 / 當季 / 非當季 / 未穿過 的衣物數量，換季整理時非常方便！
-    </div>
-
-    <div class="info-box">
-      <div class="ib-title">🔍 篩選功能</div>
-      可以同時篩選「狀態」和「類型」：例如只看「當季的外套」，快速找到需要的衣物。
-    </div>
-  </div>
-
-  <hr class="divider">
-
-  <!-- 6. 小百科 -->
-  <div class="section">
-    <span class="sec-anchor" id="wiki"></span>
-    <div class="sec-header">
-      <div class="sec-num">6</div>
-      <div>
-        <div class="sec-title">📖 小百科</div>
-        <div class="sec-desc">收藏育兒資訊、食譜、好用連結</div>
-      </div>
-    </div>
-
-    <p style="font-size:14px;margin-bottom:12px;">把從網路找到的好文章、育兒資訊、食譜收藏在這裡，隨時可以找到。</p>
-
-    <div class="steps">
-      <div class="step">
-        <div class="step-num">1</div>
-        <div class="step-body">
-          <div class="step-title">新增書籤</div>
-          <div class="step-desc">點 <span class="badge badge-clay">＋</span>，貼上網址後按「抓取預覽」，系統會自動填入標題和封面圖片！</div>
-        </div>
-      </div>
-      <div class="step">
-        <div class="step-num">2</div>
-        <div class="step-body">
-          <div class="step-title">加上筆記</div>
-          <div class="step-desc">書籤可以附加筆記，支援 Markdown 格式（例如：# 標題、**粗體**、- 清單項目）。</div>
-        </div>
-      </div>
-      <div class="step">
-        <div class="step-num">3</div>
-        <div class="step-body">
-          <div class="step-title">釘選重要書籤</div>
-          <div class="step-desc">進入詳情，點 📍 釘選。釘選的書籤會顯示在小百科頂部「快速查找」，也會同步顯示在首頁「精選書籤」區。</div>
-        </div>
-      </div>
-      <div class="step">
-        <div class="step-num">4</div>
-        <div class="step-body">
-          <div class="step-title">切換顯示模式</div>
-          <div class="step-desc">右上角可切換 <span class="badge badge-clay">⊞ 網格</span> 或 <span class="badge badge-clay">☰ 列表</span> 模式，網格模式可以看到封面圖，列表模式方便快速瀏覽。</div>
-        </div>
-      </div>
-    </div>
-
-    <p style="font-size:13px;font-weight:700;color:var(--clay);margin-top:16px;margin-bottom:8px;">9 種分類</p>
-    <div style="display:flex;gap:6px;flex-wrap:wrap;">
-      <span class="badge badge-clay">🍳 食譜</span>
-      <span class="badge badge-clay">💊 健康</span>
-      <span class="badge badge-clay">🍼 育兒</span>
-      <span class="badge badge-clay">🏠 居家</span>
-      <span class="badge badge-clay">💰 財務</span>
-      <span class="badge badge-clay">✈️ 旅遊</span>
-      <span class="badge badge-clay">🔧 工具</span>
-      <span class="badge badge-clay">📝 備忘</span>
-      <span class="badge badge-clay">📌 其他</span>
-    </div>
-  </div>
-
-  <hr class="divider">
-
-  <!-- 7. 使用技巧 -->
-  <div class="section">
-    <span class="sec-anchor" id="tips"></span>
-    <div class="sec-header">
-      <div class="sec-num">7</div>
-      <div>
-        <div class="sec-title">💡 使用技巧</div>
-        <div class="sec-desc">讓 App 用起來更順手</div>
-      </div>
-    </div>
-
-    <div class="feature-grid">
-      <div class="feature-card">
-        <span class="feature-icon">🔄</span>
-        <div class="feature-title">即時同步</div>
-        <div class="feature-desc">爸爸在超市更新庫存，媽媽的畫面馬上看到。資料存在雲端，手機換了也不怕。</div>
-      </div>
-      <div class="feature-card">
-        <span class="feature-icon">📴</span>
-        <div class="feature-title">離線使用</div>
-        <div class="feature-desc">沒有網路時仍可查看和操作，網路恢復後自動同步。不怕在地下室或山區沒訊號。</div>
-      </div>
-      <div class="feature-card">
-        <span class="feature-icon">📥</span>
-        <div class="feature-title">CSV 批次匯入</div>
-        <div class="feature-desc">用 Excel 整理好資料後，複製貼上 CSV 格式，一次新增多筆。適合初次建立大量庫存或提醒。</div>
-      </div>
-      <div class="feature-card">
-        <span class="feature-icon">🔒</span>
-        <div class="feature-title">唯讀保護</div>
-        <div class="feature-desc">點進詳情預設是唯讀模式，不小心碰到也不會改到資料。要改才按 ✏️。</div>
-      </div>
-    </div>
-
-    <div class="info-box warn">
-      <div class="ib-title">⚠️ 請注意</div>
-      這個 App 是全家共用的，任何人的操作都會影響到所有人。刪除前請確認，刪除後無法還原。
-    </div>
-  </div>
-
-  <hr class="divider">
-
-  <!-- 8. FAQ -->
-  <div class="section">
-    <span class="sec-anchor" id="faq"></span>
-    <div class="sec-header">
-      <div class="sec-num">8</div>
-      <div>
-        <div class="sec-title">❓ 常見問題</div>
-        <div class="sec-desc">遇到問題先看這裡</div>
-      </div>
-    </div>
-
-    <div class="table-wrap">
-      <table>
-        <tr><th>問題</th><th>解決方式</th></tr>
-        <tr>
-          <td>資料沒有更新 / 看不到最新的資料</td>
-          <td>確認手機有連網，下拉重新整理頁面。若還是不行，關掉頁面重新打開。</td>
-        </tr>
-        <tr>
-          <td>忘記房間碼</td>
-          <td>問家裡其他已登入的成員，或聯絡管理者（製作 App 的人）。</td>
-        </tr>
-        <tr>
-          <td>天氣沒有顯示</td>
-          <td>確認瀏覽器允許「位置存取」權限。Safari：設定 → Safari → 位置 → 允許。</td>
-        </tr>
-        <tr>
-          <td>書籤抓取預覽失敗</td>
-          <td>手動填入標題即可。封面圖片可以自己貼圖片網址。</td>
-        </tr>
-        <tr>
-          <td>不小心刪錯了</td>
-          <td>目前刪除後無法還原，請謹慎操作。重要資料可以用 CSV 匯出備份。</td>
-        </tr>
-        <tr>
-          <td>想在電腦上使用</td>
-          <td>完全可以！在電腦瀏覽器輸入同樣的網址，輸入房間碼即可使用。</td>
-        </tr>
-      </table>
-    </div>
-
-    <div class="info-box tip" style="margin-top:24px;">
-      <div class="ib-title">📞 聯絡管理者</div>
-      如果遇到說明書沒有提到的問題，請聯絡家中負責管理這個 App 的人。
-    </div>
-  </div>
-
-  <!-- Footer -->
-  <div style="text-align:center;padding:40px 0 20px;color:var(--text-muted);font-size:12px;">
-    嘟嘟一家 · 家庭數位管家 v3.0 · 2026<br>
-    <span style="margin-top:4px;display:block;">以愛打造，為家庭服務 🏡</span>
-  </div>
-
 </div>
+
+<hr class="div">
+
+<!-- ③ 提醒系統 -->
+<div class="sec">
+  <span class="anchor" id="reminders"></span>
+  <div class="sec-hd">
+    <div class="sec-dot">3</div>
+    <div>
+      <div class="sec-title">📋 提醒系統</div>
+      <div class="sec-desc">帳單、訂閱、家務、健康，週期性事項都在這裡管</div>
+    </div>
+  </div>
+
+  <div class="tbl-wrap">
+    <table>
+      <tr><th>類型</th><th>適合記錄什麼</th></tr>
+      <tr><td>💰 帳單費用</td><td>水電費、房租、保費、電話費</td></tr>
+      <tr><td>📱 訂閱服務</td><td>Netflix、Spotify、Apple iCloud</td></tr>
+      <tr><td>🧴 消耗品</td><td>定期補貨提醒（尿布、牛奶等）</td></tr>
+      <tr><td>🧹 家務</td><td>洗冷氣、換濾水器、清冰箱</td></tr>
+      <tr><td>💊 健康醫療</td><td>健康檢查、預防針、回診時間</td></tr>
+      <tr><td>📌 其他</td><td>不屬於以上的事項</td></tr>
+    </table>
+  </div>
+
+  <div class="steps">
+    <div class="step">
+      <div class="step-n">1</div>
+      <div class="step-body">
+        <div class="step-t">新增提醒</div>
+        <div class="step-d">點右下角 <span class="badge b-clay">＋</span>，選類型、輸入名稱、設定到期日與週期（9 種：單次 → 每年）。</div>
+      </div>
+    </div>
+    <div class="step">
+      <div class="step-n">2</div>
+      <div class="step-body">
+        <div class="step-t">標為完成 → 自動產生下次</div>
+        <div class="step-d">點卡片進詳情，按「標為完成」。若有金額，會先問<strong>本次實際金額</strong>（可修改，帳單金額每期可能不同）。完成後，系統自動新增下一期的提醒。</div>
+      </div>
+    </div>
+    <div class="step">
+      <div class="step-n">3</div>
+      <div class="step-body">
+        <div class="step-t">分組顯示，可收折</div>
+        <div class="step-d">分為「逾期 / 今天 / 7天內 / 其他 / 已完成」，點標題可展開或收折。預設：即將到期展開，其他與已完成收折。</div>
+      </div>
+    </div>
+  </div>
+
+  <div class="info">
+    <div class="box-t">🔄 自動計算下次範例</div>
+    水電費設定「每月 10 日」，5月10日標完成 → 系統自動新增「6月10日」的提醒。
+    每次完成都可以記錄當期實際金額，歷史紀錄完整保存。
+  </div>
+
+  <div class="warn">
+    <div class="box-t">📊 Google Sheet 匯入提醒</div>
+    Sheet 工作表頁籤名稱需含「<code>reminder</code>」，欄位：<code>title, type, recurrence, dueDate, amount, description</code>
+  </div>
+</div>
+
+<hr class="div">
+
+<!-- ④ 庫存管理 -->
+<div class="sec">
+  <span class="anchor" id="inventory"></span>
+  <div class="sec-hd">
+    <div class="sec-dot">4</div>
+    <div>
+      <div class="sec-title">📦 庫存管理</div>
+      <div class="sec-desc">家中所有物品的數量追蹤，快速加減不需進詳情</div>
+    </div>
+  </div>
+
+  <div class="steps">
+    <div class="step">
+      <div class="step-n">1</div>
+      <div class="step-body">
+        <div class="step-t">新增品項</div>
+        <div class="step-d">
+          點右下角 <span class="badge b-clay">＋</span>，選分類、填名稱、數量。<br>
+          <strong>警告值</strong>：設 <code>0</code> = 用完才提醒；設 <code>2</code> = 剩 2 個以下就標紅色提醒。
+        </div>
+      </div>
+    </div>
+    <div class="step">
+      <div class="step-n">2</div>
+      <div class="step-body">
+        <div class="step-t">快速加減數量</div>
+        <div class="step-d">在品項卡片右側直接點 <span class="badge b-clay">−</span> <span class="badge b-clay">＋</span>，不需要進詳情頁。</div>
+      </div>
+    </div>
+    <div class="step">
+      <div class="step-n">3</div>
+      <div class="step-body">
+        <div class="step-t">切換顯示模式</div>
+        <div class="step-d">右上角 <span class="badge b-clay">⊞</span> 卡片 / <span class="badge b-clay">☰</span> 列表切換。列表模式會額外顯示存放位置，找東西更快。</div>
+      </div>
+    </div>
+    <div class="step">
+      <div class="step-n">4</div>
+      <div class="step-body">
+        <div class="step-t">待買清單</div>
+        <div class="step-d">切到「待買清單」頁籤。上方自動列出庫存不足的品項；下方可自由新增臨時要買的東西（如：蛋糕、禮物）。買到了打勾，確認沒問題後點 ✕ 刪除。</div>
+      </div>
+    </div>
+  </div>
+
+  <div class="tip">
+    <div class="box-t">📸 品項照片</div>
+    新增品項時貼上圖片網址，卡片就會顯示商品圖（完整呈現，不裁切）。無圖時自動顯示分類 Emoji。
+  </div>
+
+  <div class="warn">
+    <div class="box-t">📊 Google Sheet 匯入庫存</div>
+    Sheet 工作表頁籤名稱需含「<code>inventory</code>」，欄位：<code>name, category, quantity, unit, threshold, imageUrl, barcode, location, note</code>
+  </div>
+</div>
+
+<hr class="div">
+
+<!-- ⑤ 電子衣櫥 -->
+<div class="sec">
+  <span class="anchor" id="wardrobe"></span>
+  <div class="sec-hd">
+    <div class="sec-dot">5</div>
+    <div>
+      <div class="sec-title">👗 電子衣櫥</div>
+      <div class="sec-desc">管理孩子衣物的尺碼與換季狀態</div>
+    </div>
+  </div>
+
+  <div class="steps">
+    <div class="step">
+      <div class="step-n">1</div>
+      <div class="step-body">
+        <div class="step-t">新增衣物（照片欄在最上方）</div>
+        <div class="step-d">點右下角 <span class="badge b-clay">＋</span>。照片網址欄位在最上方，貼上後馬上預覽。再填名稱、尺碼、類型、來源、狀態。</div>
+      </div>
+    </div>
+    <div class="step">
+      <div class="step-n">2</div>
+      <div class="step-body">
+        <div class="step-t">更新換季狀態</div>
+        <div class="step-d">孩子穿不下了？點卡片 → ✏️ 編輯 → 改狀態為「穿不下」或「已轉贈/售出」。統計卡會即時更新。</div>
+      </div>
+    </div>
+    <div class="step">
+      <div class="step-n">3</div>
+      <div class="step-body">
+        <div class="step-t">釘選常穿衣物</div>
+        <div class="step-d">進詳情，點右上角 📍 釘選，最常穿的衣服出現在頁面頂部橫向捲動快速區，不用翻找。</div>
+      </div>
+    </div>
+  </div>
+
+  <div class="info">
+    <div class="box-t">📊 四格統計卡</div>
+    頁面頂部顯示：總計 / 當季 / 非當季 / 未穿過，換季整理時一目了然。
+  </div>
+
+  <div class="tip">
+    <div class="box-t">🔍 雙重篩選</div>
+    可同時篩選「狀態」（當季 / 非當季…）和「類型」（外套 / 上衣…），快速縮小查找範圍。
+  </div>
+
+  <div class="warn">
+    <div class="box-t">📊 Google Sheet 匯入衣櫥</div>
+    Sheet 工作表頁籤名稱需含「<code>wardrobe</code>」，欄位：<code>name, type, size, sleeve, source, status, location, worn, note, imageUrl</code>
+  </div>
+</div>
+
+<hr class="div">
+
+<!-- ⑥ 小百科 -->
+<div class="sec">
+  <span class="anchor" id="wiki"></span>
+  <div class="sec-hd">
+    <div class="sec-dot">6</div>
+    <div>
+      <div class="sec-title">📖 小百科</div>
+      <div class="sec-desc">收藏育兒資訊、食譜、好用連結</div>
+    </div>
+  </div>
+
+  <div class="steps">
+    <div class="step">
+      <div class="step-n">1</div>
+      <div class="step-body">
+        <div class="step-t">新增書籤</div>
+        <div class="step-d">點右下角 <span class="badge b-clay">＋</span>，貼上網址後按「抓取預覽」，系統自動填入標題和封面圖。無圖時顯示分類 Emoji，不留白。</div>
+      </div>
+    </div>
+    <div class="step">
+      <div class="step-n">2</div>
+      <div class="step-body">
+        <div class="step-t">加上 Markdown 筆記</div>
+        <div class="step-d">書籤可附加筆記，支援 Markdown 格式：<code># 標題</code>、<code>**粗體**</code>、<code>- 清單</code>，含即時預覽。</div>
+      </div>
+    </div>
+    <div class="step">
+      <div class="step-n">3</div>
+      <div class="step-body">
+        <div class="step-t">釘選重要書籤</div>
+        <div class="step-d">進詳情，點 📍 釘選。釘選書籤出現在小百科頂部快速查找區，同時同步到首頁「精選書籤」。</div>
+      </div>
+    </div>
+    <div class="step">
+      <div class="step-n">4</div>
+      <div class="step-body">
+        <div class="step-t">搜尋與切換模式</div>
+        <div class="step-d">搜尋框支援標題、標籤、網域名稱。右上角 <span class="badge b-clay">⊞</span> 網格 / <span class="badge b-clay">☰</span> 列表切換，9 種分類 pill 快速篩選。</div>
+      </div>
+    </div>
+  </div>
+
+  <div class="warn">
+    <div class="box-t">📊 Google Sheet 匯入百科</div>
+    Sheet 工作表頁籤名稱需含「<code>wiki</code>」，欄位：<code>title, category, tags, url, imageUrl, note</code>。tags 多個標籤以空格分隔。
+  </div>
+</div>
+
+<hr class="div">
+
+<!-- ⑦ Google Sheet -->
+<div class="sec">
+  <span class="anchor" id="sheet"></span>
+  <div class="sec-hd">
+    <div class="sec-dot">7</div>
+    <div>
+      <div class="sec-title">📊 Google Sheet 批量匯入</div>
+      <div class="sec-desc">在 Excel 填好資料，一鍵同步到 App</div>
+    </div>
+  </div>
+
+  <div class="warn">
+    <div class="box-t">⚠️ 使用前必須完成：公開設定</div>
+    Google Sheet → 右上角「共用」→「一般存取權」→ 改成「<strong>知道連結的人</strong>」→「<strong>檢視者</strong>」→ 完成。<br>
+    未設定公開時，App 無法讀取資料。
+  </div>
+
+  <div class="steps">
+    <div class="step">
+      <div class="step-n">1</div>
+      <div class="step-body">
+        <div class="step-t">在 Google Sheet 填好資料</div>
+        <div class="step-d">
+          <a href="https://docs.google.com/spreadsheets/d/1U5eIIBD9B5z8yDfNOCBGjHYv1oODUX-HlI1CPbpO5UQ/edit" target="_blank" style="color:var(--clay);font-weight:600;">→ 點此開啟家庭 Sheet 模板</a><br>
+          第 1 列填英文欄位標題，從第 2 列開始填資料。
+        </div>
+      </div>
+    </div>
+    <div class="step">
+      <div class="step-n">2</div>
+      <div class="step-body">
+        <div class="step-t">打開對應的 App 模組</div>
+        <div class="step-d">要匯入庫存 → 進「📦 庫存管理」；要匯入衣物 → 進「👗 電子衣櫥」，依此類推。</div>
+      </div>
+    </div>
+    <div class="step">
+      <div class="step-n">3</div>
+      <div class="step-body">
+        <div class="step-t">點右上角 📥 → 點「📊 從 Google Sheet 直接匯入」</div>
+        <div class="step-d">確認對話框後開始同步，完成顯示「✅ 成功匯入 N 筆」。<br><strong>注意：每次匯入為新增，不會覆蓋現有資料。</strong></div>
+      </div>
+    </div>
+  </div>
+
+  <p style="font-size:14px;font-weight:700;margin:18px 0 10px;">工作表頁籤名稱對照</p>
+  <div class="tbl-wrap">
+    <table>
+      <tr><th>App 模組</th><th>Sheet 頁籤名稱（需含此字）</th><th>欄位數</th></tr>
+      <tr><td>📦 庫存管理</td><td><code>inventory</code></td><td>9 欄（A–I）</td></tr>
+      <tr><td>👗 電子衣櫥</td><td><code>wardrobe</code></td><td>10 欄（A–J）</td></tr>
+      <tr><td>📋 提醒系統</td><td><code>reminder</code></td><td>6 欄（A–F）</td></tr>
+      <tr><td>📖 小百科</td><td><code>wiki</code></td><td>6 欄（A–F）</td></tr>
+    </table>
+  </div>
+
+  <p style="font-size:14px;font-weight:700;margin:18px 0 10px;">📦 庫存管理格式範例（工作表名稱：<code>inventory</code>）</p>
+  <div class="sheet-wrap">
+    <table class="sheet-tbl">
+      <tr class="th-row"><th></th><th>A name *</th><th>B category</th><th>C quantity</th><th>D unit</th><th>E threshold</th><th>F imageUrl</th><th>G barcode</th><th>H location</th><th>I note</th></tr>
+      <tr class="hd"><td class="rn">1</td><td>name</td><td>category</td><td>quantity</td><td>unit</td><td>threshold</td><td>imageUrl</td><td>barcode</td><td>location</td><td>note</td></tr>
+      <tr><td class="rn">2</td><td>雞蛋</td><td>food</td><td>10</td><td>顆</td><td>0</td><td></td><td></td><td>冰箱</td><td></td></tr>
+      <tr><td class="rn">3</td><td>衛生紙</td><td>clean</td><td>3</td><td>包</td><td>2</td><td></td><td></td><td>浴室</td><td>抽取式</td></tr>
+      <tr><td class="rn">4</td><td>嬰兒濕巾</td><td>baby</td><td>5</td><td>包</td><td>2</td><td>https://i.imgur.com/abc.jpg</td><td></td><td>客廳</td><td>敏感膚質</td></tr>
+    </table>
+  </div>
+  <div class="tags">
+    <span class="tag">food</span><span class="tag">drink</span><span class="tag">frozen</span><span class="tag">clean</span><span class="tag">bath</span><span class="tag">medical</span><span class="tag">baby</span><span class="tag">kitchen</span><span class="tag">office</span><span class="tag">other</span>
+  </div>
+  <p style="font-size:12px;color:var(--muted);margin-top:6px;">threshold：0 = 用完才提醒，&gt;0 = 低於此值時提醒</p>
+
+  <p style="font-size:14px;font-weight:700;margin:18px 0 10px;">👗 電子衣櫥格式範例（工作表名稱：<code>wardrobe</code>）</p>
+  <div class="sheet-wrap">
+    <table class="sheet-tbl">
+      <tr class="th-row"><th></th><th>A name *</th><th>B type</th><th>C size</th><th>D sleeve</th><th>E source</th><th>F status</th><th>G location</th><th>H worn</th><th>I note</th><th>J imageUrl</th></tr>
+      <tr class="hd"><td class="rn">1</td><td>name</td><td>type</td><td>size</td><td>sleeve</td><td>source</td><td>status</td><td>location</td><td>worn</td><td>note</td><td>imageUrl</td></tr>
+      <tr><td class="rn">2</td><td>粉色包屁衣</td><td>洋裝/連身</td><td>80cm</td><td>短袖</td><td>自購</td><td>當季</td><td>臥室衣櫃</td><td>true</td><td></td><td></td></tr>
+      <tr><td class="rn">3</td><td>藍格外套</td><td>外套</td><td>90cm</td><td>長袖</td><td>恩典牌</td><td>非當季</td><td>儲藏室</td><td>false</td><td>阿嬤送的</td><td></td></tr>
+    </table>
+  </div>
+  <div class="tags">
+    <span class="tag">上衣</span><span class="tag">洋裝/連身</span><span class="tag">裙子/褲子</span><span class="tag">套裝</span><span class="tag">外套</span><span class="tag">居家</span><span class="tag">配件</span><span class="tag">其他</span>
+  </div>
+  <p style="font-size:12px;color:var(--muted);margin-top:6px;">worn：<code>true</code> = 已穿過，<code>false</code> = 全新未穿</p>
+
+  <p style="font-size:14px;font-weight:700;margin:18px 0 10px;">📋 提醒系統格式範例（工作表名稱：<code>reminder</code>）</p>
+  <div class="code-block"><pre>title,type,recurrence,dueDate,amount,description
+水電費,financial,monthly,2026-05-10,1200,每月10號繳
+Netflix,subscription,monthly,2026-05-15,390,家庭方案
+換濾水器,chore,quarterly,2026-06-01,,濾心在浴室
+寶寶回診,health,monthly,2026-05-28,,成大醫院小兒科</pre></div>
+  <p style="font-size:12px;color:var(--muted);margin-top:4px;">dueDate 格式：<code>YYYY-MM-DD</code>　recurrence：<code>once daily weekly biweekly monthly bimonthly quarterly semiannual yearly</code></p>
+
+  <p style="font-size:14px;font-weight:700;margin:18px 0 10px;">📖 百科格式範例（工作表名稱：<code>wiki</code>）</p>
+  <div class="code-block"><pre>title,category,tags,url,imageUrl,note
+嬰兒推車比較,baby,推車 育兒,https://babycare.tw,,輕便型首選
+氣炸鍋雞翅,recipe,雞肉 氣炸,https://cooking.tw,,180度20分鐘</pre></div>
+  <p style="font-size:12px;color:var(--muted);margin-top:4px;">tags：多個標籤以<strong>空格</strong>分隔</p>
+
+  <div class="err" style="margin-top:16px;">
+    <strong>❌ 匯入失敗常見原因</strong><br>
+    1. Sheet 沒設定「知道連結的人可以檢視」<br>
+    2. 工作表頁籤名稱不含對應英文字（大小寫不限）<br>
+    3. 第 1 列欄位名稱有錯字或多餘空格<br>
+    4. 網路不穩，重試一次即可
+  </div>
+</div>
+
+<hr class="div">
+
+<!-- ⑧ FAQ -->
+<div class="sec">
+  <span class="anchor" id="faq"></span>
+  <div class="sec-hd">
+    <div class="sec-dot">8</div>
+    <div>
+      <div class="sec-title">❓ 常見問題</div>
+      <div class="sec-desc">遇到問題先看這裡</div>
+    </div>
+  </div>
+
+  <div class="faq-item">
+    <div class="faq-q">資料沒有即時更新</div>
+    <div class="faq-a">確認手機已連網，下拉重新整理頁面。仍不更新則關閉頁面重新開啟。</div>
+  </div>
+  <div class="faq-item">
+    <div class="faq-q">忘記房間碼了</div>
+    <div class="faq-a">詢問家中其他已登入的成員，或聯絡 App 管理者。</div>
+  </div>
+  <div class="faq-item">
+    <div class="faq-q">天氣沒有顯示</div>
+    <div class="faq-a">確認瀏覽器允許「位置存取」。iPhone 設定：設定 → Safari → 位置 → 允許。</div>
+  </div>
+  <div class="faq-item">
+    <div class="faq-q">書籤抓取預覽失敗</div>
+    <div class="faq-a">手動填入標題即可，封面圖可自行貼圖片網址覆蓋。</div>
+  </div>
+  <div class="faq-item">
+    <div class="faq-q">Google Sheet 匯入顯示「❌ 匯入失敗」</div>
+    <div class="faq-a">先確認 Sheet 已設定公開檢視；再確認頁籤名稱含有對應英文字；錯誤訊息會顯示偵測到哪些工作表名稱，方便對照。</div>
+  </div>
+  <div class="faq-item">
+    <div class="faq-q">不小心刪錯資料了</div>
+    <div class="faq-a">目前刪除後無法還原，請謹慎操作。重要資料建議定期用 Google Sheet 備份。</div>
+  </div>
+  <div class="faq-item">
+    <div class="faq-q">可以在電腦上使用嗎</div>
+    <div class="faq-a">可以！在電腦瀏覽器開啟同一個網址，輸入房間碼即可，完全支援電腦版瀏覽器。</div>
+  </div>
+  <div class="faq-item">
+    <div class="faq-q">多人同時操作會衝突嗎</div>
+    <div class="faq-a">資料使用 Firebase Firestore 即時同步，最後一次寫入生效，建議避免同時編輯同一筆資料。</div>
+  </div>
+</div>
+
+<div class="footer">
+  嘟嘟一家 🌙 · Home Hub v3.0 · 2026<br>
+  <a href="https://yui0151.github.io/home-hub/">→ 前往 App</a>
+  &nbsp;·&nbsp;
+  <a href="sheet-guide.html">→ Google Sheet 詳細教學</a>
+</div>
+
+</div><!-- /wrap -->
 </body>
 </html>
