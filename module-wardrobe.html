@@ -149,6 +149,7 @@ function App(){
   const [editMode,setEditMode]=useState(false);
   const [showCsv,setShowCsv]=useState(false);
   const [viewMode,setViewMode]=useState('card');
+  const [sortBy,setSortBy]=useState('createdAt'); // createdAt | name
   const [csvText,setCsvText]=useState('');
   const room=roomCode;
 
@@ -159,8 +160,12 @@ function App(){
     return()=>u();
   },[room]);
 
-  const pinned=items.filter(r=>r.pinned);
-  const filtered=items.filter(r=>{
+  const sorted=[...items].sort((a,b)=>{
+    if(sortBy==='name') return (a.name||'').localeCompare(b.name||'','zh-TW');
+    return (b.createdAt||0)-(a.createdAt||0);
+  });
+  const pinned=sorted.filter(r=>r.pinned);
+  const filtered=sorted.filter(r=>{
     const q=search.toLowerCase();
     const matchSearch=!q||r.name?.toLowerCase().includes(q)||r.size?.toLowerCase().includes(q)||r.location?.toLowerCase().includes(q);
     const matchStatus=statusFilter==='all'||r.status===statusFilter;
@@ -247,6 +252,10 @@ function App(){
       <div className="header">
         <div className="header-title">👗 電子衣櫥</div>
         <div style={{display:'flex',gap:8}}>
+          <select value={sortBy} onChange={e=>setSortBy(e.target.value)} style={{fontSize:12,padding:'4px 8px',border:'1px solid var(--sand)',borderRadius:8,background:'var(--card2)',color:'var(--wood)',fontFamily:'var(--sans)'}}>
+            <option value="createdAt">新增日期</option>
+            <option value="name">名稱排序</option>
+          </select>
           <button className="icon-btn" onClick={()=>setViewMode(v=>v==='card'?'list':'card')}>{viewMode==='card'?'☰':'⊞'}</button>
           <button className="icon-btn" onClick={()=>setShowCsv(true)}>📥</button>
         </div>
@@ -420,20 +429,32 @@ function App(){
 function WardrobeDetail({item}){
   return(
     <div>
-      {item.imageUrl&&<img src={item.imageUrl} alt="" style={{width:'100%',height:200,objectFit:'cover',borderRadius:12,marginBottom:12}} onError={e=>{e.target.style.display='none';}}/>}
+      {item.imageUrl
+        ?<img src={item.imageUrl} alt="" style={{width:'100%',maxHeight:220,objectFit:'contain',borderRadius:12,marginBottom:14,background:'var(--card2)'}} onError={e=>e.target.style.display='none'}/>
+        :<div style={{textAlign:'center',fontSize:48,padding:'16px 0 20px'}}>👗</div>
+      }
+      <div style={{display:'grid',gridTemplateColumns:'1fr 1fr',gap:'0 12px'}}>
+        {[
+          {label:'類型',val:item.type||'—'},
+          {label:'尺碼',val:item.size||'—'},
+          {label:'袖長',val:item.sleeve||'—'},
+          {label:'來源',val:item.source||'—'},
+          {label:'狀態',val:item.status||'—'},
+          {label:'已穿過',val:item.worn?'✅ 已穿':'❌ 未穿'},
+        ].map(f=>(
+          <div key={f.label} style={{padding:'10px 0',borderBottom:'1px solid var(--sand)'}}>
+            <div style={{fontSize:11,color:'var(--text-muted)',marginBottom:3}}>{f.label}</div>
+            <div style={{fontSize:14,fontWeight:500}}>{f.val}</div>
+          </div>
+        ))}
+      </div>
       {[
-        {label:'類型',val:item.type||'—'},
-        {label:'尺碼',val:item.size||'—'},
-        {label:'袖長',val:item.sleeve||'—'},
-        {label:'來源',val:item.source||'—'},
-        {label:'狀態',val:item.status||'—'},
         {label:'擺放位置',val:item.location||'—'},
-        {label:'已穿過',val:item.worn?'是':'否'},
         {label:'備註',val:item.note||'—'},
       ].map(f=>(
-        <div key={f.label} className="detail-field">
-          <div className="detail-label">{f.label}</div>
-          <div className="detail-val">{f.val}</div>
+        <div key={f.label} style={{padding:'10px 0',borderBottom:'1px solid var(--sand)'}}>
+          <div style={{fontSize:11,color:'var(--text-muted)',marginBottom:3}}>{f.label}</div>
+          <div style={{fontSize:14,fontWeight:500}}>{f.val}</div>
         </div>
       ))}
     </div>
