@@ -88,11 +88,11 @@ input,textarea,select{font-family:var(--sans);font-size:16px;}
 .shop-add-btn{width:36px;height:36px;border-radius:50%;background:var(--highlight);color:white;font-size:18px;display:flex;align-items:center;justify-content:center;flex-shrink:0;}
 .shop-item{display:flex;align-items:center;gap:10px;padding:10px 14px;border-bottom:1px solid #f5e5de;}
 .shop-item:last-child{border-bottom:none;}
-.shop-ck{width:22px;height:22px;border-radius:6px;border:2px solid #f5c6ad;background:transparent;flex-shrink:0;display:flex;align-items:center;justify-content:center;font-size:12px;}
+.shop-ck{width:22px;height:22px;border-radius:6px;border:2px solid #f5c6ad;background:transparent;flex-shrink:0;display:flex;align-items:center;justify-content:center;font-size:12px;cursor:pointer;transition:all .15s;}
 .shop-ck.done{background:var(--highlight);border-color:var(--highlight);color:white;}
 .shop-text{flex:1;font-size:14px;}
 .shop-text.done{text-decoration:line-through;color:var(--text-muted);}
-.shop-del{width:26px;height:26px;border-radius:50%;background:transparent;color:var(--text-muted);font-size:14px;}
+.shop-del{width:26px;height:26px;border-radius:50%;background:transparent;color:var(--text-muted);font-size:14px;cursor:pointer;display:flex;align-items:center;justify-content:center;}
 /* Low stock auto-list */
 .low-stock-section{margin-bottom:14px;}
 .ls-title{font-size:12px;font-weight:700;color:var(--text-muted);letter-spacing:.1em;margin-bottom:8px;}
@@ -137,6 +137,17 @@ input,textarea,select{font-family:var(--sans);font-size:16px;}
 .inv-item-list{display:flex;align-items:center;gap:10px;padding:8px 14px;border-top:1px solid var(--sand);cursor:pointer;font-size:13px;}
 .inv-item-list:active{background:var(--card2);}
 
+
+.inv-grid{display:grid;grid-template-columns:1fr 1fr;gap:10px;}
+.inv-card{background:var(--white);border:1px solid var(--sand);border-radius:var(--radius-sm);overflow:hidden;cursor:pointer;transition:all .15s;}
+.inv-card:active{transform:scale(.97);background:var(--card2);}
+.inv-card-img{width:100%;height:90px;display:flex;align-items:center;justify-content:center;background:var(--card2);}
+.inv-card-img img{width:100%;height:90px;object-fit:contain;}
+.inv-card-body{padding:8px 10px 10px;}
+.inv-card-name{font-size:13px;font-weight:500;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;}
+.inv-card-foot{display:flex;align-items:center;justify-content:space-between;margin-top:6px;}
+.inv-card-num{font-family:var(--serif);font-size:15px;font-weight:700;}
+.inv-card-num.low{color:var(--highlight);}
 </style>
 </head>
 <body>
@@ -336,48 +347,56 @@ function App(){
                   </div>
                   <span className={`acc-arrow ${openCats[c.key]!==false?'open':''}`}>▼</span>
                 </div>
-                {openCats[c.key]!==false&&c.items.map(r=>(
-                  viewMode==='list'?(
+                {openCats[c.key]!==false&&(
+                viewMode==='list'
+                ?<div key="list-wrap">
+                  {c.items.map(r=>(
                     <div key={r.id} className="inv-item-list" onClick={()=>{setShowDetail(r);setEditMode(false);}}>
                       <div className="inv-img-ph" style={{width:32,height:32,fontSize:14,borderRadius:6,flexShrink:0}}>{catInfo(r.category).icon}</div>
                       <div style={{flex:1,minWidth:0}}>
                         <div style={{fontSize:13,fontWeight:500,whiteSpace:'nowrap',overflow:'hidden',textOverflow:'ellipsis'}}>{r.name}</div>
                         <div style={{fontSize:11,color:'var(--text-muted)',display:'flex',gap:6,marginTop:2}}>
-                          {r.location&&<span>📍{r.location}</span>}
-                          {isLow(r)&&<span style={{color:'var(--highlight)'}}>⚠️不足</span>}
+                          {r.location&&<span>{"📍"+r.location}</span>}
+                          {isLow(r)&&<span style={{color:'var(--highlight)'}}>{"⚠️不足"}</span>}
                         </div>
                       </div>
                       <div className="qty-ctrl" onClick={e=>e.stopPropagation()}>
-                        <button className="qty-btn" onClick={()=>updateQty(r,-1)}>−</button>
+                        <button className="qty-btn" onClick={()=>updateQty(r,-1)}>{"−"}</button>
                         <span className={`qty-num ${isLow(r)?'low':''}`}>{r.quantity}</span>
-                        <button className="qty-btn" onClick={()=>updateQty(r,1)}>＋</button>
+                        <button className="qty-btn" onClick={()=>updateQty(r,1)}>{"＋"}</button>
                       </div>
-                      <span style={{fontSize:11,color:'var(--text-muted)'}}>{r.unit}</span>
+                      <span style={{fontSize:11,color:'var(--text-muted)',marginLeft:2}}>{r.unit}</span>
                     </div>
-                  ):(
-                    <div key={r.id} className="inv-item" onClick={()=>{setShowDetail(r);setEditMode(false);}}>
-                      {r.imageUrl
-                        ?<img className="inv-img" src={r.imageUrl} alt="" style={{objectFit:'contain',background:'var(--card2)'}} onError={e=>{e.target.style.display='none';}}/>
-                        :<div className="inv-img-ph">{catInfo(r.category).icon}</div>
-                      }
-                      <div className="inv-body">
-                        <div className="inv-name">{r.name}</div>
-                        <div className="inv-meta">
-                          {r.location&&<span>{r.location} · </span>}
-                          {isLow(r)&&<span className="low-badge">⚠️ 庫存不足</span>}
+                  ))}
+                </div>
+                :<div key="card-wrap" className="inv-grid" style={{padding:'8px 0 0'}}>
+                  {c.items.map(r=>(
+                    <div key={r.id} className="inv-card" onClick={()=>{setShowDetail(r);setEditMode(false);}}>
+                      <div className="inv-card-img">
+                        {r.imageUrl
+                          ?<img src={r.imageUrl} alt="" onError={e=>e.target.style.display='none'}/>
+                          :<span style={{fontSize:32}}>{catInfo(r.category).icon}</span>
+                        }
+                      </div>
+                      <div className="inv-card-body">
+                        <div className="inv-card-name">{r.name}</div>
+                        {r.location&&<div style={{fontSize:11,color:'var(--text-muted)',marginTop:2}}>{"📍"+r.location}</div>}
+                        <div className="inv-card-foot">
+                          <div>
+                            <span className={`inv-card-num ${isLow(r)?'low':''}`}>{r.quantity}</span>
+                            <span style={{fontSize:11,color:'var(--text-muted)',marginLeft:3}}>{r.unit}</span>
+                            {isLow(r)&&<span style={{fontSize:10,color:'var(--highlight)',marginLeft:3}}>{"⚠️"}</span>}
+                          </div>
+                          <div className="qty-ctrl" onClick={e=>e.stopPropagation()}>
+                            <button className="qty-btn" style={{width:24,height:24,fontSize:14}} onClick={()=>updateQty(r,-1)}>{"−"}</button>
+                            <button className="qty-btn" style={{width:24,height:24,fontSize:14}} onClick={()=>updateQty(r,1)}>{"＋"}</button>
+                          </div>
                         </div>
                       </div>
-                      <div className="inv-right">
-                        <div className="qty-ctrl" onClick={e=>e.stopPropagation()}>
-                          <button className="qty-btn" onClick={()=>updateQty(r,-1)}>−</button>
-                          <span className={`qty-num ${isLow(r)?'low':''}`}>{r.quantity}</span>
-                          <button className="qty-btn" onClick={()=>updateQty(r,1)}>＋</button>
-                        </div>
-                        <span style={{fontSize:12,color:'var(--text-muted)'}}>{r.unit}</span>
-                      </div>
                     </div>
-                  )
-                ))}
+                  ))}
+                </div>
+              )}
               </div>
             ))}
           </div>
