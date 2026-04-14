@@ -105,6 +105,11 @@ input,textarea,select{font-family:var(--sans);font-size:16px;}
 .empty-icon{font-size:40px;margin-bottom:12px;}
 /* CSV import */
 .csv-area{width:100%;min-height:100px;padding:10px;border:1.5px dashed var(--sand);border-radius:var(--radius-sm);font-size:13px;color:var(--wood);background:var(--card);outline:none;resize:none;}
+
+.toggle-sw{width:44px;height:24px;border-radius:12px;background:var(--sand);position:relative;cursor:pointer;transition:background .2s;flex-shrink:0;}
+.toggle-sw.on{background:var(--sage);}
+.toggle-sw::after{content:'';position:absolute;width:20px;height:20px;border-radius:50%;background:white;top:2px;left:2px;transition:transform .2s;box-shadow:0 1px 4px rgba(0,0,0,.15);}
+.toggle-sw.on::after{transform:translateX(20px);}
 </style>
 </head>
 <body>
@@ -134,7 +139,7 @@ const TYPES=[
   {key:'consumable',label:'消耗品',icon:'🧴',color:'#fff0e8'},
   {key:'chore',label:'家務',icon:'🧹',color:'#e8fff0'},
   {key:'health',label:'健康醫療',icon:'💊',color:'#ffe8e8'},
-  {key:'other',label:'其他',icon:'📌',color:'#f5f5f5'},
+  {key:'other',label:'進行中',icon:'📌',color:'#f5f5f5'},
 ];
 const RECURRENCES=[
   {key:'once',label:'單次'},
@@ -153,11 +158,13 @@ function typeInfo(key){return TYPES.find(t=>t.key===key)||TYPES[5];}
 function App(){
   const [roomCode]=useState(()=>localStorage.getItem(ROOM_KEY)||'');
   const [items,setItems]=useState([]);
-  const [filter,setFilter]=useState('all');
+  const [statusFilter,setStatusFilter]=useState('all');
+  const [typeFilter,setTypeFilter]=useState('all');
   const [showAdd,setShowAdd]=useState(false);
   const [showDetail,setShowDetail]=useState(null);
   const [editMode,setEditMode]=useState(false);
   const [showCsv,setShowCsv]=useState(false);
+  const [showArchive,setShowArchive]=useState(false);
   const [openGroups,setOpenGroups]=useState({urgent:true,today:true,upcoming:true,noDue:false,done:false});
   const toggleGroup=key=>setOpenGroups(p=>({...p,[key]:!p[key]}));
   const [csvText,setCsvText]=useState('');
@@ -175,11 +182,13 @@ function App(){
     return()=>u();
   },[room]);
 
+  const thisMonthStr=today.format('YYYY-MM');
   const filtered=items.filter(r=>{
-    if(filter==='all')return true;
-    if(filter==='pending')return r.status!=='completed';
-    if(filter==='completed')return r.status==='completed';
-    return r.type===filter;
+    // 本月前已完成的進入封存庫，不在主清單
+    if(r.status==='completed'&&r.dueDate&&r.dueDate.slice(0,7)<thisMonthStr) return false;
+    const matchStatus=statusFilter==='all'||(statusFilter==='pending'&&r.status!=='completed')||(statusFilter==='completed'&&r.status==='completed');
+    const matchType=typeFilter==='all'||r.type===typeFilter;
+    return matchStatus&&matchType;
   });
 
   // finance stats this month
@@ -359,12 +368,15 @@ function App(){
         </div>
       )}
 
-      {/* Filter Tabs */}
-      <div className="filter-tabs">
-        {[{key:'all',label:'全部'},{key:'pending',label:'未完成'},{key:'completed',label:'已完成'},
-          ...TYPES.map(t=>({key:t.key,label:t.icon+' '+t.label}))
-        ].map(f=>(
-          <button key={f.key} className={`ftab ${filter===f.key?'active':''}`} onClick={()=>setFilter(f.key)}>{f.label}</button>
+      {/* Filter Tabs - 雙維度 */}
+      <div className="filter-tabs" style={{paddingBottom:4}}>
+        {[{key:'all',label:'全部'},{key:'pending',label:'未完成'},{key:'completed',label:'已完成'}].map(f=>(
+          <button key={f.key} className={`ftab ${statusFilter===f.key?'active':''}`} onClick={()=>setStatusFilter(f.key)}>{f.label}</button>
+        ))}
+      </div>
+      <div className="filter-tabs" style={{paddingTop:0}}>
+        {[{key:'all',label:'全部類別'},...TYPES.map(t=>({key:t.key,label:t.icon+' '+t.label}))].map(f=>(
+          <button key={f.key} className={`ftab ${typeFilter===f.key?'active':''}`} onClick={()=>setTypeFilter(f.key)}>{f.label}</button>
         ))}
       </div>
 
@@ -373,7 +385,7 @@ function App(){
           {key:'urgent',label:'⚠️ 已逾期',list:groups.urgent},
           {key:'today',label:'📅 今天到期',list:groups.today},
           {key:'upcoming',label:'🕐 即將到期（7天內）',list:groups.upcoming},
-          {key:'noDue',label:'📋 其他',list:groups.noDue},
+          {key:'noDue',label:'📋 進行中',list:groups.noDue},
           {key:'done',label:'✅ 已完成',list:groups.done},
         ].map(g=>(
           g.list.length===0?null:(
@@ -400,6 +412,7 @@ function App(){
                       </div>
                       <div className="rcard-right">
                         {r.amount&&<div className="rcard-amount">NT${Number(r.amount).toLocaleString()}</div>}
+                        {r.autoDebit&&<span style={{fontSize:12}}>🔄</span>}
                         <span className={`badge ${r.status==='completed'?'badge-done':'badge-pending'}`}>
                           {r.status==='completed'?'已完成':'待辦'}
                         </span>
@@ -419,6 +432,56 @@ function App(){
           </div>
         )}
       </div>
+
+      {/* 歷史封存庫 */}
+      {(()=>{
+        const thisMonth=today.format('YYYY-MM');
+        const archived=items.filter(r=>r.status==='completed'&&r.dueDate&&r.dueDate<thisMonth+'\x2d01'.slice(0,7));
+        if(!archived.length) return null;
+        // 按年月分組
+        const byYearMonth={};
+        archived.forEach(r=>{
+          const ym=r.dueDate?r.dueDate.slice(0,7):'unknown';
+          const yr=ym.slice(0,4);
+          if(!byYearMonth[yr]) byYearMonth[yr]={};
+          if(!byYearMonth[yr][ym]) byYearMonth[yr][ym]=[];
+          byYearMonth[yr][ym].push(r);
+        });
+        return(
+          <div style={{margin:'8px 16px 0',border:'1px solid var(--sand)',borderRadius:'var(--radius-sm)',overflow:'hidden'}}>
+            <button onClick={()=>setShowArchive(v=>!v)}
+              style={{width:'100%',padding:'12px 16px',background:'var(--card2)',border:'none',display:'flex',alignItems:'center',justifyContent:'space-between',cursor:'pointer',fontFamily:'var(--sans)'}}>
+              <span style={{fontSize:13,fontWeight:600,color:'var(--text-muted)'}}>🗄 歷史封存庫 ({archived.length} 筆)</span>
+              <span style={{fontSize:12,color:'var(--text-muted)'}}>{showArchive?'▲':'▼'}</span>
+            </button>
+            {showArchive&&(
+              <div style={{background:'var(--white)'}}>
+                {Object.keys(byYearMonth).sort((a,b)=>b-a).map(yr=>(
+                  <div key={yr}>
+                    <div style={{padding:'8px 16px',background:'var(--card)',fontSize:12,fontWeight:700,color:'var(--clay)',borderTop:'1px solid var(--sand)'}}>{yr} 年</div>
+                    {Object.keys(byYearMonth[yr]).sort((a,b)=>b.localeCompare(a)).map(ym=>(
+                      <div key={ym}>
+                        <div style={{padding:'6px 20px',background:'var(--card2)',fontSize:11,color:'var(--text-muted)',borderTop:'1px solid var(--sand)'}}>
+                          {ym.slice(5,7)} 月（{byYearMonth[yr][ym].length} 筆）
+                        </div>
+                        {byYearMonth[yr][ym].map(r=>(
+                          <div key={r.id} style={{display:'flex',alignItems:'center',justifyContent:'space-between',padding:'8px 20px',borderTop:'1px solid var(--sand)',fontSize:13}}>
+                            <span style={{color:'var(--text-muted)'}}>{typeInfo(r.type).icon} {r.title}</span>
+                            <div style={{display:'flex',gap:12,flexShrink:0}}>
+                              <span style={{color:'var(--text-muted)',fontSize:12}}>{r.dueDate}</span>
+                              {r.amount&&<span style={{color:'var(--text-muted)',fontSize:12}}>NT${Number(r.amount).toLocaleString()}</span>}
+                            </div>
+                          </div>
+                        ))}
+                      </div>
+                    ))}
+                  </div>
+                ))}
+              </div>
+            )}
+          </div>
+        );
+      })()}
 
       <button className="fab" onClick={()=>setShowAdd(true)}>＋</button>
 
@@ -594,7 +657,7 @@ function ReminderForm({onClose,onSave,initial}){
 }
 
 function ReminderFormBody({data,onSave,onCancel,onDelete}){
-  const [form,setForm]=useState({title:'',type:'financial',recurrence:'monthly',dueDate:'',amount:'',description:'',...data});
+  const [form,setForm]=useState({title:'',type:'financial',recurrence:'monthly',dueDate:'',amount:'',description:'',autoDebit:false,...data});
   const set=(k,v)=>setForm(f=>({...f,[k]:v}));
   const save=()=>{if(!form.title.trim())return;onSave(form);};
   return(
@@ -626,6 +689,10 @@ function ReminderFormBody({data,onSave,onCancel,onDelete}){
       </select>
       <label className="form-label">備註</label>
       <input className="form-input" value={form.description} onChange={e=>set('description',e.target.value)} placeholder="選填"/>
+      <div style={{display:'flex',alignItems:'center',gap:10,padding:'12px 0',borderTop:'1px solid var(--sand)',marginTop:8}}>
+        <div className={`toggle-sw ${form.autoDebit?'on':''}`} onClick={()=>set('autoDebit',!form.autoDebit)} style={{flexShrink:0}}/>
+        <div><div style={{fontSize:14}}>🔄 自動扣款</div><div style={{fontSize:12,color:'var(--text-muted)'}}>信用卡自動扣、轉帳扣款</div></div>
+      </div>
       <div style={{display:'flex',gap:10,marginTop:16}}>
         {onDelete&&<button className="btn-danger" onClick={onDelete}>刪除</button>}
         <button className="btn-secondary" onClick={onCancel}>取消</button>
