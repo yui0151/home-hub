@@ -1,0 +1,580 @@
+<!DOCTYPE html>
+<html lang="zh-TW">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+<title>小百科 · 家庭數位管家</title>
+<link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>🌙</text></svg>">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Noto+Serif+TC:wght@400;500;700&family=Zen+Kaku+Gothic+New:wght@300;400;500&display=swap" rel="stylesheet">
+<script src="https://unpkg.com/react@18/umd/react.production.min.js"></script>
+<script src="https://unpkg.com/react-dom@18/umd/react-dom.production.min.js"></script>
+<script src="https://unpkg.com/@babel/standalone/babel.min.js"></script>
+<script src="https://www.gstatic.com/firebasejs/9.22.2/firebase-app-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/9.22.2/firebase-firestore-compat.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/marked/marked.min.js"></script>
+<style>
+:root{
+  --paper:#FDFBFA;--clay:#A68A7D;--clay-light:#C4A899;
+  --sage:#8FA68B;--wood:#4A423D;--sand:#EAE2D6;--highlight:#D99A84;
+  --card:#F9F7F4;--card2:#F4F0EB;--white:#FFFFFF;--text-muted:#9B8E87;
+  --serif:'Noto Serif TC',serif;--sans:'Zen Kaku Gothic New',sans-serif;
+  --radius:16px;--radius-sm:10px;
+}
+*{box-sizing:border-box;margin:0;padding:0;-webkit-tap-highlight-color:transparent;}
+html{font-size:16px;}
+body{background:var(--paper);color:var(--wood);font-family:var(--sans);min-height:100dvh;padding-bottom:env(safe-area-inset-bottom);padding-top:env(safe-area-inset-top);}
+button{border:none;background:none;cursor:pointer;font-family:var(--sans);}
+input,textarea,select{font-family:var(--sans);font-size:16px;}
+.app{max-width:480px;margin:0 auto;}
+.header{position:sticky;top:0;z-index:50;background:rgba(253,251,250,.92);backdrop-filter:blur(12px);padding:12px 16px 10px;border-bottom:1px solid var(--sand);display:flex;align-items:center;justify-content:space-between;}
+.header-title{font-family:var(--serif);font-size:17px;font-weight:700;}
+.icon-btn{width:36px;height:36px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:17px;background:var(--card2);}
+/* Pinned strip */
+.pinned-strip{padding:12px 0 0;}
+.pinned-title{font-size:12px;font-weight:700;color:var(--clay);letter-spacing:.1em;padding:0 16px 8px;}
+.pinned-scroll{display:flex;gap:10px;overflow-x:auto;padding:0 16px 4px;}
+.pinned-scroll::-webkit-scrollbar{display:none;}
+.pinned-card{flex-shrink:0;width:110px;background:var(--card);border:1px solid var(--sand);border-radius:var(--radius-sm);overflow:hidden;cursor:pointer;}
+.pinned-img{width:100%;height:65px;object-fit:cover;background:var(--sand);}
+.pinned-img-ph{width:100%;height:65px;background:var(--card2);display:flex;align-items:center;justify-content:center;font-size:24px;}
+.pinned-meta{padding:6px 8px;}
+.pinned-name{font-size:11px;font-weight:500;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;}
+.pinned-domain{font-size:10px;color:var(--text-muted);}
+/* search */
+.search-row{padding:10px 16px 4px;position:relative;}
+.search-input{width:100%;padding:10px 14px 10px 38px;border:1.5px solid var(--sand);border-radius:50px;font-size:14px;color:var(--wood);background:var(--card);outline:none;}
+.search-input:focus{border-color:var(--clay);}
+.search-icon{position:absolute;left:28px;top:50%;transform:translateY(-50%);font-size:16px;pointer-events:none;}
+/* Cat pills */
+.cat-pills{display:flex;gap:6px;padding:4px 16px 8px;overflow-x:auto;}
+.cat-pills::-webkit-scrollbar{display:none;}
+.cpill{white-space:nowrap;padding:5px 12px;border-radius:20px;font-size:12px;border:1.5px solid var(--sand);color:var(--text-muted);background:var(--card);}
+.cpill.active{background:var(--wood);border-color:var(--wood);color:white;}
+/* View toggle */
+.view-toggle{display:flex;align-items:center;justify-content:space-between;padding:4px 16px 8px;}
+.vt-label{font-size:12px;color:var(--text-muted);}
+.vt-btns{display:flex;gap:4px;}
+.vt-btn{width:32px;height:32px;border-radius:8px;display:flex;align-items:center;justify-content:center;font-size:15px;background:var(--card);border:1px solid var(--sand);}
+.vt-btn.active{background:var(--wood);color:white;border-color:var(--wood);}
+/* Grid view */
+.content{padding:0 16px 120px;}
+.wiki-grid{display:grid;grid-template-columns:1fr 1fr;gap:10px;}
+.w-card{background:var(--white);border:1px solid var(--sand);border-radius:var(--radius-sm);overflow:hidden;cursor:pointer;transition:all .15s;}
+.w-card:active{transform:scale(.97);}
+.w-img{width:100%;height:100px;object-fit:cover;background:var(--sand);}
+.w-img-ph{width:100%;height:100px;background:var(--card2);display:flex;align-items:center;justify-content:center;font-size:32px;}
+.w-body{padding:10px;}
+.w-cat{font-size:10px;color:var(--clay);margin-bottom:3px;}
+.w-title{font-size:13px;font-weight:500;line-height:1.4;display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical;overflow:hidden;}
+.w-domain{font-size:11px;color:var(--text-muted);margin-top:4px;display:flex;align-items:center;gap:4px;}
+.w-pin{font-size:12px;}
+/* List view */
+.wiki-list{display:flex;flex-direction:column;gap:8px;}
+.wl-card{background:var(--white);border:1px solid var(--sand);border-radius:var(--radius-sm);overflow:hidden;cursor:pointer;display:flex;align-items:stretch;transition:background .15s;}
+.wl-card:active{background:var(--card2);}
+.wl-img{width:72px;height:72px;object-fit:cover;flex-shrink:0;background:var(--sand);}
+.wl-img-ph{width:72px;height:72px;flex-shrink:0;background:var(--card2);display:flex;align-items:center;justify-content:center;font-size:24px;}
+.wl-body{flex:1;padding:10px 12px;min-width:0;}
+.wl-cat{font-size:10px;color:var(--clay);margin-bottom:3px;}
+.wl-title{font-size:13px;font-weight:500;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;}
+.wl-tags{display:flex;gap:4px;flex-wrap:wrap;margin-top:5px;}
+.wl-tag{font-size:10px;padding:1px 7px;border-radius:10px;background:var(--card2);color:var(--text-muted);}
+/* FAB */
+.fab{position:fixed;bottom:calc(72px + env(safe-area-inset-bottom));right:20px;width:52px;height:52px;border-radius:50%;background:var(--wood);color:white;font-size:24px;display:flex;align-items:center;justify-content:center;box-shadow:0 4px 16px rgba(74,66,61,.3);z-index:40;}
+/* Bottom nav */
+.bottom-nav{position:fixed;bottom:0;left:0;right:0;background:rgba(253,251,250,.95);backdrop-filter:blur(12px);border-top:1px solid var(--sand);padding:8px 0 calc(8px + env(safe-area-inset-bottom));display:flex;max-width:480px;margin:0 auto;}
+.nav-btn{flex:1;display:flex;flex-direction:column;align-items:center;gap:3px;font-size:10px;color:var(--text-muted);text-decoration:none;}
+.nav-btn.active{color:var(--clay);}
+.nav-icon{font-size:22px;}
+/* Modal */
+.modal-overlay{position:fixed;inset:0;z-index:100;background:rgba(74,66,61,.5);display:flex;align-items:flex-end;animation:fadeIn .2s;}
+@keyframes fadeIn{from{opacity:0}to{opacity:1}}
+.modal-sheet{width:100%;max-width:480px;margin:0 auto;background:var(--white);border-radius:24px 24px 0 0;padding:0 0 calc(16px + env(safe-area-inset-bottom));max-height:92dvh;display:flex;flex-direction:column;animation:slideUp .25s ease;}
+@keyframes slideUp{from{transform:translateY(100%)}to{transform:translateY(0)}}
+.modal-handle{width:40px;height:4px;background:var(--sand);border-radius:2px;margin:14px auto 0;}
+.modal-header{padding:14px 20px 12px;border-bottom:1px solid var(--sand);display:flex;align-items:center;justify-content:space-between;}
+.modal-title{font-family:var(--serif);font-size:18px;font-weight:700;}
+.modal-close{width:32px;height:32px;border-radius:50%;background:var(--card2);display:flex;align-items:center;justify-content:center;font-size:16px;color:var(--text-muted);}
+.modal-body{flex:1;overflow-y:auto;padding:16px 20px;}
+.modal-footer{padding:12px 20px 0;display:flex;gap:10px;border-top:1px solid var(--sand);}
+.form-label{font-size:12px;font-weight:700;color:var(--clay);letter-spacing:.05em;margin-bottom:6px;margin-top:14px;display:block;}
+.form-label:first-child{margin-top:0;}
+.form-input{width:100%;padding:11px 14px;border:1.5px solid var(--sand);border-radius:var(--radius-sm);font-size:15px;color:var(--wood);background:var(--card);outline:none;}
+.form-input:focus{border-color:var(--clay);}
+.form-select{width:100%;padding:11px 14px;border:1.5px solid var(--sand);border-radius:var(--radius-sm);font-size:15px;color:var(--wood);background:var(--card);outline:none;appearance:none;background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='8' viewBox='0 0 12 8'%3E%3Cpath d='M1 1l5 5 5-5' stroke='%239B8E87' stroke-width='1.5' fill='none' stroke-linecap='round'/%3E%3C/svg%3E");background-repeat:no-repeat;background-position:right 14px center;}
+.form-row{display:grid;grid-template-columns:1fr 1fr;gap:10px;}
+.fetch-row{display:flex;gap:8px;}
+.fetch-btn{padding:0 16px;border-radius:var(--radius-sm);background:var(--clay);color:white;font-size:13px;font-weight:500;white-space:nowrap;flex-shrink:0;}
+.fetch-btn:disabled{opacity:.5;}
+.og-prev{background:var(--card);border:1px solid var(--sand);border-radius:var(--radius-sm);overflow:hidden;margin-top:8px;display:flex;align-items:center;gap:10px;}
+.og-img{width:60px;height:60px;object-fit:cover;flex-shrink:0;}
+.og-body{padding:8px;flex:1;min-width:0;}
+.og-title{font-size:12px;font-weight:500;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;}
+.og-desc{font-size:11px;color:var(--text-muted);margin-top:2px;overflow:hidden;display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical;}
+.md-tabs{display:flex;background:var(--card2);border-radius:8px;padding:2px;margin-bottom:6px;}
+.md-tab{flex:1;padding:6px;border-radius:6px;font-size:12px;font-weight:500;color:var(--text-muted);text-align:center;}
+.md-tab.active{background:var(--white);color:var(--wood);}
+.md-ta{width:100%;min-height:120px;padding:10px;border:1.5px solid var(--sand);border-radius:var(--radius-sm);font-size:14px;color:var(--wood);background:var(--card);outline:none;resize:none;line-height:1.7;}
+.md-preview{padding:12px;background:var(--card);border:1px solid var(--sand);border-radius:var(--radius-sm);min-height:80px;font-size:14px;line-height:1.7;}
+.md-preview h1,.md-preview h2,.md-preview h3{font-family:var(--serif);margin-bottom:6px;margin-top:10px;}
+.md-preview ul,.md-preview ol{padding-left:20px;}
+.md-preview blockquote{border-left:3px solid var(--clay);padding-left:12px;color:var(--text-muted);}
+.btn-primary{flex:1;padding:13px;background:var(--wood);color:white;border-radius:var(--radius-sm);font-size:15px;font-weight:500;}
+.btn-secondary{flex:1;padding:13px;background:var(--card2);color:var(--wood);border-radius:var(--radius-sm);font-size:15px;}
+.btn-danger{padding:13px;background:#fff0ee;color:#c0392b;border-radius:var(--radius-sm);font-size:14px;border:1.5px solid #f5c6c0;}
+.detail-field{padding:12px 0;border-bottom:1px solid var(--sand);}
+.detail-field:last-child{border-bottom:none;}
+.detail-label{font-size:11px;color:var(--text-muted);margin-bottom:4px;}
+.detail-val{font-size:15px;font-weight:500;}
+.readonly-badge{display:inline-flex;align-items:center;gap:4px;font-size:11px;color:var(--text-muted);background:var(--card2);border-radius:20px;padding:2px 10px;}
+.empty{text-align:center;padding:48px 16px;color:var(--text-muted);}
+.csv-area{width:100%;min-height:100px;padding:10px;border:1.5px dashed var(--sand);border-radius:var(--radius-sm);font-size:13px;color:var(--wood);background:var(--card);outline:none;resize:none;}
+</style>
+</head>
+<body>
+<div id="root"></div>
+<script type="text/babel">
+const {useState,useEffect,useRef}=React;
+const firebaseConfig = {
+  apiKey: "AIzaSyAFGSQOvAp1thZkWBZ-nLHe-uR8llDQDI8",
+  authDomain: "home-hub-be41f.firebaseapp.com",
+  projectId: "home-hub-be41f",
+  storageBucket: "home-hub-be41f.firebasestorage.app",
+  messagingSenderId: "286497032414",
+  appId: "1:286497032414:web:16d3f0242a400d0de85a4f"
+};
+let db;
+try{if(!firebase.apps.length)firebase.initializeApp(firebaseConfig);db=firebase.firestore();db.enablePersistence().catch(()=>{});}catch(e){}
+
+const ROOM_KEY='hh_roomCode';
+const CATS=[
+  {key:'recipe',label:'食譜',icon:'🍳'},
+  {key:'health',label:'健康',icon:'💊'},
+  {key:'baby',label:'育兒',icon:'🍼'},
+  {key:'home',label:'居家',icon:'🏠'},
+  {key:'finance',label:'財務',icon:'💰'},
+  {key:'travel',label:'旅遊',icon:'✈️'},
+  {key:'tool',label:'工具',icon:'🔧'},
+  {key:'memo',label:'備忘',icon:'📝'},
+  {key:'other',label:'其他',icon:'📌'},
+];
+function catInfo(key){return CATS.find(c=>c.key===key)||CATS[CATS.length-1];}
+
+async function fetchOg(url){
+  // Try jsonlink.io first
+  try{
+    const r=await fetch(`https://jsonlink.io/api/extract?url=${encodeURIComponent(url)}`);
+    const d=await r.json();
+    if(d.title)return{ogTitle:d.title,ogDesc:d.description||'',ogImage:d.images?.[0]||'',ogUrl:url};
+  }catch(e){}
+  // Try microlink
+  try{
+    const r=await fetch(`https://api.microlink.io?url=${encodeURIComponent(url)}`);
+    const d=await r.json();
+    if(d.data?.title)return{ogTitle:d.data.title,ogDesc:d.data.description||'',ogImage:d.data.image?.url||'',ogUrl:url};
+  }catch(e){}
+  // Try allorigins proxy
+  try{
+    const r=await fetch(`https://api.allorigins.win/raw?url=${encodeURIComponent(url)}`);
+    const html=await r.text();
+    const getM=(n)=>{const m=html.match(new RegExp(`<meta[^>]*property="og:${n}"[^>]*content="([^"]*)"`,));return m?m[1]:null;};
+    return{ogTitle:getM('title')||new URL(url).hostname,ogDesc:getM('description')||'',ogImage:getM('image')||'',ogUrl:url};
+  }catch(e){}
+  return null;
+}
+
+function App(){
+  const [roomCode]=useState(()=>localStorage.getItem(ROOM_KEY)||'');
+  const [items,setItems]=useState([]);
+  const [viewMode,setViewMode]=useState('grid');
+  const [search,setSearch]=useState('');
+  const [catFilter,setCatFilter]=useState('all');
+  const [showAdd,setShowAdd]=useState(false);
+  const [showDetail,setShowDetail]=useState(null);
+  const [editMode,setEditMode]=useState(false);
+  const [showCsv,setShowCsv]=useState(false);
+  const [csvText,setCsvText]=useState('');
+  const room=roomCode;
+
+  useEffect(()=>{
+    if(!room||!db)return;
+    const u=db.collection('wiki').doc(room).collection('articles')
+      .onSnapshot(snap=>{setItems(snap.docs.map(d=>({id:d.id,...d.data()})));},()=>{});
+    return()=>u();
+  },[room]);
+
+  const pinned=items.filter(r=>r.pinned);
+  const filtered=items.filter(r=>{
+    const q=search.toLowerCase();
+    const matchSearch=!q||r.title?.toLowerCase().includes(q)||(r.tags||[]).some(t=>t.toLowerCase().includes(q))||r.domain?.toLowerCase().includes(q);
+    const matchCat=catFilter==='all'||r.category===catFilter;
+    return matchSearch&&matchCat;
+  });
+
+  const handleSave=async(data)=>{
+    if(!db)return;
+    const col=db.collection('wiki').doc(room).collection('articles');
+    if(data.id){
+      await col.doc(data.id).update({...data,updatedAt:Date.now()});
+      setShowDetail({...showDetail,...data});setEditMode(false);
+    }else{
+      await col.add({...data,createdAt:Date.now(),updatedAt:Date.now()});
+      setShowAdd(false);
+    }
+  };
+
+  const handleDelete=async(item)=>{
+    if(!db||!window.confirm('確定刪除？'))return;
+    await db.collection('wiki').doc(room).collection('articles').doc(item.id).delete();
+    setShowDetail(null);
+  };
+
+  const togglePin=async(item)=>{
+    if(!db)return;
+    await db.collection('wiki').doc(room).collection('articles').doc(item.id).update({pinned:!item.pinned,updatedAt:Date.now()});
+    setShowDetail(d=>d&&d.id===item.id?{...d,pinned:!d.pinned}:d);
+  };
+
+  const importSheet=async()=>{
+    if(!db)return;
+    if(!window.confirm('確定要從 Google Sheet 同步資料嗎？
+這將會新增目前 Sheet 的數據。'))return;
+    const BASE=`https://sheets.googleapis.com/v4/spreadsheets/1U5eIIBD9B5z8yDfNOCBGjHYv1oODUX-HlI1CPbpO5UQ`;
+    const KEY='AIzaSyA6q7i6U6I0jHcRmrIAuvPZf3lOJhklvDg';
+    try{
+      const metaRes=await fetch(`${BASE}?key=${KEY}&fields=sheets.properties`);
+      const meta=await metaRes.json();
+      if(meta.error)throw new Error(meta.error.message+'
+
+📌 請先將 Google Sheet 設定為「知道連結的人可以檢視」');
+      const sheetNames=(meta.sheets||[]).map(s=>s.properties.title);
+      const sheetName=sheetNames.find(t=>t.toLowerCase().includes('wiki'))||sheetNames[0];
+      if(!sheetName)throw new Error('找不到工作表，請確認 Sheet 有資料且已公開');
+      const range=encodeURIComponent(sheetName+'!A:F');
+      const dataRes=await fetch(`${BASE}/values/${range}?key=${KEY}`);
+      const d=await dataRes.json();
+      if(d.error)throw new Error(d.error.message);
+      const allRows=d.values||[];
+      const headerIdx=allRows.findIndex(r=>r[0]&&r[0].toLowerCase().includes('title'));
+      const rows=headerIdx>=0?allRows.slice(headerIdx+1):allRows.slice(1);
+      if(!rows.length)throw new Error('工作表「'+sheetName+'」沒有找到資料列
+
+偵測到工作表：'+sheetNames.join('、'));
+      const batch=db.batch();
+      const col=db.collection('wiki').doc(room).collection('articles');
+      let count=0;
+      rows.forEach(r=>{
+        const [title,category,tags,url2,imageUrl,note]=r;
+        if(!title||title.toLowerCase()==='title')return;
+        let domain='';try{domain=url2?new URL(url2).hostname.replace('www.',''):''}catch(e){}
+        batch.set(col.doc(),{title,category:category||'other',tags:tags?tags.split(' '):[],url:url2||'',imageUrl:imageUrl||'',note:note||'',domain,pinned:false,og:{},createdAt:Date.now(),updatedAt:Date.now()});
+        count++;
+      });
+      await batch.commit();
+      alert('✅ 成功從「'+sheetName+'」匯入 '+count+' 筆');
+    }catch(e){alert('❌ 匯入失敗
+
+'+e.message+'
+
+請參考 sheet-guide.html 的操作說明');}
+  };
+  const importCsv=async()=>{
+    if(!csvText.trim()||!db)return;
+    const lines=csvText.trim().split('\n').slice(1);
+    const batch=db.batch();
+    const col=db.collection('wiki').doc(room).collection('articles');
+    lines.forEach(line=>{
+      const [title,category,tags,url,imageUrl,note]=line.split(',').map(s=>s.trim());
+      if(!title)return;
+      const domain=url?new URL(url).hostname.replace('www.',''):'';
+      batch.set(col.doc(),{title,category:category||'other',tags:tags?tags.split(' '):[],url:url||'',imageUrl:imageUrl||'',note:note||'',domain,pinned:false,og:{},createdAt:Date.now(),updatedAt:Date.now()});
+    });
+    await batch.commit();setShowCsv(false);setCsvText('');
+  };
+
+  const moduleUrl=mod=>`${mod}?room=${room}`;
+  const coverImg=(r)=>r.imageUrl||r.og?.ogImage||'';
+
+  return(
+    <div className="app">
+      <div className="header">
+        <div className="header-title">📖 小百科</div>
+        <div style={{display:'flex',gap:8}}>
+          <button className="icon-btn" onClick={()=>setShowCsv(true)}>📥</button>
+        </div>
+      </div>
+
+      {/* Pinned */}
+      {pinned.length>0&&(
+        <div className="pinned-strip">
+          <div className="pinned-title">📌 釘選最愛</div>
+          <div className="pinned-scroll">
+            {pinned.map(r=>(
+              <div key={r.id} className="pinned-card" onClick={()=>{setShowDetail(r);setEditMode(false);}}>
+                {coverImg(r)
+                  ?<img className="pinned-img" src={coverImg(r)} alt="" style={{objectFit:'contain',background:'var(--card2)'}} onError={e=>{e.target.style.display='none';}}/>
+                  :<div className="pinned-img-ph">{catInfo(r.category).icon}</div>
+                }
+                <div className="pinned-meta">
+                  <div className="pinned-name">{r.title}</div>
+                  {r.domain&&<div className="pinned-domain">{r.domain}</div>}
+                </div>
+              </div>
+            ))}
+          </div>
+        </div>
+      )}
+
+      {/* Search */}
+      <div className="search-row">
+        <span className="search-icon">🔍</span>
+        <input className="search-input" placeholder="搜尋標題、標籤、網域..." value={search} onChange={e=>setSearch(e.target.value)}/>
+      </div>
+
+      {/* Cat pills */}
+      <div className="cat-pills">
+        <button className={`cpill ${catFilter==='all'?'active':''}`} onClick={()=>setCatFilter('all')}>全部</button>
+        {CATS.map(c=>(
+          <button key={c.key} className={`cpill ${catFilter===c.key?'active':''}`} onClick={()=>setCatFilter(c.key)}>{c.icon} {c.label}</button>
+        ))}
+      </div>
+
+      {/* View toggle */}
+      <div className="view-toggle">
+        <span className="vt-label">{filtered.length} 篇書籤</span>
+        <div className="vt-btns">
+          <button className={`vt-btn ${viewMode==='grid'?'active':''}`} onClick={()=>setViewMode('grid')}>⊞</button>
+          <button className={`vt-btn ${viewMode==='list'?'active':''}`} onClick={()=>setViewMode('list')}>☰</button>
+        </div>
+      </div>
+
+      {/* Content */}
+      <div className="content">
+        {filtered.length===0&&<div className="empty"><div style={{fontSize:40}}>📖</div><div style={{marginTop:8}}>還沒有書籤</div><div style={{fontSize:13,marginTop:6}}>點右下角 + 新增</div></div>}
+
+        {viewMode==='grid'&&(
+          <div className="wiki-grid">
+            {filtered.map(r=>(
+              <div key={r.id} className="w-card" onClick={()=>{setShowDetail(r);setEditMode(false);}}>
+                {coverImg(r)
+                  ?<img className="w-img" src={coverImg(r)} alt="" style={{objectFit:'contain',background:'var(--card2)'}} onError={e=>{e.target.style.display='none';}}/>
+                  :<div className="w-img-ph">{catInfo(r.category).icon}</div>
+                }
+                <div className="w-body">
+                  <div className="w-cat">{catInfo(r.category).icon} {catInfo(r.category).label}</div>
+                  <div className="w-title">{r.title}</div>
+                  <div className="w-domain">{r.pinned&&<span className="w-pin">📌</span>}{r.domain||''}</div>
+                </div>
+              </div>
+            ))}
+          </div>
+        )}
+
+        {viewMode==='list'&&(
+          <div className="wiki-list">
+            {filtered.map(r=>(
+              <div key={r.id} className="wl-card" onClick={()=>{setShowDetail(r);setEditMode(false);}}>
+                {coverImg(r)
+                  ?<img className="wl-img" src={coverImg(r)} alt="" style={{objectFit:'contain',background:'var(--card2)'}} onError={e=>{e.target.style.display='none';}}/>
+                  :<div className="wl-img-ph">{catInfo(r.category).icon}</div>
+                }
+                <div className="wl-body">
+                  <div className="wl-cat">{r.pinned&&'📌 '}{catInfo(r.category).icon} {catInfo(r.category).label}</div>
+                  <div className="wl-title">{r.title}</div>
+                  <div className="wl-tags">
+                    {(r.tags||[]).map((t,i)=><span key={i} className="wl-tag">{t}</span>)}
+                  </div>
+                </div>
+              </div>
+            ))}
+          </div>
+        )}
+      </div>
+
+      <button className="fab" onClick={()=>setShowAdd(true)}>＋</button>
+
+      <div className="bottom-nav">
+        <a className="nav-btn" href={`index.html?room=${room}`}><span className="nav-icon">🏡</span>首頁</a>
+        <a className="nav-btn" href={moduleUrl('module-reminders.html')}><span className="nav-icon">📋</span>提醒</a>
+        <a className="nav-btn" href={moduleUrl('module-inventory.html')}><span className="nav-icon">📦</span>庫存</a>
+        <a className="nav-btn" href={moduleUrl('module-wardrobe.html')}><span className="nav-icon">👗</span>衣櫥</a>
+        <a className="nav-btn active" href="#"><span className="nav-icon">📖</span>百科</a>
+      </div>
+
+      {/* Add Modal */}
+      {showAdd&&(
+        <div className="modal-overlay" onClick={()=>setShowAdd(false)}>
+          <div className="modal-sheet" onClick={e=>e.stopPropagation()}>
+            <div className="modal-handle"/>
+            <div className="modal-header">
+              <div className="modal-title">新增書籤</div>
+              <button className="modal-close" onClick={()=>setShowAdd(false)}>✕</button>
+            </div>
+            <div className="modal-body"><WikiForm data={{}} onSave={handleSave} onCancel={()=>setShowAdd(false)}/></div>
+          </div>
+        </div>
+      )}
+
+      {/* Detail Modal */}
+      {showDetail&&(
+        <div className="modal-overlay" onClick={()=>setShowDetail(null)}>
+          <div className="modal-sheet" onClick={e=>e.stopPropagation()}>
+            <div className="modal-handle"/>
+            <div className="modal-header">
+              <div style={{display:'flex',alignItems:'center',gap:8,flex:1,minWidth:0}}>
+                <div className="modal-title" style={{whiteSpace:'nowrap',overflow:'hidden',textOverflow:'ellipsis'}}>{showDetail.title}</div>
+                {!editMode&&<span className="readonly-badge" style={{flexShrink:0}}>🔒 唯讀</span>}
+              </div>
+              <div style={{display:'flex',gap:6,flexShrink:0}}>
+                <button className="icon-btn" onClick={()=>togglePin(showDetail)}>{showDetail.pinned?'📌':'📍'}</button>
+                {!editMode&&<button className="icon-btn" onClick={()=>setEditMode(true)}>✏️</button>}
+                <button className="modal-close" onClick={()=>setShowDetail(null)}>✕</button>
+              </div>
+            </div>
+            <div className="modal-body">
+              {editMode
+                ?<WikiForm data={showDetail} onSave={handleSave} onCancel={()=>setEditMode(false)} onDelete={()=>handleDelete(showDetail)}/>
+                :<WikiDetail item={showDetail}/>
+              }
+            </div>
+          </div>
+        </div>
+      )}
+
+      {/* CSV Modal */}
+      {showCsv&&(
+        <div className="modal-overlay" onClick={()=>setShowCsv(false)}>
+          <div className="modal-sheet" onClick={e=>e.stopPropagation()}>
+            <div className="modal-handle"/>
+            <div className="modal-header"><div className="modal-title">📥 匯入 CSV</div><button className="modal-close" onClick={()=>setShowCsv(false)}>✕</button></div>
+            <div className="modal-body">
+              <button onClick={importSheet} style={{width:'100%',padding:'11px',marginBottom:12,background:'#e8f4e8',color:'#2e7d32',border:'1.5px solid #a5d6a7',borderRadius:'var(--radius-sm)',fontSize:14,fontWeight:500,display:'flex',alignItems:'center',justifyContent:'center',gap:6}}>
+                <span>📊</span> 從 Google Sheet 直接匯入
+              </button>
+              <div style={{fontSize:12,color:'var(--text-muted)',marginBottom:10}}>或手動貼上 CSV（格式：title, category, tags, url, imageUrl, note）</div>
+              <textarea className="csv-area" value={csvText} onChange={e=>setCsvText(e.target.value)} placeholder={'title,category,tags,url,imageUrl,note\n嬰兒推車比較,baby,推車 育兒,https://babycare.tw,,輕便型首選'}/>
+            </div>
+            <div className="modal-footer">
+              <button className="btn-secondary" onClick={()=>setShowCsv(false)}>取消</button>
+              <button className="btn-primary" onClick={importCsv}>匯入</button>
+            </div>
+          </div>
+        </div>
+      )}
+    </div>
+  );
+}
+
+function WikiDetail({item}){
+  const c=catInfo(item.category);
+  const img=item.imageUrl||item.og?.ogImage;
+  return(
+    <div>
+      {img&&<img src={img} alt="" style={{width:'100%',height:160,objectFit:'cover',borderRadius:12,marginBottom:12}} onError={e=>{e.target.style.display='none';}}/>}
+      <div style={{display:'flex',alignItems:'center',gap:8,marginBottom:12}}>
+        <span style={{fontSize:24}}>{c.icon}</span>
+        <div>
+          <div style={{fontSize:11,color:'var(--text-muted)'}}>{c.label}</div>
+          {item.domain&&<div style={{fontSize:12,color:'var(--clay)'}}>{item.domain}</div>}
+        </div>
+        {item.url&&<a href={item.url} target="_blank" rel="noopener noreferrer" style={{marginLeft:'auto',padding:'7px 14px',background:'var(--wood)',color:'white',borderRadius:20,fontSize:12,fontWeight:500,textDecoration:'none'}}>開啟連結 →</a>}
+      </div>
+      {(item.tags||[]).length>0&&(
+        <div style={{display:'flex',gap:6,flexWrap:'wrap',marginBottom:12}}>
+          {item.tags.map((t,i)=><span key={i} style={{fontSize:11,padding:'2px 9px',borderRadius:10,background:'var(--card2)',color:'var(--clay)'}}>{t}</span>)}
+        </div>
+      )}
+      {item.note&&(
+        <div>
+          <div style={{fontSize:11,color:'var(--text-muted)',marginBottom:6}}>筆記</div>
+          <div className="md-preview" dangerouslySetInnerHTML={{__html:typeof marked!=='undefined'?marked.parse(item.note):item.note}}/>
+        </div>
+      )}
+    </div>
+  );
+}
+
+function WikiForm({data,onSave,onCancel,onDelete}){
+  const [form,setForm]=useState({title:'',category:'baby',tags:[],url:'',imageUrl:'',note:'',og:{},pinned:false,...data,tagsStr:(data.tags||[]).join(' ')});
+  const [fetching,setFetching]=useState(false);
+  const [noteTab,setNoteTab]=useState('edit');
+  const set=(k,v)=>setForm(f=>({...f,[k]:v}));
+
+  const doFetch=async()=>{
+    if(!form.url)return;
+    setFetching(true);
+    const og=await fetchOg(form.url);
+    if(og){
+      const domain=new URL(form.url).hostname.replace('www.','');
+      set('og',og);
+      if(!form.title)set('title',og.ogTitle||'');
+      setForm(f=>({...f,og,domain,title:f.title||og.ogTitle||''}));
+    }
+    setFetching(false);
+  };
+
+  const save=()=>{
+    if(!form.title.trim())return;
+    const tags=form.tagsStr.trim()?form.tagsStr.trim().split(/\s+/):[];
+    const domain=form.url?new URL(form.url).hostname.replace('www.',''):'';
+    onSave({...form,tags,domain});
+  };
+
+  const coverImg=form.imageUrl||form.og?.ogImage;
+
+  return(
+    <div>
+      <label className="form-label">網址連結</label>
+      <div className="fetch-row">
+        <input className="form-input" value={form.url} onChange={e=>set('url',e.target.value)} placeholder="https://..."/>
+        <button className="fetch-btn" onClick={doFetch} disabled={fetching}>{fetching?'抓取中...':'抓取預覽'}</button>
+      </div>
+      {(form.og?.ogTitle||form.og?.ogImage)&&(
+        <div className="og-prev">
+          {form.og.ogImage&&<img className="og-img" src={form.og.ogImage} alt="" onError={e=>{e.target.style.display='none';}}/>}
+          <div className="og-body">
+            <div className="og-title">{form.og.ogTitle}</div>
+            {form.og.ogDesc&&<div className="og-desc">{form.og.ogDesc}</div>}
+          </div>
+        </div>
+      )}
+      <label className="form-label">標題 *</label>
+      <input className="form-input" value={form.title} onChange={e=>set('title',e.target.value)} placeholder="書籤標題"/>
+      <label className="form-label">封面圖片網址 ✨ <span style={{fontSize:11,fontWeight:400,color:'var(--text-muted)'}}>（選填，可覆蓋 OG 圖）</span></label>
+      <input className="form-input" value={form.imageUrl} onChange={e=>set('imageUrl',e.target.value)} placeholder="https://...（留空使用 OG 圖片）"/>
+      {coverImg&&<img src={coverImg} alt="" style={{width:'100%',height:100,objectFit:'cover',borderRadius:8,marginTop:6}} onError={e=>{e.target.style.display='none';}}/>}
+      <div className="form-row" style={{marginTop:14}}>
+        <div>
+          <label className="form-label" style={{marginTop:0}}>分類</label>
+          <select className="form-select" value={form.category} onChange={e=>set('category',e.target.value)}>
+            {CATS.map(c=><option key={c.key} value={c.key}>{c.icon} {c.label}</option>)}
+          </select>
+        </div>
+        <div>
+          <label className="form-label" style={{marginTop:0}}>標籤 <span style={{fontSize:10,fontWeight:400,color:'var(--text-muted)'}}>（空格分隔）</span></label>
+          <input className="form-input" value={form.tagsStr} onChange={e=>set('tagsStr',e.target.value)} placeholder="例：工具 推薦"/>
+        </div>
+      </div>
+      <label className="form-label">筆記內容 <span style={{fontSize:11,fontWeight:400,color:'var(--text-muted)'}}>（支援 Markdown）</span></label>
+      <div className="md-tabs">
+        <button className={`md-tab ${noteTab==='edit'?'active':''}`} onClick={()=>setNoteTab('edit')}>✏️ 編輯</button>
+        <button className={`md-tab ${noteTab==='preview'?'active':''}`} onClick={()=>setNoteTab('preview')}>👁 預覽</button>
+      </div>
+      {noteTab==='edit'
+        ?<textarea className="md-ta" value={form.note} onChange={e=>set('note',e.target.value)} placeholder={'支援 Markdown\n# 標題  **粗體**  - 清單  > 引用'}/>
+        :<div className="md-preview" dangerouslySetInnerHTML={{__html:typeof marked!=='undefined'?marked.parse(form.note||''):form.note||''}}/>
+      }
+      <div style={{display:'flex',gap:10,marginTop:16}}>
+        {onDelete&&<button className="btn-danger" onClick={onDelete}>刪除</button>}
+        <button className="btn-secondary" onClick={onCancel}>取消</button>
+        <button className="btn-primary" onClick={save}>儲存</button>
+      </div>
+    </div>
+  );
+}
+
+ReactDOM.createRoot(document.getElementById('root')).render(<App/>);
+</script>
+</body>
+</html>
