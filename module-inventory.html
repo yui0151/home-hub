@@ -180,7 +180,8 @@ function App(){
   const [editMode,setEditMode]=useState(false);
   const [showCsv,setShowCsv]=useState(false);
   const [csvText,setCsvText]=useState('');
-  const [viewMode,setViewMode]=useState('card'); // card | list
+  const [viewMode,setViewMode]=useState('card');
+  const [sortBy,setSortBy]=useState('name'); // name | createdAt
   const [shopping,setShopping]=useState(()=>JSON.parse(localStorage.getItem(SHOP_KEY_INV+'_'+(localStorage.getItem(ROOM_KEY)||''))||'[]'));
   const [shopInput,setShopInput]=useState('');
   const room=roomCode;
@@ -201,7 +202,11 @@ function App(){
     return matchSearch&&matchCat;
   });
 
-  const byCategory=CATS.map(c=>({...c,items:filtered.filter(r=>r.category===c.key)})).filter(c=>c.items.length>0);
+  const sortedItems=(arr)=>[...arr].sort((a,b)=>{
+    if(sortBy==='name') return (a.name||'').localeCompare(b.name||'','zh-TW');
+    return (b.createdAt||0)-(a.createdAt||0);
+  });
+  const byCategory=CATS.map(c=>({...c,items:sortedItems(filtered.filter(r=>r.category===c.key))})).filter(c=>c.items.length>0);
   const lowItems=items.filter(isLow);
 
   const updateQty=async(item,delta)=>{
@@ -287,6 +292,10 @@ function App(){
         <div className="header-row">
           <div className="header-title">📦 庫存管理</div>
           <div className="header-actions">
+            <select value={sortBy} onChange={e=>setSortBy(e.target.value)} style={{fontSize:12,padding:'4px 8px',border:'1px solid var(--sand)',borderRadius:8,background:'var(--card2)',color:'var(--wood)',fontFamily:'var(--sans)'}}>
+              <option value="name">名稱排序</option>
+              <option value="createdAt">新增日期</option>
+            </select>
             <button className="icon-btn" onClick={()=>setViewMode(v=>v==='card'?'list':'card')} title="切換顯示">{viewMode==='card'?'☰':'⊞'}</button>
             <button className="icon-btn" onClick={()=>setShowCsv(true)}>📥</button>
           </div>
@@ -327,7 +336,7 @@ function App(){
                   </div>
                   <span className={`acc-arrow ${openCats[c.key]!==false?'open':''}`}>▼</span>
                 </div>
-                {openCats[c.key]===true&&c.items.map(r=>(
+                {openCats[c.key]!==false&&c.items.map(r=>(
                   viewMode==='list'?(
                     <div key={r.id} className="inv-item-list" onClick={()=>{setShowDetail(r);setEditMode(false);}}>
                       <div className="inv-img-ph" style={{width:32,height:32,fontSize:14,borderRadius:6,flexShrink:0}}>{catInfo(r.category).icon}</div>
