@@ -209,8 +209,10 @@ function App(){
   const [sortBy,setSortBy]=useState('name'); // name | createdAt
   const [shopping,setShopping]=useState(()=>JSON.parse(localStorage.getItem(SHOP_KEY_INV+'_'+(localStorage.getItem(ROOM_KEY)||''))||'[]'));
   const [shopInput,setShopInput]=useState('');
-  const [lowDone,setLowDone]=useState({});  // {itemId: true/false}
+  const [lowDone,setLowDone]=useState({});
+  const [hiddenLow,setHiddenLow]=useState({});
   const toggleLow=id=>setLowDone(p=>({...p,[id]:!p[id]}));
+  const removeLow=id=>setHiddenLow(p=>({...p,[id]:true}));
   const room=roomCode;
 
   useEffect(()=>{
@@ -235,6 +237,7 @@ function App(){
   });
   const byCategory=CATS.map(c=>({...c,items:sortedItems(filtered.filter(r=>r.category===c.key))})).filter(c=>c.items.length>0);
   const lowItems=items.filter(isLow);
+  const visibleLowItems=lowItems.filter(r=>!hiddenLow[r.id]);
 
   const updateQty=async(item,delta)=>{
     if(!db)return;
@@ -424,7 +427,7 @@ function App(){
           {lowItems.length>0&&(
             <div className="low-stock-section" style={{padding:'12px 0 0'}}>
               <div className="ls-title">📦 庫存自動加入（{lowItems.length} 項不足）</div>
-              {lowItems.map(r=>(
+              {visibleLowItems.map(r=>(
                 <div key={r.id} className="shop-item" style={{borderBottom:'1px solid #f5e5de',borderLeft:'3px solid var(--highlight)'}}>
                   <button
                     className={`shop-ck ${lowDone[r.id]?'done':''}`}
@@ -434,8 +437,12 @@ function App(){
                   </button>
                   <span className={`shop-text ${lowDone[r.id]?'done':''}`}>{r.name}</span>
                   <span style={{fontSize:11,color:'var(--highlight)',marginRight:4}}>剩{r.quantity}{r.unit}</span>
+                  <button className="shop-del" onClick={()=>removeLow(r.id)}>✕</button>
                 </div>
               ))}
+              {visibleLowItems.length===0&&lowItems.length>0&&(
+                <div style={{fontSize:12,color:'var(--sage)',padding:'8px 0',textAlign:'center'}}>✅ 低庫存品項已全部處理</div>
+              )}
             </div>
           )}
           <div className="shop-card" style={{marginTop:12}}>
@@ -443,6 +450,12 @@ function App(){
               <span>✏️</span>
               <span className="shop-header-title">自由新增待買清單</span>
               <span style={{fontSize:11,color:'var(--highlight)',marginLeft:'auto'}}>{shopping.filter(s=>!s.done).length} 項待買</span>
+              {shopping.some(s=>s.done)&&(
+                <button onClick={()=>setShopping(p=>p.filter(s=>!s.done))}
+                  style={{marginLeft:8,fontSize:11,color:'var(--sage)',background:'none',border:'none',cursor:'pointer',textDecoration:'underline'}}>
+                  清除已完成
+                </button>
+              )}
             </div>
             <div className="shop-add-row">
               <input className="shop-input" placeholder="新增待買項目..." value={shopInput} onChange={e=>setShopInput(e.target.value)} onKeyDown={e=>e.key==='Enter'&&addShop()}/>
