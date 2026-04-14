@@ -248,49 +248,53 @@ function App(){
     const KEY='AIzaSyA6q7i6U6I0jHcRmrIAuvPZf3lOJhklvDg';
     const BASE='https://sheets.googleapis.com/v4/spreadsheets/'+SHEET_ID;
     try{
+      // Step 1: 取得工作表清單
       const metaRes=await fetch(BASE+'?key='+KEY+'&fields=sheets.properties');
+      if(!metaRes.ok) throw new Error('HTTP '+metaRes.status+'：無法連線到 Google API，請確認 Sheet 已設定公開檢視');
       const meta=await metaRes.json();
-      if(meta.error){
-        alert('❌ 匯入失敗\n\n'+meta.error.message+'\n\n請確認 Google Sheet 已設定「知道連結的人可以檢視」');
-        return;
-      }
+      if(meta.error) throw new Error(meta.error.message+'（錯誤碼：'+meta.error.code+'）\n\n請確認 Google Sheet 已設定「知道連結的人可以檢視」');
       const sheetNames=(meta.sheets||[]).map(function(s){return s.properties.title;});
+      if(!sheetNames.length) throw new Error('找不到任何工作表');
+      // Step 2: 找 wiki 工作表（名稱含 wiki 或用第一個）
       const sheetName=sheetNames.find(function(t){return t.toLowerCase().indexOf('wiki')>=0;})||sheetNames[0];
-      if(!sheetName){
-        alert('❌ 找不到工作表\n偵測到：'+sheetNames.join('、'));
-        return;
-      }
+      // Step 3: 抓資料
       const range=encodeURIComponent(sheetName+'!A:F');
       const dataRes=await fetch(BASE+'/values/'+range+'?key='+KEY);
       const d=await dataRes.json();
-      if(d.error){
-        alert('❌ '+d.error.message);
-        return;
-      }
+      if(d.error) throw new Error(d.error.message);
       const allRows=d.values||[];
-      const headerIdx=allRows.findIndex(function(r){return r[0]&&r[0].toLowerCase().indexOf('title')>=0;});
+      if(!allRows.length) throw new Error('工作表「'+sheetName+'」完全沒有資料\n（偵測到工作表：'+sheetNames.join('、')+'）');
+      // Step 4: 找標題列（放寬：A欄含 title/標題/書籤 任一即可）
+      const headerIdx=allRows.findIndex(function(r){
+        if(!r[0]) return false;
+        const v=r[0].toLowerCase();
+        return v.indexOf('title')>=0||v.indexOf('標題')>=0||v.indexOf('書籤')>=0||v.indexOf('名稱')>=0;
+      });
       const rows=headerIdx>=0?allRows.slice(headerIdx+1):allRows.slice(1);
-      if(!rows.length){
-        alert('工作表「'+sheetName+'」沒有資料\n偵測到工作表：'+sheetNames.join('、'));
-        return;
-      }
+      if(!rows.length) throw new Error('工作表「'+sheetName+'」找不到資料列\n共 '+allRows.length+' 列，標題在第 '+(headerIdx+1)+' 列\n請確認第 1 列是欄位標題');
+      // Step 5: 寫入 Firebase
       const batch=db.batch();
       const col=db.collection('wiki').doc(room).collection('articles');
       let count=0;
       rows.forEach(function(r){
-        const title=r[0]||'';const category=r[1]||'other';const tags=r[2]||'';
-        const url=r[3]||'';const imageUrl=r[4]||'';const note=r[5]||'';
-        if(!title||title.toLowerCase()==='title')return;
+        const title=r[0]||'';
+        if(!title||title.toLowerCase()==='title') return;
+        const category=r[1]||'other';
+        const tags=r[2]||'';
+        const url=r[3]||'';
+        const imageUrl=r[4]||'';
+        const note=r[5]||'';
         let domain='';
         try{domain=url?new URL(url).hostname.replace('www.',''):''}catch(e){}
-        batch.set(col.doc(),{title,category,tags:tags?tags.split(' '):[],url,imageUrl,note,domain,pinned:false,og:{},createdAt:Date.now(),updatedAt:Date.now()});
+        batch.set(col.doc(),{title,category,tags:tags?tags.trim().split(/\s+/):[],url,imageUrl,note,domain,pinned:false,og:{},createdAt:Date.now(),updatedAt:Date.now()});
         count++;
       });
+      if(!count) throw new Error('沒有可匯入的資料列（共 '+rows.length+' 列，但全部跳過）');
       await batch.commit();
       alert('✅ 成功從「'+sheetName+'」匯入 '+count+' 筆書籤');
       setShowCsv(false);
     }catch(e){
-      alert('❌ 匯入失敗\n\n'+e.message);
+      alert('❌ 匯入失敗\n\n'+e.message+'\n\n如持續失敗，請嘗試 CSV 手動匯入。');
     }
   };
   const importCsv=async()=>{

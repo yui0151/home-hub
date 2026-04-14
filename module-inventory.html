@@ -134,6 +134,8 @@ input,textarea,select{font-family:var(--sans);font-size:16px;}
 .empty{text-align:center;padding:48px 16px;color:var(--text-muted);}
 .csv-area{width:100%;min-height:100px;padding:10px;border:1.5px dashed var(--sand);border-radius:var(--radius-sm);font-size:13px;color:var(--wood);background:var(--card);outline:none;resize:none;}
 /* List view item */
+.inv-card{background:var(--white);border:1px solid var(--sand);border-radius:var(--radius-sm);overflow:hidden;cursor:pointer;transition:all .15s;}
+.inv-card:active{transform:scale(.97);background:var(--card2);}
 .inv-item-list{display:flex;align-items:center;gap:10px;padding:8px 14px;border-top:1px solid var(--sand);cursor:pointer;font-size:13px;}
 .inv-item-list:active{background:var(--card2);}
 
@@ -146,6 +148,18 @@ input,textarea,select{font-family:var(--sans);font-size:16px;}
 .inv-card-body{padding:8px 10px 10px;}
 .inv-card-name{font-size:13px;font-weight:500;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;}
 .inv-card-foot{display:flex;align-items:center;justify-content:space-between;margin-top:6px;}
+.inv-card-num{font-family:var(--serif);font-size:15px;font-weight:700;}
+.inv-card-num.low{color:var(--highlight);}
+
+/* ── 庫存卡片網格模式 ── */
+.inv-grid{display:grid;grid-template-columns:1fr 1fr;gap:8px;padding:8px 10px 10px;}
+.inv-card{background:var(--white);border:1px solid var(--sand);border-radius:var(--radius-sm);overflow:hidden;cursor:pointer;transition:all .15s;}
+.inv-card:active{transform:scale(.97);background:var(--card2);}
+.inv-card-img{width:100%;height:88px;background:var(--card2);display:flex;align-items:center;justify-content:center;overflow:hidden;}
+.inv-card-img img{width:100%;height:100%;object-fit:contain;}
+.inv-card-body{padding:8px 9px 9px;}
+.inv-card-name{font-size:13px;font-weight:600;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;color:var(--wood);}
+.inv-card-foot{display:flex;align-items:center;justify-content:space-between;margin-top:7px;}
 .inv-card-num{font-family:var(--serif);font-size:15px;font-weight:700;}
 .inv-card-num.low{color:var(--highlight);}
 </style>
