@@ -247,32 +247,50 @@ function App(){
     const SHEET_ID='1U5eIIBD9B5z8yDfNOCBGjHYv1oODUX-HlI1CPbpO5UQ';
     const KEY='AIzaSyA6q7i6U6I0jHcRmrIAuvPZf3lOJhklvDg';
     const BASE='https://sheets.googleapis.com/v4/spreadsheets/'+SHEET_ID;
-    try{
-      // Step 1: 取得工作表清單
+    // 先嘗試 Sheets API，失敗則改用公開 CSV export
+    const tryApi=async()=>{
       const metaRes=await fetch(BASE+'?key='+KEY+'&fields=sheets.properties');
-      if(!metaRes.ok) throw new Error('HTTP '+metaRes.status+'：無法連線到 Google API，請確認 Sheet 已設定公開檢視');
+      if(!metaRes.ok) throw new Error('API_FAILED');
       const meta=await metaRes.json();
-      if(meta.error) throw new Error(meta.error.message+'（錯誤碼：'+meta.error.code+'）\n\n請確認 Google Sheet 已設定「知道連結的人可以檢視」');
+      if(meta.error) throw new Error('API_FAILED');
       const sheetNames=(meta.sheets||[]).map(function(s){return s.properties.title;});
-      if(!sheetNames.length) throw new Error('找不到任何工作表');
-      // Step 2: 找 wiki 工作表（名稱含 wiki 或用第一個）
       const sheetName=sheetNames.find(function(t){return t.toLowerCase().indexOf('wiki')>=0;})||sheetNames[0];
-      // Step 3: 抓資料
       const range=encodeURIComponent(sheetName+'!A:F');
       const dataRes=await fetch(BASE+'/values/'+range+'?key='+KEY);
       const d=await dataRes.json();
-      if(d.error) throw new Error(d.error.message);
-      const allRows=d.values||[];
-      if(!allRows.length) throw new Error('工作表「'+sheetName+'」完全沒有資料\n（偵測到工作表：'+sheetNames.join('、')+'）');
-      // Step 4: 找標題列（放寬：A欄含 title/標題/書籤 任一即可）
+      if(d.error) throw new Error('API_FAILED');
+      return d.values||[];
+    };
+    const tryCsv=async()=>{
+      // 用公開 CSV export（不需 API Key，只要 Sheet 公開）
+      // 先取第一個工作表（gid=0），或讓用戶輸入工作表 gid
+      const csvUrl='https://docs.google.com/spreadsheets/d/'+SHEET_ID+'/export?format=csv&gid=0';
+      const proxy='https://api.allorigins.win/raw?url='+encodeURIComponent(csvUrl);
+      const res=await fetch(proxy);
+      if(!res.ok) throw new Error('CSV 下載失敗（HTTP '+res.status+'）');
+      const text=await res.text();
+      if(!text.trim()) throw new Error('CSV 內容為空');
+      // 解析 CSV
+      const lines=text.trim().split('\n').map(function(l){return l.split(',').map(function(c){return c.trim().replace(/^"|"$/g,'');});});
+      return lines;
+    };
+    try{
+      let allRows=null;
+      try{
+        allRows=await tryApi();
+        console.log('使用 Sheets API');
+      }catch(e){
+        console.log('API 失敗，改用 CSV export');
+        allRows=await tryCsv();
+      }
+      if(!allRows||!allRows.length) throw new Error('沒有取得任何資料');
       const headerIdx=allRows.findIndex(function(r){
         if(!r[0]) return false;
         const v=r[0].toLowerCase();
         return v.indexOf('title')>=0||v.indexOf('標題')>=0||v.indexOf('書籤')>=0||v.indexOf('名稱')>=0;
       });
       const rows=headerIdx>=0?allRows.slice(headerIdx+1):allRows.slice(1);
-      if(!rows.length) throw new Error('工作表「'+sheetName+'」找不到資料列\n共 '+allRows.length+' 列，標題在第 '+(headerIdx+1)+' 列\n請確認第 1 列是欄位標題');
-      // Step 5: 寫入 Firebase
+      if(!rows.length) throw new Error('工作表沒有資料列（共'+allRows.length+'列，標題在第'+(headerIdx+1)+'列）');
       const batch=db.batch();
       const col=db.collection('wiki').doc(room).collection('articles');
       let count=0;
@@ -285,16 +303,16 @@ function App(){
         const imageUrl=r[4]||'';
         const note=r[5]||'';
         let domain='';
-        try{domain=url?new URL(url).hostname.replace('www.',''):''}catch(e){}
+        try{domain=url?new URL(url).hostname.replace('www.',''):'';}catch(e){}
         batch.set(col.doc(),{title,category,tags:tags?tags.trim().split(/\s+/):[],url,imageUrl,note,domain,pinned:false,og:{},createdAt:Date.now(),updatedAt:Date.now()});
         count++;
       });
-      if(!count) throw new Error('沒有可匯入的資料列（共 '+rows.length+' 列，但全部跳過）');
+      if(!count) throw new Error('沒有可匯入的資料（共'+rows.length+'列，全部跳過）');
       await batch.commit();
-      alert('✅ 成功從「'+sheetName+'」匯入 '+count+' 筆書籤');
+      alert('✅ 成功匯入 '+count+' 筆書籤');
       setShowCsv(false);
     }catch(e){
-      alert('❌ 匯入失敗\n\n'+e.message+'\n\n如持續失敗，請嘗試 CSV 手動匯入。');
+      alert('❌ 匯入失敗\n\n'+e.message+'\n\n請確認：\n1. Google Sheet 已設定「知道連結的人可以檢視」\n2. 工作表名稱含 wiki\n3. 第1列為欄位標題');
     }
   };
   const importCsv=async()=>{

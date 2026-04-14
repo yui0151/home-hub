@@ -361,7 +361,7 @@ function App(){
                   </div>
                   <span className={`acc-arrow ${openCats[c.key]!==false?'open':''}`}>▼</span>
                 </div>
-                {openCats[c.key]!==false&&(
+                {openCats[c.key]===true&&(
                 viewMode==='list'
                 ?<div key="list-wrap">
                   {c.items.map(r=>(
@@ -423,9 +423,10 @@ function App(){
             <div className="low-stock-section" style={{padding:'12px 0 0'}}>
               <div className="ls-title">📦 庫存自動加入（{lowItems.length} 項不足）</div>
               {lowItems.map(r=>(
-                <div key={r.id} className="ls-item">
-                  <span>{r.name}</span>
-                  <span className="ls-qty">剩 {r.quantity} {r.unit}</span>
+                <div key={r.id} className="shop-item" style={{borderBottom:'1px solid #f5e5de',borderLeft:'3px solid var(--highlight)'}}>
+                  <button className="shop-ck" style={{borderColor:'var(--highlight)'}} onClick={()=>{}}>　</button>
+                  <span className="shop-text">{r.name}</span>
+                  <span style={{fontSize:11,color:'var(--highlight)',marginRight:4}}>剩{r.quantity}{r.unit}</span>
                 </div>
               ))}
             </div>
