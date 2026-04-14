@@ -209,6 +209,8 @@ function App(){
   const [sortBy,setSortBy]=useState('name'); // name | createdAt
   const [shopping,setShopping]=useState(()=>JSON.parse(localStorage.getItem(SHOP_KEY_INV+'_'+(localStorage.getItem(ROOM_KEY)||''))||'[]'));
   const [shopInput,setShopInput]=useState('');
+  const [lowDone,setLowDone]=useState({});  // {itemId: true/false}
+  const toggleLow=id=>setLowDone(p=>({...p,[id]:!p[id]}));
   const room=roomCode;
 
   useEffect(()=>{
@@ -424,8 +426,13 @@ function App(){
               <div className="ls-title">📦 庫存自動加入（{lowItems.length} 項不足）</div>
               {lowItems.map(r=>(
                 <div key={r.id} className="shop-item" style={{borderBottom:'1px solid #f5e5de',borderLeft:'3px solid var(--highlight)'}}>
-                  <button className="shop-ck" style={{borderColor:'var(--highlight)'}} onClick={()=>{}}>　</button>
-                  <span className="shop-text">{r.name}</span>
+                  <button
+                    className={`shop-ck ${lowDone[r.id]?'done':''}`}
+                    style={{borderColor:'var(--highlight)'}}
+                    onClick={()=>toggleLow(r.id)}>
+                    {lowDone[r.id]?'✓':''}
+                  </button>
+                  <span className={`shop-text ${lowDone[r.id]?'done':''}`}>{r.name}</span>
                   <span style={{fontSize:11,color:'var(--highlight)',marginRight:4}}>剩{r.quantity}{r.unit}</span>
                 </div>
               ))}
