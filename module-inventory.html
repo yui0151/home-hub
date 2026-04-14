@@ -209,6 +209,9 @@ function App(){
   const [sortBy,setSortBy]=useState('name'); // name | createdAt
   const [shopping,setShopping]=useState(()=>JSON.parse(localStorage.getItem(SHOP_KEY_INV+'_'+(localStorage.getItem(ROOM_KEY)||''))||'[]'));
   const [shopInput,setShopInput]=useState('');
+  const [lowDone,setLowDone]=useState(()=>JSON.parse(localStorage.getItem('hh_low_done'+'_'+(localStorage.getItem(ROOM_KEY)||''))||'{}'));
+  const toggleLow=id=>setLowDone(p=>{const n={...p,[id]:!p[id]};localStorage.setItem('hh_low_done'+'_'+room,JSON.stringify(n));return n;});
+  const removeLow=id=>setLowDone(p=>{const n={...p};delete n[id];localStorage.setItem('hh_low_done'+'_'+room,JSON.stringify(n));return n;});
   
   const room=roomCode;
 
@@ -423,14 +426,26 @@ function App(){
           {lowItems.length>0&&(
             <div className="low-stock-section" style={{padding:'12px 0 0'}}>
               <div className="ls-title">📦 庫存自動加入（{lowItems.length} 項不足）</div>
+              {lowItems.some(r=>lowDone[r.id])&&(
+                <button onClick={()=>setLowDone(p=>{const n={};lowItems.forEach(r=>{if(!p[r.id])n[r.id]=false;});localStorage.setItem('hh_low_done'+'_'+room,JSON.stringify(n));return n;})}
+                  style={{width:'100%',padding:'8px',fontSize:12,color:'var(--sage)',background:'#edf2ec',border:'none',cursor:'pointer',fontFamily:'var(--sans)'}}>
+                  ✓ 清除已勾選項目
+                </button>
+              )}
               {lowItems.map(r=>(
-                <div key={r.id} style={{display:'flex',alignItems:'center',justifyContent:'space-between',padding:'10px 14px',borderBottom:'1px solid #f5e5de',borderLeft:'3px solid var(--highlight)'}}>
-                  <span style={{fontSize:14}}>{r.name}</span>
-                  <span style={{fontSize:12,color:'var(--highlight)'}}>剩 {r.quantity} {r.unit}</span>
+                <div key={r.id} className="shop-item" style={{borderBottom:'1px solid #f5e5de',borderLeft:'3px solid var(--highlight)'}}>
+                  <button className={`shop-ck ${lowDone[r.id]?'done':''}`}
+                    style={{borderColor:'var(--highlight)'}}
+                    onClick={()=>toggleLow(r.id)}>
+                    {lowDone[r.id]?'✓':''}
+                  </button>
+                  <span className={`shop-text ${lowDone[r.id]?'done':''}`}>{r.name}</span>
+                  <span style={{fontSize:12,color:'var(--highlight)',marginRight:4}}>剩{r.quantity}{r.unit}</span>
+                  <button className="shop-del" onClick={()=>removeLow(r.id)}>✕</button>
                 </div>
               ))}
-              <div style={{fontSize:12,color:'var(--text-muted)',padding:'10px 14px',background:'var(--card2)',borderTop:'1px solid #f5e5de'}}>
-                💡 買回來後，到庫存清單點 ＋ 補數量，品項會自動從這裡消失
+              <div style={{fontSize:11,color:'var(--text-muted)',padding:'8px 14px',background:'var(--card2)',borderTop:'1px solid #f5e5de'}}>
+                💡 補貨後到庫存清單點 ＋，數量足夠後此列表自動更新
               </div>
             </div>
           )}
