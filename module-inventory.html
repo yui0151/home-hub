@@ -209,10 +209,7 @@ function App(){
   const [sortBy,setSortBy]=useState('name'); // name | createdAt
   const [shopping,setShopping]=useState(()=>JSON.parse(localStorage.getItem(SHOP_KEY_INV+'_'+(localStorage.getItem(ROOM_KEY)||''))||'[]'));
   const [shopInput,setShopInput]=useState('');
-  const [lowDone,setLowDone]=useState({});
-  const [hiddenLow,setHiddenLow]=useState({});
-  const toggleLow=id=>setLowDone(p=>({...p,[id]:!p[id]}));
-  const removeLow=id=>setHiddenLow(p=>({...p,[id]:true}));
+  
   const room=roomCode;
 
   useEffect(()=>{
@@ -237,7 +234,6 @@ function App(){
   });
   const byCategory=CATS.map(c=>({...c,items:sortedItems(filtered.filter(r=>r.category===c.key))})).filter(c=>c.items.length>0);
   const lowItems=items.filter(isLow);
-  const visibleLowItems=lowItems.filter(r=>!hiddenLow[r.id]);
 
   const updateQty=async(item,delta)=>{
     if(!db)return;
@@ -427,22 +423,15 @@ function App(){
           {lowItems.length>0&&(
             <div className="low-stock-section" style={{padding:'12px 0 0'}}>
               <div className="ls-title">📦 庫存自動加入（{lowItems.length} 項不足）</div>
-              {visibleLowItems.map(r=>(
-                <div key={r.id} className="shop-item" style={{borderBottom:'1px solid #f5e5de',borderLeft:'3px solid var(--highlight)'}}>
-                  <button
-                    className={`shop-ck ${lowDone[r.id]?'done':''}`}
-                    style={{borderColor:'var(--highlight)'}}
-                    onClick={()=>toggleLow(r.id)}>
-                    {lowDone[r.id]?'✓':''}
-                  </button>
-                  <span className={`shop-text ${lowDone[r.id]?'done':''}`}>{r.name}</span>
-                  <span style={{fontSize:11,color:'var(--highlight)',marginRight:4}}>剩{r.quantity}{r.unit}</span>
-                  <button className="shop-del" onClick={()=>removeLow(r.id)}>✕</button>
+              {lowItems.map(r=>(
+                <div key={r.id} style={{display:'flex',alignItems:'center',justifyContent:'space-between',padding:'10px 14px',borderBottom:'1px solid #f5e5de',borderLeft:'3px solid var(--highlight)'}}>
+                  <span style={{fontSize:14}}>{r.name}</span>
+                  <span style={{fontSize:12,color:'var(--highlight)'}}>剩 {r.quantity} {r.unit}</span>
                 </div>
               ))}
-              {visibleLowItems.length===0&&lowItems.length>0&&(
-                <div style={{fontSize:12,color:'var(--sage)',padding:'8px 0',textAlign:'center'}}>✅ 低庫存品項已全部處理</div>
-              )}
+              <div style={{fontSize:12,color:'var(--text-muted)',padding:'10px 14px',background:'var(--card2)',borderTop:'1px solid #f5e5de'}}>
+                💡 買回來後，到庫存清單點 ＋ 補數量，品項會自動從這裡消失
+              </div>
             </div>
           )}
           <div className="shop-card" style={{marginTop:12}}>
