@@ -45,7 +45,7 @@ input,textarea,select{font-family:var(--sans);font-size:16px;}
 .pinned-name{font-size:11px;text-align:center;margin-top:4px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;}
 /* Search + filter */
 .search-row{padding:10px 16px 4px;position:relative;}
-.search-input{width:100%;padding:10px 14px 140px 38px;border:1.5px solid var(--sand);border-radius:50px;font-size:14px;color:var(--wood);background:var(--card);outline:none;}
+.search-input{width:100%;padding:10px 14px 10px 38px;border:1.5px solid var(--sand);border-radius:50px;font-size:14px;color:var(--wood);background:var(--card);outline:none;}
 .search-input:focus{border-color:var(--clay);}
 .search-icon{position:absolute;left:28px;top:50%;transform:translateY(-50%);font-size:16px;pointer-events:none;}
 .filter-row{display:flex;gap:6px;padding:4px 16px 8px;overflow-x:auto;}
@@ -113,6 +113,10 @@ input,textarea,select{font-family:var(--sans);font-size:16px;}
 .wl-name{font-size:13px;font-weight:500;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;}
 .wl-badges{display:flex;gap:4px;flex-wrap:wrap;margin-top:5px;}
 .csv-area{width:100%;min-height:100px;padding:10px;border:1.5px dashed var(--sand);border-radius:var(--radius-sm);font-size:13px;color:var(--wood);background:var(--card);outline:none;resize:none;}
+
+/* 導覽列高亮 */
+.nav-btn{opacity:.45;}
+.nav-btn.active{opacity:1;font-weight:600;}
 </style>
 </head>
 <body>
@@ -328,7 +332,8 @@ function App(){
       {/* Search */}
       <div className="search-row">
         <span className="search-icon">🔍</span>
-        <input className="search-input" placeholder="搜尋名稱、尺碼、位置..." value={search} onChange={e=>setSearch(e.target.value)}/>
+        <input className="search-input" placeholder="搜尋名稱、尺碼、位置..." value={search} onChange={e=>setSearch(e.target.value)} style={{paddingRight:search?'36px':'14px'}}/>
+        {search&&<button onClick={()=>setSearch('')} style={{position:'absolute',right:'24px',top:'50%',transform:'translateY(-50%)',background:'none',border:'none',cursor:'pointer',fontSize:16,color:'var(--text-muted)',lineHeight:1}}>✕</button>}
       </div>
 
       {/* Status filter */}

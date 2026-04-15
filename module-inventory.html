@@ -43,7 +43,7 @@ input,textarea,select{font-family:var(--sans);font-size:16px;}
 .stat-label{font-size:11px;color:var(--text-muted);margin-top:2px;}
 /* Search + filter */
 .search-row{padding:10px 16px 4px;position:relative;}
-.search-input{width:100%;padding:10px 14px 140px 38px;border:1.5px solid var(--sand);border-radius:50px;font-size:14px;color:var(--wood);background:var(--card);outline:none;}
+.search-input{width:100%;padding:10px 14px 10px 38px;border:1.5px solid var(--sand);border-radius:50px;font-size:14px;color:var(--wood);background:var(--card);outline:none;}
 .search-input:focus{border-color:var(--clay);}
 .search-icon{position:absolute;left:28px;top:50%;transform:translateY(-50%);font-size:16px;pointer-events:none;}
 .cat-pills{display:flex;gap:6px;padding:6px 16px;overflow-x:auto;}
@@ -162,6 +162,10 @@ input,textarea,select{font-family:var(--sans);font-size:16px;}
 .inv-card-foot{display:flex;align-items:center;justify-content:space-between;margin-top:7px;}
 .inv-card-num{font-family:var(--serif);font-size:15px;font-weight:700;}
 .inv-card-num.low{color:var(--highlight);}
+
+/* 導覽列高亮 */
+.nav-btn{opacity:.45;}
+.nav-btn.active{opacity:1;font-weight:600;}
 </style>
 </head>
 <body>
@@ -357,7 +361,8 @@ function App(){
           </div>
           <div className="search-row">
             <span className="search-icon">🔍</span>
-            <input className="search-input" placeholder="搜尋名稱、條碼、位置..." value={search} onChange={e=>setSearch(e.target.value)}/>
+            <input className="search-input" placeholder="搜尋名稱、條碼、位置..." value={search} onChange={e=>setSearch(e.target.value)} style={{paddingRight:search?'36px':'14px'}}/>
+            {search&&<button onClick={()=>setSearch('')} style={{position:'absolute',right:'26px',top:'50%',transform:'translateY(-50%)',background:'none',border:'none',cursor:'pointer',fontSize:16,color:'var(--text-muted)',lineHeight:1}}>✕</button>}
           </div>
           <div className="cat-pills">
             <button className={`cpill ${catFilter==='all'?'active':''}`} onClick={()=>setCatFilter('all')}>全部</button>
