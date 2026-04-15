@@ -44,7 +44,7 @@ input,textarea,select{font-family:var(--sans);font-size:16px;}
 .ftab{white-space:nowrap;padding:5px 14px;border-radius:20px;font-size:13px;font-weight:500;border:1.5px solid var(--sand);color:var(--text-muted);background:var(--card);transition:all .15s;}
 .ftab.active{background:var(--wood);border-color:var(--wood);color:white;}
 /* Content */
-.content{padding:0 16px 120px;display:flex;flex-direction:column;gap:8px;}
+.content{padding:0 16px 140px;display:flex;flex-direction:column;gap:8px;}
 /* Reminder Card */
 .rcard{background:var(--white);border:1px solid var(--sand);border-radius:var(--radius-sm);overflow:hidden;cursor:pointer;transition:background .15s;}
 .rcard:active{background:var(--card2);}
@@ -67,8 +67,8 @@ input,textarea,select{font-family:var(--sans);font-size:16px;}
 .fab{position:fixed;bottom:calc(72px + env(safe-area-inset-bottom));right:20px;width:52px;height:52px;border-radius:50%;background:var(--wood);color:white;font-size:24px;display:flex;align-items:center;justify-content:center;box-shadow:0 4px 16px rgba(74,66,61,.3);z-index:40;}
 /* Bottom nav */
 .bottom-nav{position:fixed;bottom:0;left:0;right:0;background:rgba(253,251,250,.95);backdrop-filter:blur(12px);border-top:1px solid var(--sand);padding:8px 0 calc(8px + env(safe-area-inset-bottom));display:flex;max-width:480px;margin:0 auto;}
-.nav-btn{flex:1;display:flex;flex-direction:column;align-items:center;gap:3px;font-size:10px;color:var(--text-muted);text-decoration:none;}
-.nav-btn.active{color:var(--clay);}
+.nav-btn{flex:1;display:flex;flex-direction:column;align-items:center;gap:3px;font-size:10px;color:var(--text-muted);text-decoration:none;opacity:.45;transition:opacity .15s;}
+.nav-btn.active{color:var(--clay);opacity:1;font-weight:600;}
 .nav-icon{font-size:22px;}
 /* Modal overlay */
 .modal-overlay{position:fixed;inset:0;z-index:100;background:rgba(74,66,61,.5);display:flex;align-items:flex-end;animation:fadeIn .2s;}
