@@ -420,7 +420,7 @@ function App(){
           byYearMonth[yr][ym].push(r);
         });
         return(
-          <div style={{margin:'8px 16px 0',border:'1px solid var(--sand)',borderRadius:'var(--radius-sm)',overflow:'hidden'}}>
+          <div style={{margin:'8px 16px 120px',border:'1px solid var(--sand)',borderRadius:'var(--radius-sm)',overflow:'hidden'}}>
             <button onClick={()=>setShowArchive(v=>!v)}
               style={{width:'100%',padding:'12px 16px',background:'var(--card2)',border:'none',display:'flex',alignItems:'center',justifyContent:'space-between',cursor:'pointer',fontFamily:'var(--sans)'}}>
               <span style={{fontSize:13,fontWeight:600,color:'var(--text-muted)'}}>🗄 歷史封存庫 ({archived.length} 筆)</span>
