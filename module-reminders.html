@@ -312,6 +312,44 @@ function App(){
       alert('❌ 匯入失敗\n\n' + e.message);
     }
   };
+  const importSheet=async()=>{
+    if(!window.confirm('確定要從 Google Sheet 同步嗎？這將新增資料，不會覆蓋現有紀錄。'))return;
+    const SID='1U5eIIBD9B5z8yDfNOCBGjHYv1oODUX-HlI1CPbpO5UQ';
+    const KEY='AIzaSyA6q7i6U6I0jHcRmrIAuvPZf3lOJhklvDg';
+    const BASE='https://sheets.googleapis.com/v4/spreadsheets/'+SID;
+    try{
+      const mRes=await fetch(BASE+'?key='+KEY+'&fields=sheets.properties');
+      if(!mRes.ok) throw new Error('API 連線失敗 HTTP '+mRes.status+'\n如果是 403，請確認 API Key 已允許 https://yui0151.github.io/home-hub/*');
+      const meta=await mRes.json();
+      if(meta.error) throw new Error(meta.error.message+' ('+meta.error.code+')');
+      const names=(meta.sheets||[]).map(s=>s.properties.title);
+      const name=names.find(t=>t.toLowerCase().includes('reminder'))||names[0];
+      if(!name) throw new Error('找不到工作表，偵測到：'+names.join('、'));
+      const dRes=await fetch(BASE+'/values/'+encodeURIComponent(name+'!A:F')+'?key='+KEY);
+      if(!dRes.ok) throw new Error('讀取工作表失敗 HTTP '+dRes.status);
+      const d=await dRes.json();
+      if(d.error) throw new Error(d.error.message);
+      const all=d.values||[];
+      const hi=all.findIndex(r=>r[0]&&(r[0].toLowerCase().includes('title')||r[0].includes('title')));
+      const rows=hi>=0?all.slice(hi+1):all.slice(1);
+      if(!rows.length) throw new Error('找不到資料列（共'+all.length+'列）');
+      const batch=db.batch();
+      const col=db.collection('reminders').doc(room).collection('items');
+      let n=0;
+      rows.forEach(r=>{
+        if(!r[0]||r[0].toLowerCase()==='title') return;
+        const [title,type,recurrence,dueDate,amount,description]=r;
+        batch.set(col.doc(),{title,type:type||'other',recurrence:recurrence||'once',dueDate:dueDate||'',amount:amount||'',description:description||'',status:'pending',completionHistory:[],createdAt:Date.now(),updatedAt:Date.now()});
+        n++;
+      });
+      if(!n) throw new Error('沒有可匯入的資料');
+      await batch.commit();
+      alert('✅ 從「'+name+'」成功匯入 '+n+' 筆');
+      setShowCsv(false);
+    }catch(e){
+      alert('❌ 匯入失敗\n\n'+e.message);
+    }
+  };
   const importCsv=async()=>{
     if(!csvText.trim()||!db)return;
     const lines=csvText.trim().split('\n').slice(1);

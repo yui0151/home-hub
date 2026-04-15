@@ -276,37 +276,50 @@ function App(){
   };
 
   const importSheet=async()=>{
-    if(!db)return;
-    if(!window.confirm('確定要從 Google Sheet 同步資料嗎？\n這將會新增目前 Sheet 的數據。'))return;
-    const BASE=`https://sheets.googleapis.com/v4/spreadsheets/1U5eIIBD9B5z8yDfNOCBGjHYv1oODUX-HlI1CPbpO5UQ`;
+    if(!window.confirm('確定要從 Google Sheet 同步嗎？這將新增資料，不會覆蓋現有紀錄。'))return;
+    const SID='1U5eIIBD9B5z8yDfNOCBGjHYv1oODUX-HlI1CPbpO5UQ';
     const KEY='AIzaSyA6q7i6U6I0jHcRmrIAuvPZf3lOJhklvDg';
+    const BASE='https://sheets.googleapis.com/v4/spreadsheets/'+SID;
     try{
-      const metaRes=await fetch(`${BASE}?key=${KEY}&fields=sheets.properties`);
-      const meta=await metaRes.json();
-      if(meta.error)throw new Error(meta.error.message+'\n\n📌 請先將 Google Sheet 設定為「知道連結的人可以檢視」');
-      const sheetNames=(meta.sheets||[]).map(s=>s.properties.title);
-      const sheetName=sheetNames.find(t=>t.toLowerCase().includes('inventory'))||sheetNames[0];
-      if(!sheetName)throw new Error('找不到工作表，請確認 Sheet 有資料且已公開');
-      const range=encodeURIComponent(sheetName+'!A:I');
-      const dataRes=await fetch(`${BASE}/values/${range}?key=${KEY}`);
-      const d=await dataRes.json();
-      if(d.error)throw new Error(d.error.message);
-      const allRows=d.values||[];
-      const headerIdx=allRows.findIndex(r=>r[0]&&r[0].toLowerCase().includes('name'));
-      const rows=headerIdx>=0?allRows.slice(headerIdx+1):allRows.slice(1);
-      if(!rows.length)throw new Error('工作表「'+sheetName+'」沒有找到資料列\n\n偵測到工作表：'+sheetNames.join('、'));
+      // Step1 取得工作表清單
+      const mRes=await fetch(BASE+'?key='+KEY+'&fields=sheets.properties');
+      if(!mRes.ok){
+        const err=await mRes.text();
+        throw new Error('API 連線失敗 HTTP '+mRes.status+'\n\n如果是 403，請到 Google Cloud Console 確認 API Key 已允許 https://yui0151.github.io/home-hub/*');
+      }
+      const meta=await mRes.json();
+      if(meta.error) throw new Error(meta.error.message+' ('+meta.error.code+')');
+      const names=(meta.sheets||[]).map(s=>s.properties.title);
+      if(!names.length) throw new Error('找不到任何工作表');
+      const name=names.find(t=>t.toLowerCase().includes('inventory'))||names[0];
+      // Step2 取得資料
+      const dRes=await fetch(BASE+'/values/'+encodeURIComponent(name+'!A:I')+'?key='+KEY);
+      if(!dRes.ok) throw new Error('讀取工作表失敗 HTTP '+dRes.status);
+      const d=await dRes.json();
+      if(d.error) throw new Error(d.error.message);
+      const all=d.values||[];
+      if(!all.length) throw new Error('工作表「'+name+'」沒有資料\n偵測到工作表：'+names.join('、'));
+      // Step3 找標題列
+      const hi=all.findIndex(r=>r[0]&&(r[0].toLowerCase().includes('name')||r[0].includes('name')));
+      const rows=hi>=0?all.slice(hi+1):all.slice(1);
+      if(!rows.length) throw new Error('找不到資料列（共'+all.length+'列，標題在第'+(hi+1)+'列）\n第1列內容：'+JSON.stringify(all[0]));
+      // Step4 寫入 Firebase
       const batch=db.batch();
       const col=db.collection('inventory').doc(room).collection('items');
-      let count=0;
+      let n=0;
       rows.forEach(r=>{
+        if(!r[0]||r[0].toLowerCase()==='name') return;
         const [name,category,quantity,unit,threshold,imageUrl,barcode,location,note]=r;
-        if(!name||name.toLowerCase()==='name')return;
         batch.set(col.doc(),{name,category:category||'other',quantity:Number(quantity)||0,unit:unit||'個',threshold:Number(threshold)||0,imageUrl:imageUrl||'',barcode:barcode||'',location:location||'',note:note||'',createdAt:Date.now(),updatedAt:Date.now()});
-        count++;
+        n++;
       });
+      if(!n) throw new Error('沒有可匯入的資料（共'+rows.length+'列，全部跳過）\n第一筆：'+JSON.stringify(rows[0]));
       await batch.commit();
-      alert('✅ 成功從「'+sheetName+'」匯入 '+count+' 筆');
-    }catch(e){alert('❌ 匯入失敗\n\n'+e.message+'\n\n請參考 sheet-guide.html 的操作說明');}
+      alert('✅ 從「'+name+'」成功匯入 '+n+' 筆');
+      setShowCsv(false);
+    }catch(e){
+      alert('❌ 匯入失敗\n\n'+e.message);
+    }
   };
   const addShop=()=>{if(!shopInput.trim())return;setShopping(p=>[...p,{id:Date.now(),text:shopInput.trim(),done:false}]);setShopInput('');};
   const toggleShop=id=>setShopping(p=>p.map(t=>t.id===id?{...t,done:!t.done}:t));
