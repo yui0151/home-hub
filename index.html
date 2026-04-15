@@ -173,23 +173,11 @@
     padding: 3px 10px; display: inline-block;
   }
   /* Stats Grid */
-  .stats-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 8px; }
-  .stat-card {
-    background: var(--card);
-    border: 1px solid var(--sand);
-    border-radius: var(--radius-sm);
-    padding: 10px 12px;
-    cursor: pointer;
-    transition: background 0.15s;
-  }
+  .stats-grid{display:grid;grid-template-columns:repeat(4,1fr);gap:6px;}
+  .stat-card{background:var(--card);border:1px solid var(--sand);border-radius:var(--radius-sm);padding:8px 6px;cursor:pointer;transition:background .15s;text-align:center;}
   .stat-card:active { background: var(--sand); }
-  .stat-icon{font-size:22px;margin-bottom:4px;}
-  .stat-num {
-    font-family: var(--serif);
-    font-size: 20px; font-weight: 700;
-    color: var(--wood);
-    margin-top: 4px;
-  }
+  .stat-icon{font-size:18px;margin-bottom:2px;display:block;}
+  .stat-num{font-family:var(--serif);font-size:18px;font-weight:700;color:var(--wood);}
   .stat-num.alert { color: var(--highlight); }
   .stat-label{font-size:11px;color:var(--text-muted);margin-top:2px;}
   /* Quick Record */
@@ -712,7 +700,9 @@ function App() {
       <div className="content">
 
         {/* 天氣 */}
-        {weather && (
+        <div style={{minHeight:90}}>
+          {!weather&&<div style={{height:90,display:'flex',alignItems:'center',justifyContent:'center',color:'var(--text-muted)',fontSize:13,background:'var(--card)',borderRadius:'var(--radius)',margin:'0 0 10px'}}>☁️ 定位中...</div>}
+          {weather && (
           <div className="weather-card">
             <div className="weather-icon">{weather.icon}</div>
             <div className="weather-info">
@@ -722,6 +712,7 @@ function App() {
             </div>
           </div>
         )}
+          </div>
 
         {/* 四格統計 */}
         <div className="stats-grid">
