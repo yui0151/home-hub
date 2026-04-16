@@ -135,6 +135,42 @@ input,textarea,select{font-family:var(--sans);font-size:16px;}
 .nav-btn{opacity:.45;}
 .nav-btn.active{opacity:1;font-weight:600;}
 </style>
+
+  <!-- PWA Meta -->
+  <meta name="apple-mobile-web-app-capable" content="yes">
+  <meta name="apple-mobile-web-app-status-bar-style" content="default">
+  <meta name="apple-mobile-web-app-title" content="嘟嘟一家">
+  <meta name="mobile-web-app-capable" content="yes">
+  <meta name="theme-color" content="#A68A7D">
+  <meta name="application-name" content="嘟嘟一家">
+  <link rel="apple-touch-icon" href="data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHZpZXdCb3g9IjAgMCAxODAgMTgwIj48cmVjdCB3aWR0aD0iMTgwIiBoZWlnaHQ9IjE4MCIgcng9IjAiIGZpbGw9IiNBNjhBN0QiLz48dGV4dCB4PSI5MCIgeT0iMTIwIiB0ZXh0LWFuY2hvcj0ibWlkZGxlIiBmb250LXNpemU9IjEwMCIgZm9udC1mYW1pbHk9IkFwcGxlIENvbG9yIEVtb2ppLFNlZ29lIFVJIEVtb2ppLHNhbnMtc2VyaWYiPvCfjJk8L3RleHQ+PC9zdmc+">
+  <script>
+    (function(){
+      var iconDataUri = "data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHZpZXdCb3g9IjAgMCAxOTIgMTkyIj48cmVjdCB3aWR0aD0iMTkyIiBoZWlnaHQ9IjE5MiIgcng9IjQwIiBmaWxsPSIjQTY4QTdEIi8+PHRleHQgeD0iOTYiIHk9IjEzMCIgdGV4dC1hbmNob3I9Im1pZGRsZSIgZm9udC1zaXplPSIxMTAiIGZvbnQtZmFtaWx5PSJBcHBsZSBDb2xvciBFbW9qaSxTZWdvZSBVSSBFbW9qaSxzYW5zLXNlcmlmIj7wn4yZPC90ZXh0Pjwvc3ZnPg==";
+      var manifest = {
+        name: "嘟嘟一家🌙",
+        short_name: "嘟嘟一家",
+        description: "家庭數位管家",
+        start_url: "/home-hub/",
+        scope: "/home-hub/",
+        display: "standalone",
+        orientation: "portrait",
+        background_color: "#FDFBFA",
+        theme_color: "#A68A7D",
+        lang: "zh-TW",
+        icons: [
+          { src: iconDataUri, sizes: "192x192", type: "image/svg+xml", purpose: "any maskable" },
+          { src: iconDataUri, sizes: "512x512", type: "image/svg+xml", purpose: "any maskable" }
+        ]
+      };
+      var blob = new Blob([JSON.stringify(manifest)], {type: "application/manifest+json"});
+      var url = URL.createObjectURL(blob);
+      var link = document.createElement("link");
+      link.rel = "manifest";
+      link.href = url;
+      document.head.appendChild(link);
+    })();
+  </script>
 </head>
 <body>
 <div id="root"></div>
