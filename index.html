@@ -245,11 +245,11 @@
   }
   .list-add-input:focus { border-color: var(--clay); }
   .list-add-btn {
-    width: 44px; height: 44px;
+    width: 36px; height: 36px;
     border-radius: 50%;
     background: var(--wood);
     color: white;
-    font-size: 20px;
+    font-size: 18px;
     display: flex; align-items: center; justify-content: center;
     flex-shrink: 0;
     transition: background 0.2s;
@@ -784,7 +784,7 @@ function App() {
               {[
                 { key: 'memo', label: '📝 備忘錄', count: 0 },
                 { key: 'todo', label: '✅ 待辦', count: todos.filter(t=>!t.done).length },
-                { key: 'shop', label: '🛍️ 待買', count: shopping.filter(t=>!t.done).length },
+                { key: 'shop', label: '💭 許願清單', count: shopping.filter(t=>!t.done).length },
               ].map(t => (
                 <button
                   key={t.key}
@@ -845,7 +845,7 @@ function App() {
                   <div className="list-add-row">
                     <input
                       className="list-add-input"
-                      placeholder="新增待買項目..."
+                      placeholder="新增許願清單..."
                       value={shopInput}
                       onChange={e => setShopInput(e.target.value)}
                       onKeyDown={e => e.key === 'Enter' && addShop()}
@@ -853,7 +853,7 @@ function App() {
                     <button className="list-add-btn" onClick={addShop}>＋</button>
                   </div>
                   {shopping.length === 0
-                    ? <div className="list-empty">沒有待買項目</div>
+                    ? <div className="list-empty">沒有許願清單項目</div>
                     : shopping.map(t => (
                         <div key={t.id} className="list-item">
                           <button
@@ -933,7 +933,7 @@ function App() {
           <div>
             <div className="sec-head">
               <span className="sec-title">📦 庫存不足</span>
-              <a href={moduleUrl('module-inventory')+'&tab=shopping'} className="sec-more">前往待買清單 →</a>
+              <a href={moduleUrl('module-inventory')+'&tab=shopping'} className="sec-more">前往許願清單 →</a>
             </div>
             <div className="stock-list">
               {lowStock.slice(0, 4).map(r => (
