@@ -1,4 +1,5 @@
 <!DOCTYPE html>
+
 <html lang="zh-TW">
 <head>
 <meta charset="UTF-8">
@@ -443,6 +444,7 @@
 </style>
 
   <!-- PWA Meta -->
+
   <meta name="apple-mobile-web-app-capable" content="yes">
   <meta name="apple-mobile-web-app-status-bar-style" content="default">
   <meta name="apple-mobile-web-app-title" content="嘟嘟一家">
@@ -502,11 +504,8 @@ try {
 } catch(e) {}
 
 // ─── 常數 ──────────────────────────────────────────
-const VERSION = "v3.0";
+const VERSION = "v3.1";
 const ROOM_KEY = "hh_roomCode";
-const MEMO_KEY = "hh_memo";
-const TODO_KEY = "hh_todo";
-const SHOP_KEY = "hh_shop";
 
 const categoryIcon = {
   food:'🍱', drink:'🧴', frozen:'🧊', clean:'🧹', bath:'🛁',
@@ -563,14 +562,15 @@ function App() {
   const [wiki, setWiki] = useState([]);
   const [loading, setLoading] = useState(false);
 
-  // Quick record
+  // Quick record — 從 Firestore 讀取，不再用 localStorage
   const [activeTab, setActiveTab] = useState('memo');
-  const [memo, setMemo] = useState(() => localStorage.getItem(MEMO_KEY + '_' + (localStorage.getItem(ROOM_KEY) || '')) || '');
-  const [todos, setTodos] = useState(() => JSON.parse(localStorage.getItem(TODO_KEY + '_' + (localStorage.getItem(ROOM_KEY) || '')) || '[]'));
-  const [shopping, setShopping] = useState(() => JSON.parse(localStorage.getItem(SHOP_KEY + '_' + (localStorage.getItem(ROOM_KEY) || '')) || '[]'));
+  const [memo, setMemo] = useState('');
+  const [todos, setTodos] = useState([]);
+  const [shopping, setShopping] = useState([]);
   const [todoInput, setTodoInput] = useState('');
   const [shopInput, setShopInput] = useState('');
   const [memoSaved, setMemoSaved] = useState(true);
+  const [quickLoaded, setQuickLoaded] = useState(false);
   const memoTimer = useRef(null);
 
   const weather = useWeather();
@@ -587,9 +587,13 @@ function App() {
     localStorage.removeItem(ROOM_KEY);
     setRoomCode('');
     setShowSettings(false);
+    setMemo('');
+    setTodos([]);
+    setShopping([]);
+    setQuickLoaded(false);
   };
 
-  // ── Firebase 訂閱 ──
+  // ── Firebase 訂閱（提醒、庫存、衣櫥、百科）──
   useEffect(() => {
     if (!roomCode || !db) return;
     setLoading(true);
@@ -617,28 +621,44 @@ function App() {
     return () => unsubs.forEach(u => u());
   }, [roomCode]);
 
-  // ── 備忘錄自動儲存 ──
+  // ── 快速記錄：從 Firestore 讀取（一次性載入）──
   useEffect(() => {
-    if (!roomCode) return;
+    if (!roomCode || !db) return;
+    const ref = db.collection('quickRecord').doc(roomCode);
+    ref.get().then(doc => {
+      if (doc.exists) {
+        const data = doc.data();
+        setMemo(data.memo || '');
+        setTodos(data.todos || []);
+        setShopping(data.shopping || []);
+      }
+      setQuickLoaded(true);
+    }).catch(() => setQuickLoaded(true));
+  }, [roomCode]);
+
+  // ── 備忘錄自動儲存到 Firestore ──
+  useEffect(() => {
+    if (!roomCode || !quickLoaded || !db) return;
     setMemoSaved(false);
     clearTimeout(memoTimer.current);
     memoTimer.current = setTimeout(() => {
-      localStorage.setItem(MEMO_KEY + '_' + roomCode, memo);
-      setMemoSaved(true);
+      db.collection('quickRecord').doc(roomCode).set({ memo }, { merge: true })
+        .then(() => setMemoSaved(true))
+        .catch(() => setMemoSaved(true));
     }, 800);
-  }, [memo, roomCode]);
+  }, [memo, roomCode, quickLoaded]);
 
-  // ── Todo 儲存 ──
+  // ── Todo 儲存到 Firestore ──
   useEffect(() => {
-    if (!roomCode) return;
-    localStorage.setItem(TODO_KEY + '_' + roomCode, JSON.stringify(todos));
-  }, [todos, roomCode]);
+    if (!roomCode || !quickLoaded || !db) return;
+    db.collection('quickRecord').doc(roomCode).set({ todos }, { merge: true }).catch(() => {});
+  }, [todos, roomCode, quickLoaded]);
 
-  // ── Shopping 儲存 ──
+  // ── Shopping 儲存到 Firestore ──
   useEffect(() => {
-    if (!roomCode) return;
-    localStorage.setItem(SHOP_KEY + '_' + roomCode, JSON.stringify(shopping));
-  }, [shopping, roomCode]);
+    if (!roomCode || !quickLoaded || !db) return;
+    db.collection('quickRecord').doc(roomCode).set({ shopping }, { merge: true }).catch(() => {});
+  }, [shopping, roomCode, quickLoaded]);
 
   // ── 計算資料 ──
   const today = dayjs();
@@ -799,16 +819,25 @@ function App() {
             <div className="quick-body">
               {activeTab === 'memo' && (
                 <div>
-                  <textarea
-                    className="memo-area"
-                    placeholder="隨手記下任何事情..."
-                    value={memo}
-                    onChange={e => setMemo(e.target.value)}
-                    rows={5}
-                  />
-                  <div className="memo-status">
-                    {memoSaved ? <><span>✓</span> 已儲存</> : <><span className="loading-dot" style={{width:5,height:5}}/> 儲存中</>}
-                  </div>
+                  {!quickLoaded
+                    ? <div style={{padding:'20px 0',textAlign:'center',color:'var(--text-muted)',fontSize:13}}>
+                        <div className="loading-dot" style={{animationDelay:'0s'}}/>{' '}
+                        <div className="loading-dot" style={{animationDelay:'0.2s'}}/>{' '}
+                        <div className="loading-dot" style={{animationDelay:'0.4s'}}/>
+                      </div>
+                    : <>
+                        <textarea
+                          className="memo-area"
+                          placeholder="隨手記下任何事情..."
+                          value={memo}
+                          onChange={e => setMemo(e.target.value)}
+                          rows={5}
+                        />
+                        <div className="memo-status">
+                          {memoSaved ? <><span>✓</span> 已儲存</> : <><span className="loading-dot" style={{width:5,height:5}}/> 儲存中</>}
+                        </div>
+                      </>
+                  }
                 </div>
               )}
 
@@ -1035,5 +1064,6 @@ function App() {
 
 ReactDOM.createRoot(document.getElementById('root')).render(<App/>);
 </script>
+
 </body>
 </html>
