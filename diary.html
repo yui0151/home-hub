@@ -986,11 +986,18 @@ async function init() {
 
 function updateTodayHeader() {
   const now = new Date();
-  document.getElementById('today-num').textContent = now.getDate();
-  document.getElementById('today-month').textContent = `${now.getFullYear()}年 ${MONTHS_ZH[now.getMonth()]}`;
-  document.getElementById('today-week').textContent = WEEKDAYS[now.getDay()];
   document.getElementById('memory-date').textContent = `${MONTHS_ZH[now.getMonth()]} ${now.getDate()}日`;
   document.getElementById('review-month-label').textContent = `${reviewYear}年 ${MONTHS_ZH[reviewMonth]}`;
+  updateDisplayDate();
+}
+
+function updateDisplayDate() {
+  const dateStr = getEntryDate();
+  const d = new Date(dateStr + 'T12:00:00');
+  document.getElementById('today-num').textContent = d.getDate();
+  document.getElementById('today-month').textContent = `${d.getFullYear()}年 ${MONTHS_ZH[d.getMonth()]}`;
+  document.getElementById('today-week').textContent = WEEKDAYS[d.getDay()];
+  renderTodayEntries();
 }
 
 // ===== TAGS =====
@@ -1087,9 +1094,10 @@ window.toggleDatePicker = function() {
   wrap.style.display = wrap.style.display === 'none' ? 'block' : 'none';
   if (wrap.style.display === 'block') {
     document.getElementById('backdate-input').value = todayStr();
-    selectedBackdate = todayStr();
+    selectedBackdate = null;
     document.getElementById('backdate-input').onchange = e => {
-      selectedBackdate = e.target.value || todayStr();
+      selectedBackdate = e.target.value || null;
+      updateDisplayDate();
     };
   }
 };
@@ -1097,6 +1105,7 @@ window.toggleDatePicker = function() {
 window.clearBackdate = function() {
   selectedBackdate = null;
   document.getElementById('date-picker-wrap').style.display = 'none';
+  updateDisplayDate();
 };
 
 function getEntryDate() {
@@ -1109,8 +1118,8 @@ function todayStr() {
 }
 
 function renderTodayEntries() {
-  const today = todayStr();
-  const entries = allEntries.filter(e => e.dateStr === today).sort((a,b) => a.timestamp?.localeCompare(b.timestamp||''));
+  const today = getEntryDate();
+  const entries = allEntries.filter(e => e.dateStr === today).sort((a,b) => (a.timestamp||'').localeCompare(b.timestamp||''));
   const wrap = document.getElementById('today-entries');
   wrap.innerHTML = '';
   document.getElementById('today-count').textContent = `${entries.length} 筆紀錄`;
