@@ -1212,16 +1212,18 @@ window.submitEntry = async function() {
       photoUrls.push(url);
     }
 
+    const entryDateStr = getEntryDate();
+    const entryDate = new Date(entryDateStr + 'T12:00:00');
     const now = new Date();
     const entry = {
       text,
       tags: [...selectedTags],
       photos: photoUrls,
-      dateStr: todayStr(),
-      timestamp: now.toISOString(),
-      year: now.getFullYear(),
-      month: now.getMonth() + 1,
-      day: now.getDate()
+      dateStr: entryDateStr,
+      timestamp: selectedBackdate ? (entryDateStr + 'T12:00:00.000Z') : now.toISOString(),
+      year: entryDate.getFullYear(),
+      month: entryDate.getMonth() + 1,
+      day: entryDate.getDate()
     };
 
     const docRef = await addDoc(collection(db, 'diary_entries'), entry);
