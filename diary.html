@@ -50,11 +50,15 @@ body {
   flex-shrink: 0;
   order: 1;
   text-align: center;
-  padding: 14px 16px 8px;
+  padding: 16px 16px 12px;
   background: rgba(253,246,240,0.95);
   backdrop-filter: blur(10px);
   border-bottom: 1px solid rgba(242,196,206,0.3);
-  position: relative;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 4px;
 }
 
 .header-deco {
@@ -65,10 +69,11 @@ body {
 }
 
 .header-title {
-  font-size: 17px;
+  font-size: 18px;
   font-weight: 700;
   color: var(--text);
-  line-height: 1.3;
+  line-height: 1;
+  margin-bottom: 5px;
 }
 
 .header-title span {
@@ -76,6 +81,8 @@ body {
   font-size: 13px;
   color: var(--text-light);
   font-weight: 500;
+  margin-top: 5px;
+  letter-spacing: 2px;
 }
 
 /* ===== TABS (bottom nav) ===== */
@@ -910,7 +917,7 @@ let reviewYear = new Date().getFullYear();
 let reviewMonth = new Date().getMonth(); // 0-indexed
 
 const TAG_COLORS = ['tag-color-0','tag-color-1','tag-color-2','tag-color-3'];
-const WEEKDAYS = ['日','一','二','三','四','五','六'];
+const WEEKDAYS = ['日曜日','月曜日','火曜日','水曜日','木曜日','金曜日','土曜日'];
 const MONTHS_ZH = ['1月','2月','3月','4月','5月','6月','7月','8月','9月','10月','11月','12月'];
 
 // ===== INIT =====
@@ -935,7 +942,7 @@ function updateTodayHeader() {
   const now = new Date();
   document.getElementById('today-num').textContent = now.getDate();
   document.getElementById('today-month').textContent = `${now.getFullYear()}年 ${MONTHS_ZH[now.getMonth()]}`;
-  document.getElementById('today-week').textContent = `週${WEEKDAYS[now.getDay()]}`;
+  document.getElementById('today-week').textContent = WEEKDAYS[now.getDay()];
   document.getElementById('memory-date').textContent = `${MONTHS_ZH[now.getMonth()]} ${now.getDate()}日`;
   document.getElementById('review-month-label').textContent = `${reviewYear}年 ${MONTHS_ZH[reviewMonth]}`;
 }
@@ -1049,7 +1056,7 @@ function renderTodayEntries() {
         ${entry.tags?.length ? `<div class="entry-tags">${entry.tags.map((t,i)=>`<span class="entry-tag ${TAG_COLORS[i%4]}">${escHtml(t)}</span>`).join('')}</div>` : ''}
         ${entry.photos?.length ? `<div class="entry-photos">${entry.photos.map(url=>`<img class="entry-photo" src="${url}" onclick="openLightbox('${url}')" loading="lazy">`).join('')}</div>` : ''}
       </div>
-      <button class="entry-delete" onclick="deleteEntry('${entry.id}', ${JSON.stringify(entry.photos||[]).replace(/"/g,'&quot;')})">🗑</button>
+      <button class="entry-delete" onclick="deleteEntry('${entry.id}', ${JSON.stringify(entry.photos||[]).replace(/"/g,'&quot;')})">✕</button>
     `;
     wrap.appendChild(div);
   });
