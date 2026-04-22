@@ -1,5 +1,4 @@
 <!DOCTYPE html>
-
 <html lang="zh-TW">
 <head>
 <meta charset="UTF-8">
@@ -15,11 +14,11 @@
 <script src="https://www.gstatic.com/firebasejs/9.22.2/firebase-firestore-compat.js"></script>
 <style>
 :root{
---paper:#FDFBFA;--clay:#A68A7D;--clay-light:#C4A899;
---sage:#8FA68B;--wood:#4A423D;--sand:#EAE2D6;--highlight:#D99A84;
---card:#F9F7F4;--card2:#F4F0EB;--white:#FFFFFF;--text-muted:#9B8E87;
---serif:'Noto Serif TC',serif;--sans:'Zen Kaku Gothic New',sans-serif;
---radius:16px;--radius-sm:10px;
+  --paper:#FDFBFA;--clay:#A68A7D;--clay-light:#C4A899;
+  --sage:#8FA68B;--wood:#4A423D;--sand:#EAE2D6;--highlight:#D99A84;
+  --card:#F9F7F4;--card2:#F4F0EB;--white:#FFFFFF;--text-muted:#9B8E87;
+  --serif:'Noto Serif TC',serif;--sans:'Zen Kaku Gothic New',sans-serif;
+  --radius:16px;--radius-sm:10px;
 }
 *{box-sizing:border-box;margin:0;padding:0;-webkit-tap-highlight-color:transparent;}
 html{font-size:16px;}
@@ -30,10 +29,12 @@ input,textarea,select{font-family:var(--sans);font-size:16px;}
 .header{position:sticky;top:0;z-index:50;background:rgba(253,251,250,.92);backdrop-filter:blur(12px);padding:12px 16px 10px;border-bottom:1px solid var(--sand);display:flex;align-items:center;justify-content:space-between;}
 .header-title{font-family:var(--serif);font-size:17px;font-weight:700;}
 .icon-btn{width:36px;height:36px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:17px;background:var(--card2);}
+/* Stats */
 .stats-row{display:grid;grid-template-columns:repeat(4,1fr);gap:6px;padding:12px 16px 0;}
 .stat-card{background:var(--card);border:1px solid var(--sand);border-radius:var(--radius-sm);padding:10px 6px;text-align:center;}
 .stat-num{font-family:var(--serif);font-size:18px;font-weight:700;}
 .stat-label{font-size:10px;color:var(--text-muted);margin-top:2px;}
+/* Pinned strip */
 .pinned-strip{padding:12px 0 4px;}
 .pinned-title{font-size:12px;font-weight:700;color:var(--clay);letter-spacing:.1em;padding:0 16px 8px;}
 .pinned-scroll{display:flex;gap:10px;overflow-x:auto;padding:0 16px 4px;}
@@ -42,6 +43,7 @@ input,textarea,select{font-family:var(--sans);font-size:16px;}
 .pinned-img{width:80px;height:80px;border-radius:12px;object-fit:contain;background:var(--card2);}
 .pinned-img-ph{width:80px;height:80px;border-radius:12px;background:var(--card2);display:flex;align-items:center;justify-content:center;font-size:28px;}
 .pinned-name{font-size:11px;text-align:center;margin-top:4px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;}
+/* Search + filter */
 .search-row{padding:10px 16px 4px;position:relative;}
 .search-input{width:100%;padding:10px 14px 10px 38px;border:1.5px solid var(--sand);border-radius:50px;font-size:14px;color:var(--wood);background:var(--card);outline:none;}
 .search-input:focus{border-color:var(--clay);}
@@ -50,6 +52,7 @@ input,textarea,select{font-family:var(--sans);font-size:16px;}
 .filter-row::-webkit-scrollbar{display:none;}
 .fpill{white-space:nowrap;padding:5px 12px;border-radius:20px;font-size:12px;border:1.5px solid var(--sand);color:var(--text-muted);background:var(--card);}
 .fpill.active{background:var(--wood);border-color:var(--wood);color:white;}
+/* Content grid */
 .content{padding:8px 16px 140px;}
 .wardrobe-grid{display:grid;grid-template-columns:1fr 1fr;gap:10px;}
 .w-card{background:var(--white);border:1px solid var(--sand);border-radius:var(--radius-sm);overflow:hidden;cursor:pointer;transition:all .15s;}
@@ -64,11 +67,14 @@ input,textarea,select{font-family:var(--sans);font-size:16px;}
 .badge-off{background:var(--card2);color:var(--text-muted);}
 .badge-small{background:#e8f0ff;color:#5575c0;}
 .badge-pin{font-size:14px;}
+/* FAB */
 .fab{position:fixed;bottom:calc(72px + env(safe-area-inset-bottom));right:20px;width:52px;height:52px;border-radius:50%;background:var(--wood);color:white;font-size:24px;display:flex;align-items:center;justify-content:center;box-shadow:0 4px 16px rgba(74,66,61,.3);z-index:40;}
+/* Bottom nav */
 .bottom-nav{position:fixed;bottom:0;left:0;right:0;background:rgba(253,251,250,.95);backdrop-filter:blur(12px);border-top:1px solid var(--sand);padding:8px 0 calc(8px + env(safe-area-inset-bottom));display:flex;max-width:480px;margin:0 auto;}
 .nav-btn{flex:1;display:flex;flex-direction:column;align-items:center;gap:3px;font-size:10px;color:var(--text-muted);text-decoration:none;opacity:.45;transition:opacity .15s;}
 .nav-btn.active{color:var(--clay);opacity:1;font-weight:600;}
 .nav-icon{font-size:22px;}
+/* Modal */
 .modal-overlay{position:fixed;inset:0;z-index:100;background:rgba(74,66,61,.5);display:flex;align-items:flex-end;animation:fadeIn .2s;}
 @keyframes fadeIn{from{opacity:0}to{opacity:1}}
 .modal-sheet{width:100%;max-width:480px;margin:0 auto;background:var(--white);border-radius:24px 24px 0 0;padding:0 0 calc(16px + env(safe-area-inset-bottom));max-height:92dvh;display:flex;flex-direction:column;animation:slideUp .25s ease;}
@@ -107,386 +113,476 @@ input,textarea,select{font-family:var(--sans);font-size:16px;}
 .wl-name{font-size:13px;font-weight:500;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;}
 .wl-badges{display:flex;gap:4px;flex-wrap:wrap;margin-top:5px;}
 .csv-area{width:100%;min-height:100px;padding:10px;border:1.5px dashed var(--sand);border-radius:var(--radius-sm);font-size:13px;color:var(--wood);background:var(--card);outline:none;resize:none;}
-.upload-btn-label{display:inline-block;padding:9px 16px;background:var(--clay);color:white;border-radius:var(--radius-sm);font-size:13px;cursor:pointer;font-weight:500;}
+
+/* 導覽列高亮 */
 .nav-btn{opacity:.45;}
 .nav-btn.active{opacity:1;font-weight:600;}
 </style>
-<!-- PWA Meta -->
-<meta name="apple-mobile-web-app-capable" content="yes">
-<meta name="apple-mobile-web-app-status-bar-style" content="default">
-<meta name="apple-mobile-web-app-title" content="嘟嘟一家">
-<meta name="mobile-web-app-capable" content="yes">
-<meta name="theme-color" content="#A68A7D">
-<script>
-(function(){
-var iconDataUri="data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHZpZXdCb3g9IjAgMCAxOTIgMTkyIj48cmVjdCB3aWR0aD0iMTkyIiBoZWlnaHQ9IjE5MiIgcng9IjQwIiBmaWxsPSIjQTY4QTdEIi8+PHRleHQgeD0iOTYiIHk9IjEzMCIgdGV4dC1hbmNob3I9Im1pZGRsZSIgZm9udC1zaXplPSIxMTAiIGZvbnQtZmFtaWx5PSJBcHBsZSBDb2xvciBFbW9qaSxTZWdvZSBVSSBFbW9qaSxzYW5zLXNlcmlmIj7wn4yZPC90ZXh0Pjwvc3ZnPg==";
-var manifest={name:"嘟嘟一家🌙",short_name:"嘟嘟一家",start_url:"/home-hub/",scope:"/home-hub/",display:"standalone",background_color:"#FDFBFA",theme_color:"#A68A7D",lang:"zh-TW",icons:[{src:iconDataUri,sizes:"192x192",type:"image/svg+xml",purpose:"any maskable"},{src:iconDataUri,sizes:"512x512",type:"image/svg+xml",purpose:"any maskable"}]};
-var blob=new Blob([JSON.stringify(manifest)],{type:"application/manifest+json"});
-var link=document.createElement("link");link.rel="manifest";link.href=URL.createObjectURL(blob);document.head.appendChild(link);
-})();
-</script>
+
+  <!-- PWA Meta -->
+  <meta name="apple-mobile-web-app-capable" content="yes">
+  <meta name="apple-mobile-web-app-status-bar-style" content="default">
+  <meta name="apple-mobile-web-app-title" content="嘟嘟一家">
+  <meta name="mobile-web-app-capable" content="yes">
+  <meta name="theme-color" content="#A68A7D">
+  <meta name="application-name" content="嘟嘟一家">
+  <link rel="apple-touch-icon" href="data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHZpZXdCb3g9IjAgMCAxODAgMTgwIj48cmVjdCB3aWR0aD0iMTgwIiBoZWlnaHQ9IjE4MCIgcng9IjAiIGZpbGw9IiNBNjhBN0QiLz48dGV4dCB4PSI5MCIgeT0iMTIwIiB0ZXh0LWFuY2hvcj0ibWlkZGxlIiBmb250LXNpemU9IjEwMCIgZm9udC1mYW1pbHk9IkFwcGxlIENvbG9yIEVtb2ppLFNlZ29lIFVJIEVtb2ppLHNhbnMtc2VyaWYiPvCfjJk8L3RleHQ+PC9zdmc+">
+  <script>
+    (function(){
+      var iconDataUri = "data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHZpZXdCb3g9IjAgMCAxOTIgMTkyIj48cmVjdCB3aWR0aD0iMTkyIiBoZWlnaHQ9IjE5MiIgcng9IjQwIiBmaWxsPSIjQTY4QTdEIi8+PHRleHQgeD0iOTYiIHk9IjEzMCIgdGV4dC1hbmNob3I9Im1pZGRsZSIgZm9udC1zaXplPSIxMTAiIGZvbnQtZmFtaWx5PSJBcHBsZSBDb2xvciBFbW9qaSxTZWdvZSBVSSBFbW9qaSxzYW5zLXNlcmlmIj7wn4yZPC90ZXh0Pjwvc3ZnPg==";
+      var manifest = {
+        name: "嘟嘟一家🌙",
+        short_name: "嘟嘟一家",
+        description: "家庭數位管家",
+        start_url: "/home-hub/",
+        scope: "/home-hub/",
+        display: "standalone",
+        orientation: "portrait",
+        background_color: "#FDFBFA",
+        theme_color: "#A68A7D",
+        lang: "zh-TW",
+        icons: [
+          { src: iconDataUri, sizes: "192x192", type: "image/svg+xml", purpose: "any maskable" },
+          { src: iconDataUri, sizes: "512x512", type: "image/svg+xml", purpose: "any maskable" }
+        ]
+      };
+      var blob = new Blob([JSON.stringify(manifest)], {type: "application/manifest+json"});
+      var url = URL.createObjectURL(blob);
+      var link = document.createElement("link");
+      link.rel = "manifest";
+      link.href = url;
+      document.head.appendChild(link);
+    })();
+  </script>
 </head>
 <body>
 <div id="root"></div>
 <script type="text/babel">
 const {useState,useEffect}=React;
-const firebaseConfig={apiKey:"AIzaSyAFGSQOvAp1thZkWBZ-nLHe-uR8llDQDI8",authDomain:"home-hub-be41f.firebaseapp.com",projectId:"home-hub-be41f",storageBucket:"home-hub-be41f.firebasestorage.app",messagingSenderId:"286497032414",appId:"1:286497032414:web:16d3f0242a400d0de85a4f"};
+const firebaseConfig = {
+  apiKey: "AIzaSyAFGSQOvAp1thZkWBZ-nLHe-uR8llDQDI8",
+  authDomain: "home-hub-be41f.firebaseapp.com",
+  projectId: "home-hub-be41f",
+  storageBucket: "home-hub-be41f.firebasestorage.app",
+  messagingSenderId: "286497032414",
+  appId: "1:286497032414:web:16d3f0242a400d0de85a4f"
+};
 let db;
 try{if(!firebase.apps.length)firebase.initializeApp(firebaseConfig);db=firebase.firestore();db.enablePersistence().catch(()=>{});}catch(e){}
 
-const CLOUDINARY_CLOUD=‘dxd5ijwof’;
-const CLOUDINARY_PRESET=‘ml_default’;
+const CLOUDINARY_CLOUD='dxd5ijwof';
+const CLOUDINARY_PRESET='ml_default';
 async function uploadToCloudinary(file){
-const compressed=await compressImg(file,1200,0.82);
-const fd=new FormData();
-fd.append(‘file’,compressed);
-fd.append(‘upload_preset’,CLOUDINARY_PRESET);
-const r=await fetch(‘https://api.cloudinary.com/v1_1/’+CLOUDINARY_CLOUD+’/image/upload’,{method:‘POST’,body:fd});
-const d=await r.json();
-if(!d.secure_url)throw new Error(‘上傳失敗’);
-return d.secure_url;
+  const compressed=await compressImg(file,1200,0.82);
+  const fd=new FormData();
+  fd.append('file',compressed);
+  fd.append('upload_preset',CLOUDINARY_PRESET);
+  const r=await fetch('https://api.cloudinary.com/v1_1/'+CLOUDINARY_CLOUD+'/image/upload',{method:'POST',body:fd});
+  const d=await r.json();
+  if(!d.secure_url)throw new Error('upload failed');
+  return d.secure_url;
 }
 async function compressImg(file,maxW,q){
-return new Promise(resolve=>{
-const img=new Image();
-const u=URL.createObjectURL(file);
-img.onload=()=>{
-let w=img.width,h=img.height;
-if(w>maxW){h=Math.round(h*maxW/w);w=maxW;}
-const c=document.createElement(‘canvas’);
-c.width=w;c.height=h;
-c.getContext(‘2d’).drawImage(img,0,0,w,h);
-c.toBlob(b=>resolve(b||file),‘image/jpeg’,q);
-URL.revokeObjectURL(u);
-};
-img.src=u;
-});
+  return new Promise(resolve=>{
+    const img=new Image();
+    const u=URL.createObjectURL(file);
+    img.onload=()=>{
+      let w=img.width,h=img.height;
+      if(w>maxW){h=Math.round(h*maxW/w);w=maxW;}
+      const c=document.createElement('canvas');
+      c.width=w;c.height=h;
+      c.getContext('2d').drawImage(img,0,0,w,h);
+      c.toBlob(b=>resolve(b||file),'image/jpeg',q);
+      URL.revokeObjectURL(u);
+    };
+    img.src=u;
+  });
 }
 
-const ROOM_KEY=‘hh_roomCode’;
-const TYPES=[‘上衣’,‘洋裝/連身’,‘裙子/褲子’,‘套裝’,‘外套’,‘居家’,‘配件’,‘其他’];
-const SLEEVES=[‘長袖’,‘短袖’,‘無袖’,‘加厚’];
-const SOURCES=[‘自購’,‘恩典牌’,‘二手’,‘禮物’];
-const STATUSES=[‘當季’,‘非當季’,‘穿不下’,‘已轉贈/售出’];
-const STATUS_COLORS={‘當季’:‘badge-current’,‘非當季’:‘badge-off’,‘穿不下’:‘badge-small’,‘已轉贈/售出’:‘badge-off’};
+
+const ROOM_KEY='hh_roomCode';
+const TYPES=['上衣','洋裝/連身','裙子/褲子','套裝','外套','居家','配件','其他'];
+const SLEEVES=['長袖','短袖','無袖','加厚'];
+const SOURCES=['自購','恩典牌','二手','禮物'];
+const STATUSES=['當季','非當季','穿不下','已轉贈/售出'];
+
+const STATUS_COLORS={'當季':'badge-current','非當季':'badge-off','穿不下':'badge-small','已轉贈/售出':'badge-off'};
 
 function App(){
-const [roomCode]=useState(()=>localStorage.getItem(ROOM_KEY)||’’);
-const [items,setItems]=useState([]);
-const [search,setSearch]=useState(’’);
-const [statusFilter,setStatusFilter]=useState(‘all’);
-const [typeFilter,setTypeFilter]=useState(‘all’);
-const [showAdd,setShowAdd]=useState(false);
-const [showDetail,setShowDetail]=useState(null);
-const [editMode,setEditMode]=useState(false);
-const [showCsv,setShowCsv]=useState(false);
-const [viewMode,setViewMode]=useState(‘card’);
-const [sortBy,setSortBy]=useState(‘createdAt’);
-const [csvText,setCsvText]=useState(’’);
-const room=roomCode;
-useEffect(()=>{
-if(!room||!db)return;
-const u=db.collection(‘wardrobe’).doc(room).collection(‘items’)
-.onSnapshot(snap=>{setItems(snap.docs.map(d=>({id:d.id,…d.data()})));},()=>{});
-return()=>u();
-},[room]);
-const sorted=[…items].sort((a,b)=>{
-if(sortBy===‘name’)return(a.name||’’).localeCompare(b.name||’’,‘zh-TW’);
-return(b.createdAt||0)-(a.createdAt||0);
-});
-const pinned=sorted.filter(r=>r.pinned);
-const filtered=sorted.filter(r=>{
-const q=search.toLowerCase();
-const matchSearch=!q||r.name?.toLowerCase().includes(q)||r.size?.toLowerCase().includes(q)||r.location?.toLowerCase().includes(q);
-const matchStatus=statusFilter===‘all’||r.status===statusFilter;
-const matchType=typeFilter===‘all’||r.type===typeFilter;
-return matchSearch&&matchStatus&&matchType;
-});
-const stats={total:items.length,current:items.filter(r=>r.status===‘當季’).length,off:items.filter(r=>r.status===‘非當季’).length,unworn:items.filter(r=>!r.worn).length};
-const handleSave=async(data)=>{
-if(!db)return;
-const col=db.collection(‘wardrobe’).doc(room).collection(‘items’);
-if(data.id){await col.doc(data.id).update({…data,updatedAt:Date.now()});setShowDetail({…showDetail,…data});setEditMode(false);}
-else{await col.add({…data,createdAt:Date.now(),updatedAt:Date.now()});setShowAdd(false);}
-};
-const handleDelete=async(item)=>{
-if(!db||!window.confirm(‘確定刪除？’))return;
-await db.collection(‘wardrobe’).doc(room).collection(‘items’).doc(item.id).delete();
-setShowDetail(null);
-};
-const togglePin=async(item)=>{
-if(!db)return;
-await db.collection(‘wardrobe’).doc(room).collection(‘items’).doc(item.id).update({pinned:!item.pinned,updatedAt:Date.now()});
-setShowDetail(d=>d&&d.id===item.id?{…d,pinned:!d.pinned}:d);
-};
-const importCsv=async()=>{
-if(!csvText.trim()||!db)return;
-const lines=csvText.trim().split(’\n’).slice(1);
-const batch=db.batch();
-const col=db.collection(‘wardrobe’).doc(room).collection(‘items’);
-lines.forEach(line=>{
-const [name,type,size,sleeve,source,status,location,worn,note,imageUrl]=line.split(’,’).map(s=>s.trim());
-if(!name)return;
-batch.set(col.doc(),{name,type:type||‘其他’,size:size||’’,sleeve:sleeve||’’,source:source||‘自購’,status:status||‘當季’,location:location||’’,worn:worn===‘true’,note:note||’’,imageUrl:imageUrl||’’,pinned:false,createdAt:Date.now(),updatedAt:Date.now()});
-});
-await batch.commit();setShowCsv(false);setCsvText(’’);
-};
-const moduleUrl=mod=>`${mod}?room=${room}`;
-return(
-<div className="app">
-<div className="header">
-<div className="header-title">👗 電子衣櫥</div>
-<div style={{display:‘flex’,gap:8}}>
-<select value={sortBy} onChange={e=>setSortBy(e.target.value)} style={{fontSize:12,padding:‘4px 8px’,border:‘1px solid var(–sand)’,borderRadius:8,background:‘var(–card2)’,color:‘var(–wood)’,fontFamily:‘var(–sans)’}}>
-<option value="createdAt">新增日期</option>
-<option value="name">名稱排序</option>
-</select>
-<button className=“icon-btn” onClick={()=>setViewMode(v=>v===‘card’?‘list’:‘card’)}>{viewMode===‘card’?‘☰’:‘⊞’}</button>
-<button className=“icon-btn” onClick={()=>setShowCsv(true)}>📥</button>
-</div>
-</div>
-<div className="stats-row">
-<div className="stat-card"><div className="stat-num">{stats.total}</div><div className="stat-label">總計</div></div>
-<div className="stat-card"><div className=“stat-num” style={{color:‘var(–sage)’}}>{stats.current}</div><div className="stat-label">當季</div></div>
-<div className="stat-card"><div className="stat-num">{stats.off}</div><div className="stat-label">非當季</div></div>
-<div className="stat-card"><div className=“stat-num” style={{color:‘var(–highlight)’}}>{stats.unworn}</div><div className="stat-label">未穿</div></div>
-</div>
-{pinned.length>0&&(
-<div className="pinned-strip">
-<div className="pinned-title">📌 釘選最愛</div>
-<div className="pinned-scroll">
-{pinned.map(r=>(
-<div key={r.id} className=“pinned-item” onClick={()=>{setShowDetail(r);setEditMode(false);}}>
-{r.imageUrl?<img className=“pinned-img” src={r.imageUrl} alt=”” onError={e=>{e.target.style.display=‘none’;}}/>:<div className="pinned-img-ph">👗</div>}
-<div className="pinned-name">{r.name}</div>
-</div>
-))}
-</div>
-</div>
-)}
-<div className="search-row">
-<span className="search-icon">🔍</span>
-<input className=“search-input” placeholder=“搜尋名稱、尺碼、位置…” value={search} onChange={e=>setSearch(e.target.value)} style={{paddingRight:search?‘36px’:‘14px’}}/>
-{search&&<button onClick={()=>setSearch(’’)} style={{position:‘absolute’,right:‘24px’,top:‘50%’,transform:‘translateY(-50%)’,background:‘none’,border:‘none’,cursor:‘pointer’,fontSize:16,color:‘var(–text-muted)’,lineHeight:1}}>✕</button>}
-</div>
-<div className="filter-row">
-{[‘all’,‘當季’,‘非當季’,‘穿不下’,‘已轉贈/售出’].map(s=>(
-<button key={s} className={`fpill ${statusFilter===s?'active':''}`} onClick={()=>setStatusFilter(s)}>{s===‘all’?‘全部狀態’:s}</button>
-))}
-</div>
-<div className="filter-row" style={{paddingTop:0}}>
-{[‘all’,…TYPES].map(t=>(
-<button key={t} className={`fpill ${typeFilter===t?'active':''}`} onClick={()=>setTypeFilter(t)}>{t===‘all’?‘全部類型’:t}</button>
-))}
-</div>
-<div className="content">
-{filtered.length===0&&<div className="empty"><div style={{fontSize:40}}>👗</div><div style={{marginTop:8}}>沒有符合的衣物</div></div>}
-{viewMode===‘card’?(
-<div className="wardrobe-grid">
-{filtered.map(r=>(
-<div key={r.id} className=“w-card” onClick={()=>{setShowDetail(r);setEditMode(false);}}>
-{r.imageUrl?<img className=“w-img” src={r.imageUrl} alt=”” onError={e=>{e.target.style.display=‘none’;}}/>:<div className="w-img-ph">👗</div>}
-<div className="w-body">
-<div className="w-name">{r.pinned&&’📌 ’}{r.name}</div>
-<div className="w-meta">
-{r.size&&<span className="w-badge badge-small">{r.size}</span>}
-{r.status&&<span className={`w-badge ${STATUS_COLORS[r.status]||'badge-off'}`}>{r.status}</span>}
-{r.sleeve&&<span className="w-badge badge-off">{r.sleeve}</span>}
-</div>
-</div>
-</div>
-))}
-</div>
-):(
-<div>
-{filtered.map(r=>(
-<div key={r.id} className=“wl-card” onClick={()=>{setShowDetail(r);setEditMode(false);}}>
-{r.imageUrl?<img className=“wl-thumb” src={r.imageUrl} alt=”” onError={e=>{e.target.style.display=‘none’;}}/>:<div className="wl-thumb-ph">👗</div>}
-<div className="wl-body">
-<div className="wl-name">{r.pinned&&’📌 ’}{r.name}</div>
-<div className="wl-badges">
-{r.size&&<span className="w-badge badge-small">{r.size}</span>}
-{r.status&&<span className={`w-badge ${STATUS_COLORS[r.status]||'badge-off'}`}>{r.status}</span>}
-{r.sleeve&&<span className="w-badge badge-off">{r.sleeve}</span>}
-{r.location&&<span className="w-badge badge-off">📍{r.location}</span>}
-</div>
-</div>
-</div>
-))}
-</div>
-)}
-</div>
-<button className=“fab” onClick={()=>setShowAdd(true)}>＋</button>
-<div className="bottom-nav">
-<a className=“nav-btn” href={`index.html?room=${room}`}><span className="nav-icon">🏡</span>首頁</a>
-<a className=“nav-btn” href={moduleUrl(‘module-reminders.html’)}><span className="nav-icon">📋</span>提醒</a>
-<a className=“nav-btn” href={moduleUrl(‘module-inventory.html’)}><span className="nav-icon">📦</span>庫存</a>
-<a className="nav-btn active" href="#"><span className="nav-icon">👗</span>衣櫥</a>
-<a className=“nav-btn” href={moduleUrl(‘module-wiki.html’)}><span className="nav-icon">📖</span>百科</a>
-</div>
-{showAdd&&(
-<div className=“modal-overlay” onClick={()=>setShowAdd(false)}>
-<div className=“modal-sheet” onClick={e=>e.stopPropagation()}>
-<div className="modal-handle"/>
-<div className="modal-header">
-<div className="modal-title">新增衣物</div>
-<button className=“modal-close” onClick={()=>setShowAdd(false)}>✕</button>
-</div>
-<div className="modal-body"><WardrobeForm data={{}} onSave={handleSave} onCancel={()=>setShowAdd(false)}/></div>
-</div>
-</div>
-)}
-{showDetail&&(
-<div className=“modal-overlay” onClick={()=>setShowDetail(null)}>
-<div className=“modal-sheet” onClick={e=>e.stopPropagation()}>
-<div className="modal-handle"/>
-<div className="modal-header">
-<div style={{display:‘flex’,alignItems:‘center’,gap:8}}>
-<div className="modal-title">{showDetail.name}</div>
-{!editMode&&<span className="readonly-badge">🔒 唯讀</span>}
-</div>
-<div style={{display:‘flex’,gap:6}}>
-<button className=“icon-btn” onClick={()=>togglePin(showDetail)}>{showDetail.pinned?‘📌’:‘📍’}</button>
-{!editMode&&<button className=“icon-btn” onClick={()=>setEditMode(true)}>✏️</button>}
-<button className=“modal-close” onClick={()=>setShowDetail(null)}>✕</button>
-</div>
-</div>
-<div className="modal-body">
-{editMode?<WardrobeForm data={showDetail} onSave={handleSave} onCancel={()=>setEditMode(false)} onDelete={()=>handleDelete(showDetail)}/>:<WardrobeDetail item={showDetail}/>}
-</div>
-</div>
-</div>
-)}
-{showCsv&&(
-<div className=“modal-overlay” onClick={()=>setShowCsv(false)}>
-<div className=“modal-sheet” onClick={e=>e.stopPropagation()}>
-<div className="modal-handle"/>
-<div className="modal-header"><div className="modal-title">📥 匯入 CSV</div><button className=“modal-close” onClick={()=>setShowCsv(false)}>✕</button></div>
-<div className="modal-body">
-<div style={{fontSize:12,color:‘var(–text-muted)’,marginBottom:10}}>手動貼上 CSV（name, type, size, sleeve, source, status, location, worn, note, imageUrl）</div>
-<textarea className=“csv-area” value={csvText} onChange={e=>setCsvText(e.target.value)} placeholder={‘name,type,size,sleeve,source,status,location,worn,note,imageUrl\n粉色包屁衣,洋裝/連身,80cm,短袖,自購,當季,臥室衣櫃,true,,’}/>
-</div>
-<div className="modal-footer">
-<button className=“btn-secondary” onClick={()=>setShowCsv(false)}>取消</button>
-<button className="btn-primary" onClick={importCsv}>匯入</button>
-</div>
-</div>
-</div>
-)}
-</div>
-);
+  const [roomCode]=useState(()=>localStorage.getItem(ROOM_KEY)||'');
+  const [items,setItems]=useState([]);
+  const [search,setSearch]=useState('');
+  const [statusFilter,setStatusFilter]=useState('all');
+  const [typeFilter,setTypeFilter]=useState('all');
+  const [showAdd,setShowAdd]=useState(false);
+  const [showDetail,setShowDetail]=useState(null);
+  const [editMode,setEditMode]=useState(false);
+  const [showCsv,setShowCsv]=useState(false);
+  const [viewMode,setViewMode]=useState('card');
+  const [sortBy,setSortBy]=useState('createdAt'); // createdAt | name
+  const [csvText,setCsvText]=useState('');
+  const room=roomCode;
+
+  useEffect(()=>{
+    if(!room||!db)return;
+    const u=db.collection('wardrobe').doc(room).collection('items')
+      .onSnapshot(snap=>{setItems(snap.docs.map(d=>({id:d.id,...d.data()})));},()=>{});
+    return()=>u();
+  },[room]);
+
+  const sorted=[...items].sort((a,b)=>{
+    if(sortBy==='name') return (a.name||'').localeCompare(b.name||'','zh-TW');
+    return (b.createdAt||0)-(a.createdAt||0);
+  });
+  const pinned=sorted.filter(r=>r.pinned);
+  const filtered=sorted.filter(r=>{
+    const q=search.toLowerCase();
+    const matchSearch=!q||r.name?.toLowerCase().includes(q)||r.size?.toLowerCase().includes(q)||r.location?.toLowerCase().includes(q);
+    const matchStatus=statusFilter==='all'||r.status===statusFilter;
+    const matchType=typeFilter==='all'||r.type===typeFilter;
+    return matchSearch&&matchStatus&&matchType;
+  });
+
+  const stats={total:items.length,current:items.filter(r=>r.status==='當季').length,off:items.filter(r=>r.status==='非當季').length,unworn:items.filter(r=>!r.worn).length};
+
+  const handleSave=async(data)=>{
+    if(!db)return;
+    const col=db.collection('wardrobe').doc(room).collection('items');
+    if(data.id){
+      await col.doc(data.id).update({...data,updatedAt:Date.now()});
+      setShowDetail({...showDetail,...data});setEditMode(false);
+    }else{
+      await col.add({...data,createdAt:Date.now(),updatedAt:Date.now()});
+      setShowAdd(false);
+    }
+  };
+
+  const handleDelete=async(item)=>{
+    if(!db||!window.confirm('確定刪除？'))return;
+    await db.collection('wardrobe').doc(room).collection('items').doc(item.id).delete();
+    setShowDetail(null);
+  };
+
+  const togglePin=async(item)=>{
+    if(!db)return;
+    await db.collection('wardrobe').doc(room).collection('items').doc(item.id).update({pinned:!item.pinned,updatedAt:Date.now()});
+    setShowDetail(d=>d&&d.id===item.id?{...d,pinned:!d.pinned}:d);
+  };
+
+
+  const importCsv=async()=>{
+    if(!csvText.trim()||!db)return;
+    const lines=csvText.trim().split('\n').slice(1);
+    const batch=db.batch();
+    const col=db.collection('wardrobe').doc(room).collection('items');
+    lines.forEach(line=>{
+      const [name,type,size,sleeve,source,status,location,worn,note,imageUrl]=line.split(',').map(s=>s.trim());
+      if(!name)return;
+      batch.set(col.doc(),{name,type:type||'其他',size:size||'',sleeve:sleeve||'',source:source||'自購',status:status||'當季',location:location||'',worn:worn==='true',note:note||'',imageUrl:imageUrl||'',pinned:false,createdAt:Date.now(),updatedAt:Date.now()});
+    });
+    await batch.commit();setShowCsv(false);setCsvText('');
+  };
+
+  const moduleUrl=mod=>`${mod}?room=${room}`;
+
+  return(
+    <div className="app">
+      <div className="header">
+        <div className="header-title">👗 電子衣櫥</div>
+        <div style={{display:'flex',gap:8}}>
+          <select value={sortBy} onChange={e=>setSortBy(e.target.value)} style={{fontSize:12,padding:'4px 8px',border:'1px solid var(--sand)',borderRadius:8,background:'var(--card2)',color:'var(--wood)',fontFamily:'var(--sans)'}}>
+            <option value="createdAt">新增日期</option>
+            <option value="name">名稱排序</option>
+          </select>
+          <button className="icon-btn" onClick={()=>setViewMode(v=>v==='card'?'list':'card')}>{viewMode==='card'?'☰':'⊞'}</button>
+          <button className="icon-btn" onClick={()=>setShowCsv(true)}>📥</button>
+        </div>
+      </div>
+
+      {/* Stats */}
+      <div className="stats-row">
+        <div className="stat-card"><div className="stat-num">{stats.total}</div><div className="stat-label">總計</div></div>
+        <div className="stat-card"><div className="stat-num" style={{color:'var(--sage)'}}>{stats.current}</div><div className="stat-label">當季</div></div>
+        <div className="stat-card"><div className="stat-num">{stats.off}</div><div className="stat-label">非當季</div></div>
+        <div className="stat-card"><div className="stat-num" style={{color:'var(--highlight)'}}>{stats.unworn}</div><div className="stat-label">未穿</div></div>
+      </div>
+
+      {/* Pinned Strip */}
+      {pinned.length>0&&(
+        <div className="pinned-strip">
+          <div className="pinned-title">📌 釘選最愛</div>
+          <div className="pinned-scroll">
+            {pinned.map(r=>(
+              <div key={r.id} className="pinned-item" onClick={()=>{setShowDetail(r);setEditMode(false);}}>
+                {r.imageUrl
+                  ?<img className="pinned-img" src={r.imageUrl} alt="" onError={e=>{e.target.style.display='none';}}/>
+                  :<div className="pinned-img-ph">👗</div>
+                }
+                <div className="pinned-name">{r.name}</div>
+              </div>
+            ))}
+          </div>
+        </div>
+      )}
+
+      {/* Search */}
+      <div className="search-row">
+        <span className="search-icon">🔍</span>
+        <input className="search-input" placeholder="搜尋名稱、尺碼、位置..." value={search} onChange={e=>setSearch(e.target.value)} style={{paddingRight:search?'36px':'14px'}}/>
+        {search&&<button onClick={()=>setSearch('')} style={{position:'absolute',right:'24px',top:'50%',transform:'translateY(-50%)',background:'none',border:'none',cursor:'pointer',fontSize:16,color:'var(--text-muted)',lineHeight:1}}>✕</button>}
+      </div>
+
+      {/* Status filter */}
+      <div className="filter-row">
+        {['all','當季','非當季','穿不下','已轉贈/售出'].map(s=>(
+          <button key={s} className={`fpill ${statusFilter===s?'active':''}`} onClick={()=>setStatusFilter(s)}>{s==='all'?'全部狀態':s}</button>
+        ))}
+      </div>
+
+      {/* Type filter */}
+      <div className="filter-row" style={{paddingTop:0}}>
+        {['all',...TYPES].map(t=>(
+          <button key={t} className={`fpill ${typeFilter===t?'active':''}`} onClick={()=>setTypeFilter(t)}>{t==='all'?'全部類型':t}</button>
+        ))}
+      </div>
+
+      {/* Grid */}
+      <div className="content">
+        {filtered.length===0&&<div className="empty"><div style={{fontSize:40}}>👗</div><div style={{marginTop:8}}>沒有符合的衣物</div></div>}
+        {viewMode==='card'?(
+          <div className="wardrobe-grid">
+            {filtered.map(r=>(
+              <div key={r.id} className="w-card" onClick={()=>{setShowDetail(r);setEditMode(false);}}>
+                {r.imageUrl
+                  ?<img className="w-img" src={r.imageUrl} alt="" onError={e=>{e.target.style.display='none';}}/>
+                  :<div className="w-img-ph">👗</div>
+                }
+                <div className="w-body">
+                  <div className="w-name">{r.pinned&&'📌 '}{r.name}</div>
+                  <div className="w-meta">
+                    {r.size&&<span className="w-badge badge-small">{r.size}</span>}
+                    {r.status&&<span className={`w-badge ${STATUS_COLORS[r.status]||'badge-off'}`}>{r.status}</span>}
+                    {r.sleeve&&<span className="w-badge badge-off">{r.sleeve}</span>}
+                  </div>
+                </div>
+              </div>
+            ))}
+          </div>
+        ):(
+          <div>
+            {filtered.map(r=>(
+              <div key={r.id} className="wl-card" onClick={()=>{setShowDetail(r);setEditMode(false);}}>
+                {r.imageUrl
+                  ?<img className="wl-thumb" src={r.imageUrl} alt="" onError={e=>{e.target.style.display='none';}}/>
+                  :<div className="wl-thumb-ph">👗</div>
+                }
+                <div className="wl-body">
+                  <div className="wl-name">{r.pinned&&'📌 '}{r.name}</div>
+                  <div className="wl-badges">
+                    {r.size&&<span className="w-badge badge-small">{r.size}</span>}
+                    {r.status&&<span className={`w-badge ${STATUS_COLORS[r.status]||'badge-off'}`}>{r.status}</span>}
+                    {r.sleeve&&<span className="w-badge badge-off">{r.sleeve}</span>}
+                    {r.location&&<span className="w-badge badge-off">📍{r.location}</span>}
+                  </div>
+                </div>
+              </div>
+            ))}
+          </div>
+        )}
+      </div>
+
+      <button className="fab" onClick={()=>setShowAdd(true)}>＋</button>
+
+      <div className="bottom-nav">
+        <a className="nav-btn" href={`index.html?room=${room}`}><span className="nav-icon">🏡</span>首頁</a>
+        <a className="nav-btn" href={moduleUrl('module-reminders.html')}><span className="nav-icon">📋</span>提醒</a>
+        <a className="nav-btn" href={moduleUrl('module-inventory.html')}><span className="nav-icon">📦</span>庫存</a>
+        <a className="nav-btn active" href="#"><span className="nav-icon">👗</span>衣櫥</a>
+        <a className="nav-btn" href={moduleUrl('module-wiki.html')}><span className="nav-icon">📖</span>百科</a>
+      </div>
+
+      {/* Add Modal */}
+      {showAdd&&(
+        <div className="modal-overlay" onClick={()=>setShowAdd(false)}>
+          <div className="modal-sheet" onClick={e=>e.stopPropagation()}>
+            <div className="modal-handle"/>
+            <div className="modal-header">
+              <div className="modal-title">新增衣物</div>
+              <button className="modal-close" onClick={()=>setShowAdd(false)}>✕</button>
+            </div>
+            <div className="modal-body"><WardrobeForm data={{}} onSave={handleSave} onCancel={()=>setShowAdd(false)}/></div>
+          </div>
+        </div>
+      )}
+
+      {/* Detail Modal */}
+      {showDetail&&(
+        <div className="modal-overlay" onClick={()=>setShowDetail(null)}>
+          <div className="modal-sheet" onClick={e=>e.stopPropagation()}>
+            <div className="modal-handle"/>
+            <div className="modal-header">
+              <div style={{display:'flex',alignItems:'center',gap:8}}>
+                <div className="modal-title">{showDetail.name}</div>
+                {!editMode&&<span className="readonly-badge">🔒 唯讀</span>}
+              </div>
+              <div style={{display:'flex',gap:6}}>
+                <button className="icon-btn" onClick={()=>togglePin(showDetail)}>{showDetail.pinned?'📌':'📍'}</button>
+                {!editMode&&<button className="icon-btn" onClick={()=>setEditMode(true)}>✏️</button>}
+                <button className="modal-close" onClick={()=>setShowDetail(null)}>✕</button>
+              </div>
+            </div>
+            <div className="modal-body">
+              {editMode
+                ?<WardrobeForm data={showDetail} onSave={handleSave} onCancel={()=>setEditMode(false)} onDelete={()=>handleDelete(showDetail)}/>
+                :<WardrobeDetail item={showDetail}/>
+              }
+            </div>
+          </div>
+        </div>
+      )}
+
+      {/* CSV Modal */}
+      {showCsv&&(
+        <div className="modal-overlay" onClick={()=>setShowCsv(false)}>
+          <div className="modal-sheet" onClick={e=>e.stopPropagation()}>
+            <div className="modal-handle"/>
+            <div className="modal-header"><div className="modal-title">📥 匯入 CSV</div><button className="modal-close" onClick={()=>setShowCsv(false)}>✕</button></div>
+            <div className="modal-body">
+              <div style={{fontSize:12,color:'var(--text-muted)',marginBottom:10}}>或手動貼上 CSV（name, type, size, sleeve, source, status, location, worn, note, imageUrl）</div>
+              <textarea className="csv-area" value={csvText} onChange={e=>setCsvText(e.target.value)} placeholder={'name,type,size,sleeve,source,status,location,worn,note,imageUrl\n粉色包屁衣,洋裝/連身,80cm,短袖,自購,當季,臥室衣櫃,true,,'}/>
+            </div>
+            <div className="modal-footer">
+              <button className="btn-secondary" onClick={()=>setShowCsv(false)}>取消</button>
+              <button className="btn-primary" onClick={importCsv}>匯入</button>
+            </div>
+          </div>
+        </div>
+      )}
+    </div>
+  );
 }
 
 function WardrobeDetail({item}){
-return(
-<div>
-{item.imageUrl
-?<img src={item.imageUrl} alt=”” style={{width:‘100%’,maxHeight:220,objectFit:‘contain’,borderRadius:12,marginBottom:14,background:‘var(–card2)’}} onError={e=>e.target.style.display=‘none’}/>
-:<div style={{textAlign:‘center’,fontSize:48,padding:‘16px 0 20px’}}>👗</div>
-}
-<div style={{display:‘grid’,gridTemplateColumns:‘1fr 1fr’,gap:‘0 12px’}}>
-{[{label:‘類型’,val:item.type||’—’},{label:‘尺碼’,val:item.size||’—’},{label:‘袖長’,val:item.sleeve||’—’},{label:‘來源’,val:item.source||’—’},{label:‘狀態’,val:item.status||’—’},{label:‘已穿過’,val:item.worn?‘✅ 已穿’:‘❌ 未穿’}].map(f=>(
-<div key={f.label} style={{padding:‘10px 0’,borderBottom:‘1px solid var(–sand)’}}>
-<div style={{fontSize:11,color:‘var(–text-muted)’,marginBottom:3}}>{f.label}</div>
-<div style={{fontSize:14,fontWeight:500}}>{f.val}</div>
-</div>
-))}
-</div>
-{[{label:‘擺放位置’,val:item.location||’—’},{label:‘備註’,val:item.note||’—’}].map(f=>(
-<div key={f.label} style={{padding:‘10px 0’,borderBottom:‘1px solid var(–sand)’}}>
-<div style={{fontSize:11,color:‘var(–text-muted)’,marginBottom:3}}>{f.label}</div>
-<div style={{fontSize:14,fontWeight:500}}>{f.val}</div>
-</div>
-))}
-</div>
-);
+  return(
+    <div>
+      {item.imageUrl
+        ?<img src={item.imageUrl} alt="" style={{width:'100%',maxHeight:220,objectFit:'contain',borderRadius:12,marginBottom:14,background:'var(--card2)'}} onError={e=>e.target.style.display='none'}/>
+        :<div style={{textAlign:'center',fontSize:48,padding:'16px 0 20px'}}>👗</div>
+      }
+      <div style={{display:'grid',gridTemplateColumns:'1fr 1fr',gap:'0 12px'}}>
+        {[
+          {label:'類型',val:item.type||'—'},
+          {label:'尺碼',val:item.size||'—'},
+          {label:'袖長',val:item.sleeve||'—'},
+          {label:'來源',val:item.source||'—'},
+          {label:'狀態',val:item.status||'—'},
+          {label:'已穿過',val:item.worn?'✅ 已穿':'❌ 未穿'},
+        ].map(f=>(
+          <div key={f.label} style={{padding:'10px 0',borderBottom:'1px solid var(--sand)'}}>
+            <div style={{fontSize:11,color:'var(--text-muted)',marginBottom:3}}>{f.label}</div>
+            <div style={{fontSize:14,fontWeight:500}}>{f.val}</div>
+          </div>
+        ))}
+      </div>
+      {[
+        {label:'擺放位置',val:item.location||'—'},
+        {label:'備註',val:item.note||'—'},
+      ].map(f=>(
+        <div key={f.label} style={{padding:'10px 0',borderBottom:'1px solid var(--sand)'}}>
+          <div style={{fontSize:11,color:'var(--text-muted)',marginBottom:3}}>{f.label}</div>
+          <div style={{fontSize:14,fontWeight:500}}>{f.val}</div>
+        </div>
+      ))}
+    </div>
+  );
 }
 
 function WardrobeForm({data,onSave,onCancel,onDelete}){
-const [form,setForm]=useState({name:’’,type:‘上衣’,size:’’,sleeve:‘短袖’,source:‘自購’,status:‘當季’,location:’’,worn:false,note:’’,imageUrl:’’,pinned:false,…data});
-const [uploading,setUploading]=useState(false);
-const set=(k,v)=>setForm(f=>({…f,[k]:v}));
-const save=()=>{if(!form.name.trim())return;onSave(form);};
-return(
-<div>
-<label className="form-label">照片 ✨</label>
-<div style={{display:‘flex’,gap:10,alignItems:‘center’,marginBottom:12}}>
-{form.imageUrl
-?<img src={form.imageUrl} alt=“預覽” style={{width:80,height:80,objectFit:‘contain’,borderRadius:10,border:‘1.5px solid var(–sand)’,background:‘var(–card2)’}} onError={e=>{e.target.style.display=‘none’;}}/>
-:<div style={{width:80,height:80,borderRadius:10,background:‘var(–card2)’,border:‘1.5px dashed var(–sand)’,display:‘flex’,alignItems:‘center’,justifyContent:‘center’,fontSize:28}}>👗</div>
-}
-<div>
-<label className="upload-btn-label">
-{uploading?‘上傳中…’:‘📷 選擇照片’}
-<input type=“file” accept=“image/*” style={{display:‘none’}} disabled={uploading} onChange={async e=>{
-const f=e.target.files[0];if(!f)return;
-setUploading(true);
-try{const url=await uploadToCloudinary(f);set(‘imageUrl’,url);}
-catch(err){alert(‘上傳失敗，請重試’);}
-setUploading(false);
-e.target.value=’’;
-}}/>
-</label>
-{form.imageUrl&&<button onClick={()=>set(‘imageUrl’,’’)} style={{display:‘block’,marginTop:6,fontSize:12,color:‘var(–text-muted)’,background:‘none’,border:‘none’,cursor:‘pointer’}}>移除照片</button>}
-</div>
-</div>
-<label className="form-label">衣物名稱 *</label>
-<input className=“form-input” value={form.name} onChange={e=>set(‘name’,e.target.value)} placeholder=“例：粉色包屁衣”/>
-<div className="form-row">
-<div>
-<label className="form-label">類型</label>
-<select className=“form-select” value={form.type} onChange={e=>set(‘type’,e.target.value)}>
-{TYPES.map(t=><option key={t}>{t}</option>)}
-</select>
-</div>
-<div>
-<label className="form-label">袖長</label>
-<select className=“form-select” value={form.sleeve} onChange={e=>set(‘sleeve’,e.target.value)}>
-{SLEEVES.map(t=><option key={t}>{t}</option>)}
-</select>
-</div>
-</div>
-<div className="form-row">
-<div>
-<label className="form-label">尺碼</label>
-<input className=“form-input” value={form.size} onChange={e=>set(‘size’,e.target.value)} placeholder=“例：80cm、S”/>
-</div>
-<div>
-<label className="form-label">來源</label>
-<select className=“form-select” value={form.source} onChange={e=>set(‘source’,e.target.value)}>
-{SOURCES.map(t=><option key={t}>{t}</option>)}
-</select>
-</div>
-</div>
-<label className="form-label">狀態</label>
-<div style={{display:‘flex’,gap:6,flexWrap:‘wrap’,marginBottom:4}}>
-{STATUSES.map(s=>(
-<button key={s} onClick={()=>set(‘status’,s)} style={{padding:‘7px 12px’,borderRadius:20,border:`1.5px solid ${form.status===s?'var(--wood)':'var(--sand)'}`,background:form.status===s?‘var(–wood)’:‘var(–card)’,color:form.status===s?‘white’:‘var(–wood)’,fontSize:13}}>{s}</button>
-))}
-</div>
-<label className="form-label">擺放位置</label>
-<input className=“form-input” value={form.location} onChange={e=>set(‘location’,e.target.value)} placeholder=“例：臥室衣櫃第二格”/>
-<label className="form-label">備註</label>
-<input className=“form-input” value={form.note} onChange={e=>set(‘note’,e.target.value)} placeholder=“選填”/>
-<div className="toggle-row">
-<span style={{fontSize:14}}>已實際穿過</span>
-<div className={`toggle-sw ${form.worn?'on':''}`} onClick={()=>set(‘worn’,!form.worn)}/>
-</div>
-<div className=“toggle-row” style={{borderBottom:‘none’}}>
-<span style={{fontSize:14}}>📌 釘選最愛</span>
-<div className={`toggle-sw ${form.pinned?'on':''}`} onClick={()=>set(‘pinned’,!form.pinned)}/>
-</div>
-<div style={{display:‘flex’,gap:10,marginTop:8}}>
-{onDelete&&<button className="btn-danger" onClick={onDelete}>刪除</button>}
-<button className="btn-secondary" onClick={onCancel}>取消</button>
-<button className="btn-primary" onClick={save}>儲存</button>
-</div>
-</div>
-);
+  const [form,setForm]=useState({name:'',type:'上衣',size:'',sleeve:'短袖',source:'自購',status:'當季',location:'',worn:false,note:'',imageUrl:'',pinned:false,...data});
+  const [uploading,setUploading]=useState(false);
+  const set=(k,v)=>setForm(f=>({...f,[k]:v}));
+  const save=()=>{if(!form.name.trim())return;onSave(form);};
+  return(
+    <div>
+      <label className="form-label">照片 ✨</label>
+      <div style={{display:'flex',gap:10,alignItems:'center',marginBottom:8}}>
+        {form.imageUrl
+          ?<img src={form.imageUrl} alt="" style={{width:80,height:80,objectFit:'contain',borderRadius:10,border:'1.5px solid var(--sand)',background:'var(--card2)'}} onError={e=>{e.target.style.display='none';}}/>
+          :<div style={{width:80,height:80,borderRadius:10,background:'var(--card2)',border:'1.5px dashed var(--sand)',display:'flex',alignItems:'center',justifyContent:'center',fontSize:28}}>{'👗'}</div>
+        }
+        <div>
+          <label style={{display:'inline-block',padding:'9px 16px',background:'var(--clay)',color:'white',borderRadius:10,fontSize:13,cursor:uploading?'not-allowed':'pointer',fontWeight:500,opacity:uploading?0.6:1}}>
+            {uploading?'上傳中...':'📷 選擇照片'}
+            <input type="file" accept="image/*" style={{display:'none'}} disabled={uploading} onChange={async e=>{
+              const f=e.target.files[0];if(!f)return;
+              setUploading(true);
+              try{const url=await uploadToCloudinary(f);set('imageUrl',url);}catch(err){alert('上傳失敗，請重試');}
+              setUploading(false);
+              e.target.value='';
+            }}/>
+          </label>
+          {form.imageUrl&&<button onClick={()=>set('imageUrl','')} style={{display:'block',marginTop:6,fontSize:12,color:'var(--text-muted)',background:'none',border:'none',cursor:'pointer'}}>移除照片</button>}
+        </div>
+      </div>
+      <label className="form-label">衣物名稱 *</label>
+      <input className="form-input" value={form.name} onChange={e=>set('name',e.target.value)} placeholder="例：粉色包屁衣"/>
+      <div className="form-row">
+        <div>
+          <label className="form-label">類型</label>
+          <select className="form-select" value={form.type} onChange={e=>set('type',e.target.value)}>
+            {TYPES.map(t=><option key={t}>{t}</option>)}
+          </select>
+        </div>
+        <div>
+          <label className="form-label">袖長</label>
+          <select className="form-select" value={form.sleeve} onChange={e=>set('sleeve',e.target.value)}>
+            {SLEEVES.map(t=><option key={t}>{t}</option>)}
+          </select>
+        </div>
+      </div>
+      <div className="form-row">
+        <div>
+          <label className="form-label">尺碼</label>
+          <input className="form-input" value={form.size} onChange={e=>set('size',e.target.value)} placeholder="例：80cm、S"/>
+        </div>
+        <div>
+          <label className="form-label">來源</label>
+          <select className="form-select" value={form.source} onChange={e=>set('source',e.target.value)}>
+            {SOURCES.map(t=><option key={t}>{t}</option>)}
+          </select>
+        </div>
+      </div>
+      <label className="form-label">狀態</label>
+      <div style={{display:'flex',gap:6,flexWrap:'wrap',marginBottom:4}}>
+        {STATUSES.map(s=>(
+          <button key={s} onClick={()=>set('status',s)}
+            style={{padding:'7px 12px',borderRadius:20,border:`1.5px solid ${form.status===s?'var(--wood)':'var(--sand)'}`,background:form.status===s?'var(--wood)':'var(--card)',color:form.status===s?'white':'var(--wood)',fontSize:13}}>
+            {s}
+          </button>
+        ))}
+      </div>
+      <label className="form-label">擺放位置</label>
+      <input className="form-input" value={form.location} onChange={e=>set('location',e.target.value)} placeholder="例：臥室衣櫃第二格"/>
+      <label className="form-label">備註</label>
+      <input className="form-input" value={form.note} onChange={e=>set('note',e.target.value)} placeholder="選填"/>
+      <div className="toggle-row">
+        <span style={{fontSize:14}}>已實際穿過</span>
+        <div className={`toggle-sw ${form.worn?'on':''}`} onClick={()=>set('worn',!form.worn)}/>
+      </div>
+      <div className="toggle-row" style={{borderBottom:'none'}}>
+        <span style={{fontSize:14}}>📌 釘選最愛</span>
+        <div className={`toggle-sw ${form.pinned?'on':''}`} onClick={()=>set('pinned',!form.pinned)}/>
+      </div>
+      <div style={{display:'flex',gap:10,marginTop:8}}>
+        {onDelete&&<button className="btn-danger" onClick={onDelete}>刪除</button>}
+        <button className="btn-secondary" onClick={onCancel}>取消</button>
+        <button className="btn-primary" onClick={save}>儲存</button>
+      </div>
+    </div>
+  );
 }
 
-ReactDOM.createRoot(document.getElementById(‘root’)).render(<App/>);
+ReactDOM.createRoot(document.getElementById('root')).render(<App/>);
 </script>
-
 </body>
 </html>
