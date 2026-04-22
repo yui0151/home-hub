@@ -812,7 +812,17 @@ textarea::placeholder { color: var(--text-lighter); }
           <div class="today-week" id="today-week"></div>
         </div>
       </div>
-      <div class="today-count" id="today-count">0 筆紀錄</div>
+      <div style="display:flex;flex-direction:column;align-items:flex-end;gap:6px;">
+        <div class="today-count" id="today-count">0 筆紀錄</div>
+        <button onclick="toggleDatePicker()" style="font-size:11px;color:var(--text-lighter);background:none;border:none;cursor:pointer;padding:0;">📅 補登過去</button>
+      </div>
+    </div>
+    <div id="date-picker-wrap" style="display:none;margin-bottom:12px;">
+      <div style="background:white;border-radius:14px;padding:12px 14px;box-shadow:0 2px 10px var(--shadow);display:flex;align-items:center;gap:10px;">
+        <span style="font-size:13px;color:var(--text-light);">📅 補登日期</span>
+        <input type="date" id="backdate-input" style="flex:1;border:1.5px solid var(--pink-light);border-radius:10px;padding:6px 10px;font-size:13px;font-family:inherit;color:var(--text);outline:none;">
+        <button onclick="clearBackdate()" style="font-size:12px;color:var(--text-lighter);background:none;border:none;cursor:pointer;">✕</button>
+      </div>
     </div>
 
     <!-- Today's entries -->
@@ -1070,6 +1080,29 @@ async function loadEntries() {
   }
 }
 
+let selectedBackdate = null;
+
+window.toggleDatePicker = function() {
+  const wrap = document.getElementById('date-picker-wrap');
+  wrap.style.display = wrap.style.display === 'none' ? 'block' : 'none';
+  if (wrap.style.display === 'block') {
+    document.getElementById('backdate-input').value = todayStr();
+    selectedBackdate = todayStr();
+    document.getElementById('backdate-input').onchange = e => {
+      selectedBackdate = e.target.value || todayStr();
+    };
+  }
+};
+
+window.clearBackdate = function() {
+  selectedBackdate = null;
+  document.getElementById('date-picker-wrap').style.display = 'none';
+};
+
+function getEntryDate() {
+  return selectedBackdate || todayStr();
+}
+
 function todayStr() {
   const n = new Date();
   return `${n.getFullYear()}-${String(n.getMonth()+1).padStart(2,'0')}-${String(n.getDate()).padStart(2,'0')}`;
@@ -1241,8 +1274,11 @@ function renderReview() {
     if (!byDay[e.day]) byDay[e.day] = [];
     byDay[e.day].push(e);
   });
+  Object.keys(byDay).forEach(day => {
+    byDay[day].sort((a,b) => (a.timestamp||'').localeCompare(b.timestamp||''));
+  });
 
-  const days = Object.keys(byDay).map(Number).sort((a,b) => b-a);
+  const days = Object.keys(byDay).map(Number).sort((a,b) => a-b);
   wrap.innerHTML = '';
 
   days.forEach(day => {
