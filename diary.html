@@ -906,9 +906,9 @@ textarea::placeholder { color: var(--text-lighter); }
     <div class="settings-section">
       <div class="settings-title">🏷️ 管理標籤</div>
       <div class="tag-manage-list" id="tag-manage-list"></div>
-      <div class="tag-add-row">
-        <input type="text" class="tag-add-input" id="new-tag-input" placeholder="新增標籤名稱" maxlength="10">
-        <button class="tag-add-confirm" onclick="addTag()">新增</button>
+      <div class="tag-add-row" style="display:flex;gap:8px;margin-top:10px;align-items:center;">
+        <input type="text" class="tag-add-input" id="new-tag-input" placeholder="新增標籤名稱" maxlength="10" style="flex:1;min-width:0;">
+        <button class="tag-add-confirm" onclick="addTag()" style="flex-shrink:0;white-space:nowrap;">新增</button>
       </div>
     </div>
 
@@ -1329,9 +1329,8 @@ function renderReview() {
         <div class="review-entry">
           <div class="review-dot"></div>
           <div>
-            <div class="review-text">${escHtml(e.text)}</div>
+            ${e.timestamp ? `<div style="font-size:10px;color:var(--text-lighter);margin-bottom:3px;">${new Date(e.timestamp).toLocaleTimeString(\'zh-TW\',{hour:\'2-digit\',minute:\'2-digit\',hour12:false})}</div>` : \'\'}\n            <div class="review-text">${escHtml(e.text)}</div>
             ${e.tags?.length ? `<div class="review-tags">${e.tags.map((t,j)=>`<span class="review-tag ${TAG_COLORS[j%4]}">${escHtml(t)}</span>`).join('')}</div>` : ''}
-            ${e.timestamp ? `<div style="font-size:10px;color:var(--text-lighter);margin-top:4px;">${new Date(e.timestamp).toLocaleTimeString('zh-TW',{hour:'2-digit',minute:'2-digit',hour12:false})}</div>` : ''}
           </div>
         </div>
       `).join('')}
@@ -1570,7 +1569,7 @@ window.openExport = function(day) {
         <div style="font-size:10px;color:#C0AEB4;letter-spacing:3px;margin-bottom:8px;">🌸 M.Y 嘟嘟一家 🌸</div>
         <div style="font-size:13px;font-weight:700;color:#5C4A52;margin-bottom:2px;">${reviewYear}年${MONTHS_ZH[reviewMonth]}${day}日</div>
         <div style="font-size:11px;color:#9C8890;margin-bottom:8px;">${WEEKDAYS_EX[date.getDay()]}</div>
-        <div style="width:40px;height:2px;background:#FAE8EC;margin:0 auto;border-radius:1px;"></div>
+        <div style="border-top:1px dashed #F2C4CE;margin:10px 0 0;"></div>
       </div>
       ${entries.map(e => `
         <div style="margin-bottom:14px;padding-bottom:14px;border-bottom:1px dashed #F2C4CE;">
@@ -1581,10 +1580,10 @@ window.openExport = function(day) {
       `).join('')}
       ${allPhotos.length ? `
         <div style="display:grid;grid-template-columns:${allPhotos.length===1?'1fr':'1fr 1fr'};gap:8px;margin-top:4px;">
-          ${allPhotos.map(url=>`<img src="${url}" style="width:100%;border-radius:12px;object-fit:contain;background:#FDF6F0;" crossorigin="anonymous">`).join('')}
+          ${allPhotos.map(url=>`<img src="${url}" style="width:100%;border-radius:12px;object-fit:cover;aspect-ratio:1;" crossorigin="anonymous">`).join('')}
         </div>
       ` : ''}
-      <div style="text-align:center;margin-top:14px;font-size:10px;color:#C0AEB4;letter-spacing:2px;">🌷 嘟嘟一家育兒日記 🌷</div>
+      <div style="text-align:center;margin-top:14px;font-size:10px;color:#C0AEB4;letter-spacing:2px;">🌷 嘟嘟一家｜育兒日記 🌷</div>
     </div>
   `;
 
