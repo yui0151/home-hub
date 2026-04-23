@@ -1329,7 +1329,8 @@ function renderReview() {
         <div class="review-entry">
           <div class="review-dot"></div>
           <div>
-            ${e.timestamp ? `<div style="font-size:10px;color:var(--text-lighter);margin-bottom:3px;">${new Date(e.timestamp).toLocaleTimeString(\'zh-TW\',{hour:\'2-digit\',minute:\'2-digit\',hour12:false})}</div>` : \'\'}\n            <div class="review-text">${escHtml(e.text)}</div>
+            ${e.timestamp ? `<div style="font-size:10px;color:var(--text-lighter);margin-bottom:3px;">${new Date(e.timestamp).toLocaleTimeString('zh-TW',{hour:'2-digit',minute:'2-digit',hour12:false})}</div>` : ''}
+            <div class="review-text">${escHtml(e.text)}</div>
             ${e.tags?.length ? `<div class="review-tags">${e.tags.map((t,j)=>`<span class="review-tag ${TAG_COLORS[j%4]}">${escHtml(t)}</span>`).join('')}</div>` : ''}
           </div>
         </div>
