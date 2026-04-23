@@ -854,12 +854,23 @@ textarea::placeholder { color: var(--text-lighter); }
 
   <!-- ===== REVIEW PAGE ===== -->
   <div class="page" id="page-review">
-    <div class="month-nav">
+    <!-- Date jump pills -->
+  <div id="review-date-pills" style="display:flex;gap:6px;overflow-x:auto;padding:0 0 10px;scrollbar-width:none;"></div>
+  <div class="month-nav">
       <button class="nav-btn" onclick="changeMonth(-1)">‹</button>
       <div class="month-label" id="review-month-label">載入中</div>
       <button class="nav-btn" onclick="changeMonth(1)">›</button>
     </div>
     <div id="review-content"></div>
+
+  <!-- Export overlay -->
+  <div id="export-overlay" style="display:none;position:fixed;inset:0;background:rgba(0,0,0,0.7);z-index:200;align-items:center;justify-content:center;flex-direction:column;gap:16px;">
+    <div id="export-card" style="background:white;border-radius:24px;padding:20px;max-width:340px;width:90%;max-height:80vh;overflow-y:auto;"></div>
+    <div style="display:flex;gap:10px;">
+      <button onclick="saveExportImage()" style="padding:12px 24px;background:#D4849A;color:white;border:none;border-radius:20px;font-size:15px;font-weight:700;cursor:pointer;font-family:inherit;">💾 儲存圖片</button>
+      <button onclick="closeExport()" style="padding:12px 24px;background:rgba(255,255,255,0.2);color:white;border:2px solid rgba(255,255,255,0.4);border-radius:20px;font-size:15px;cursor:pointer;font-family:inherit;">取消</button>
+    </div>
+  </div>
   </div>
 
   <!-- ===== MEMORY PAGE ===== -->
@@ -922,6 +933,7 @@ textarea::placeholder { color: var(--text-lighter); }
 <div class="toast" id="toast"></div>
 
 <!-- Firebase -->
+<script src="https://html2canvas.hertzen.com/dist/html2canvas.min.js"></script>
 <script type="module">
 import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-app.js";
 import { getFirestore, collection, addDoc, getDocs, deleteDoc, doc, query, orderBy, setDoc, getDoc } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore.js";
@@ -1289,8 +1301,9 @@ function renderReview() {
     byDay[day].sort((a,b) => (a.timestamp||'').localeCompare(b.timestamp||''));
   });
 
-  const days = Object.keys(byDay).map(Number).sort((a,b) => a-b);
+  const days = Object.keys(byDay).map(Number).sort((a,b) => b-a);
   wrap.innerHTML = '';
+  renderDatePills();
 
   days.forEach(day => {
     const dayEntries = byDay[day];
@@ -1302,13 +1315,15 @@ function renderReview() {
 
     const div = document.createElement('div');
     div.className = 'review-day';
+    div.id = 'review-day-' + day;
     div.innerHTML = `
       <div class="review-day-header">
         <div class="review-day-num">${day}</div>
-        <div>
+        <div style="flex:1;">
           <div style="font-weight:700;font-size:14px;">${reviewYear}年${MONTHS_ZH[reviewMonth]}${day}日</div>
-          <div class="review-day-weekday">週${weekday} · ${dayEntries.length}筆紀錄</div>
+          <div class="review-day-weekday">${weekday} · ${dayEntries.length}筆紀錄</div>
         </div>
+        <button onclick="openExport(${day})" style="font-size:18px;background:none;border:none;cursor:pointer;padding:4px;">🖼</button>
       </div>
       ${dayEntries.map((e,i) => `
         <div class="review-entry">
@@ -1316,6 +1331,7 @@ function renderReview() {
           <div>
             <div class="review-text">${escHtml(e.text)}</div>
             ${e.tags?.length ? `<div class="review-tags">${e.tags.map((t,j)=>`<span class="review-tag ${TAG_COLORS[j%4]}">${escHtml(t)}</span>`).join('')}</div>` : ''}
+            ${e.timestamp ? `<div style="font-size:10px;color:var(--text-lighter);margin-top:4px;">${new Date(e.timestamp).toLocaleTimeString('zh-TW',{hour:'2-digit',minute:'2-digit',hour12:false})}</div>` : ''}
           </div>
         </div>
       `).join('')}
@@ -1519,6 +1535,87 @@ function showToast(msg) {
 function escHtml(str) {
   return (str||'').replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/\n/g,'<br>');
 }
+
+// ===== DATE PILLS for Review =====
+function renderDatePills() {
+  const entries = allEntries.filter(e => e.year === reviewYear && e.month === reviewMonth + 1);
+  const days = [...new Set(entries.map(e => e.day))].sort((a,b) => b-a);
+  const wrap = document.getElementById('review-date-pills');
+  if (!wrap) return;
+  if (days.length === 0) { wrap.innerHTML = ''; return; }
+  wrap.innerHTML = days.map(d => `
+    <button onclick="scrollToDay(${d})" style="flex-shrink:0;padding:4px 12px;border-radius:16px;border:1.5px solid var(--pink-light);background:white;color:var(--pink-deep);font-size:12px;font-weight:500;cursor:pointer;font-family:inherit;">${d}日</button>
+  `).join('');
+}
+
+window.scrollToDay = function(day) {
+  const el = document.getElementById('review-day-' + day);
+  if (el) el.scrollIntoView({ behavior: 'smooth', block: 'start' });
+};
+
+// ===== EXPORT =====
+window.openExport = function(day) {
+  const entries = allEntries.filter(e => e.year === reviewYear && e.month === reviewMonth + 1 && e.day === day)
+    .sort((a,b) => (a.timestamp||'').localeCompare(b.timestamp||''));
+  if (!entries.length) return;
+
+  const date = new Date(reviewYear, reviewMonth, day);
+  const WEEKDAYS_EX = ['日曜日','月曜日','火曜日','水曜日','木曜日','金曜日','土曜日'];
+  const allPhotos = entries.flatMap(e => e.photos || []);
+
+  const card = document.getElementById('export-card');
+  card.innerHTML = `
+    <div style="font-family:'Zen Maru Gothic',sans-serif;background:#FDF6F0;border-radius:16px;padding:20px;">
+      <div style="text-align:center;margin-bottom:16px;">
+        <div style="font-size:11px;color:#C0AEB4;letter-spacing:3px;margin-bottom:6px;">🌸 M.Y 嘟嘟一家 🌸</div>
+        <div style="font-size:28px;font-weight:700;color:#D4849A;line-height:1;">${day}</div>
+        <div style="font-size:14px;font-weight:600;color:#5C4A52;margin-top:2px;">${reviewYear}年${MONTHS_ZH[reviewMonth]}${day}日</div>
+        <div style="font-size:11px;color:#9C8890;margin-top:2px;">${WEEKDAYS_EX[date.getDay()]}</div>
+        <div style="width:40px;height:2px;background:var(--pink-light,#FAE8EC);margin:10px auto 0;border-radius:1px;"></div>
+      </div>
+      ${entries.map(e => `
+        <div style="margin-bottom:14px;padding-bottom:14px;border-bottom:1px dashed #F2C4CE;">
+          <div style="font-size:13px;line-height:1.8;color:#5C4A52;">${escHtml(e.text)}</div>
+          ${e.tags?.length ? `<div style="display:flex;gap:5px;flex-wrap:wrap;margin-top:7px;">${e.tags.map(t=>`<span style="font-size:10px;padding:2px 9px;border-radius:10px;background:#FAE8EC;color:#D4849A;">${escHtml(t)}</span>`).join('')}</div>` : ''}
+          ${e.timestamp ? `<div style="font-size:10px;color:#C0AEB4;margin-top:5px;">${new Date(e.timestamp).toLocaleTimeString('zh-TW',{hour:'2-digit',minute:'2-digit',hour12:false})}</div>` : ''}
+        </div>
+      `).join('')}
+      ${allPhotos.length ? `
+        <div style="display:grid;grid-template-columns:${allPhotos.length===1?'1fr':'1fr 1fr'};gap:8px;margin-top:4px;">
+          ${allPhotos.map(url=>`<img src="${url}" style="width:100%;border-radius:12px;object-fit:cover;aspect-ratio:1;" crossorigin="anonymous">`).join('')}
+        </div>
+      ` : ''}
+      <div style="text-align:center;margin-top:14px;font-size:10px;color:#C0AEB4;letter-spacing:2px;">🌷 嘟嘟一家成長日記 🌷</div>
+    </div>
+  `;
+
+  const overlay = document.getElementById('export-overlay');
+  overlay.style.display = 'flex';
+};
+
+window.closeExport = function() {
+  document.getElementById('export-overlay').style.display = 'none';
+};
+
+window.saveExportImage = async function() {
+  const card = document.getElementById('export-card').firstElementChild;
+  try {
+    const canvas = await html2canvas(card, {
+      scale: 2,
+      useCORS: true,
+      allowTaint: false,
+      backgroundColor: '#FDF6F0'
+    });
+    const link = document.createElement('a');
+    link.download = `嘟嘟日記_${reviewYear}${String(reviewMonth+1).padStart(2,'0')}.png`;
+    link.href = canvas.toDataURL('image/png');
+    link.click();
+    showToast('🌸 圖片已儲存！');
+    closeExport();
+  } catch(e) {
+    showToast('❌ 儲存失敗，請重試');
+  }
+};
 
 init();
 </script>
