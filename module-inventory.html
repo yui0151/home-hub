@@ -216,6 +216,8 @@ const firebaseConfig = {
   messagingSenderId: "286497032414",
   appId: "1:286497032414:web:16d3f0242a400d0de85a4f"
 };
+const CLOUDINARY_CLOUD='dxd5ijwof';
+const CLOUDINARY_PRESET='ml_default';
 let db;
 try{if(!firebase.apps.length)firebase.initializeApp(firebaseConfig);db=firebase.firestore();db.enablePersistence().catch(()=>{});}catch(e){}
 
@@ -259,8 +261,7 @@ if(!room||!db)return;
 const u1=db.collection(‘inventory’).doc(room).collection(‘items’)
 .onSnapshot(snap=>setItems(snap.docs.map(d=>({id:d.id,…d.data()}))),()=>{});
 const u2=db.collection(‘shopping’).doc(room).collection(‘items’)
-.orderBy(‘createdAt’,‘asc’)
-.onSnapshot(snap=>setShopping(snap.docs.map(d=>({id:d.id,…d.data()}))),()=>{});
+.onSnapshot(snap=>setShopping(snap.docs.map(d=>({id:d.id,…d.data()})).sort((a,b)=>(a.createdAt||0)-(b.createdAt||0))),()=>{});
 return()=>{u1();u2();};
 },[room]);
 
@@ -622,8 +623,28 @@ style={{padding:‘8px 4px’,borderRadius:8,border:`1.5px solid ${form.category
 </div>
 <label className="form-label">品項名稱 *</label>
 <input className=“form-input” value={form.name} onChange={e=>set(‘name’,e.target.value)} placeholder=“例：衛生紙、雞蛋”/>
-<label className="form-label">照片網址 ✨</label>
-<input className=“form-input” value={form.imageUrl} onChange={e=>set(‘imageUrl’,e.target.value)} placeholder=“https://…（選填）”/>
+<label className="form-label">照片</label>
+{form.imageUrl&&form.imageUrl!==‘上傳中…’&&<img src={form.imageUrl} alt=”” style={{width:‘100%’,maxHeight:140,objectFit:‘contain’,borderRadius:8,marginBottom:6,background:‘var(–card2)’}}/>}
+{form.imageUrl===‘上傳中…’&&<div style={{textAlign:‘center’,padding:‘16px’,color:‘var(–clay)’,fontSize:13}}>⏳ 上傳中…</div>}
+<div style={{display:‘flex’,gap:8}}>
+<input className=“form-input” style={{flex:1}} value={form.imageUrl===‘上傳中…’?’’:form.imageUrl} onChange={e=>set(‘imageUrl’,e.target.value)} placeholder=“貼上圖片網址（選填）”/>
+<label style={{display:‘flex’,alignItems:‘center’,justifyContent:‘center’,width:44,height:44,flexShrink:0,background:‘var(–clay)’,borderRadius:‘var(–radius-sm)’,cursor:‘pointer’,color:‘white’,fontSize:20}}>
+📷<input type=“file” accept=“image/*” style={{display:‘none’}} onChange={async e=>{
+const file=e.target.files[0];
+if(!file)return;
+set(‘imageUrl’,‘上傳中…’);
+try{
+const fd=new FormData();
+fd.append(‘file’,file);
+fd.append(‘upload_preset’,CLOUDINARY_PRESET);
+const res=await fetch(‘https://api.cloudinary.com/v1_1/’+CLOUDINARY_CLOUD+’/image/upload’,{method:‘POST’,body:fd});
+const d=await res.json();
+if(d.secure_url){set(‘imageUrl’,d.secure_url);}
+else{set(‘imageUrl’,’’);alert(‘上傳失敗：’+JSON.stringify(d.error));}
+}catch(err){set(‘imageUrl’,’’);alert(‘上傳失敗：’+err.message);}
+}}/>
+</label>
+</div>
 <div className="form-row3">
 <div><label className="form-label">數量</label><input className=“form-input” type=“number” value={form.quantity} onChange={e=>set(‘quantity’,e.target.value)}/></div>
 <div><label className="form-label">單位</label>
