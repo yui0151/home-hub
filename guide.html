@@ -4,7 +4,7 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width,initial-scale=1.0">
 <title>操作說明書 · 嘟嘟一家🌙</title>
-<link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>🌙</text></svg>">
+<link rel="icon" href="icon.jpeg" type="image/jpeg">
 <link href="https://fonts.googleapis.com/css2?family=Noto+Serif+TC:wght@400;700&family=Zen+Kaku+Gothic+New:wght@300;400;500&display=swap" rel="stylesheet">
 <style>
 :root{
@@ -19,8 +19,8 @@ body{background:var(--paper);color:var(--wood);font-family:var(--sans);line-heig
 a{color:var(--clay);text-decoration:none;}
 .cover{background:linear-gradient(145deg,#fdf3ec,#ede0d4,#dfd0c6);padding:56px 24px 44px;text-align:center;position:relative;overflow:hidden;border-bottom:1px solid var(--sand);}
 .cover::after{content:'🌙';position:absolute;font-size:220px;opacity:.05;top:-30px;right:-20px;pointer-events:none;}
-.cover-icon{font-size:52px;display:block;margin-bottom:16px;}
-.cover-title{font-family:var(--serif);font-size:26px;font-weight:700;letter-spacing:.06em;}
+.cover-icon{width:80px;height:80px;border-radius:20px;object-fit:cover;display:block;margin:0 auto 16px;box-shadow:0 4px 16px rgba(0,0,0,.15);}
+.cover-title{font-family:var(--serif);font-size:24px;font-weight:700;letter-spacing:.06em;}
 .cover-ver{font-size:12px;color:var(--clay);margin-top:6px;}
 .cover-url{display:inline-block;margin-top:18px;padding:9px 22px;background:var(--wood);color:#fff;border-radius:30px;font-size:13px;}
 .cover-tags{display:flex;justify-content:center;gap:8px;margin-top:16px;flex-wrap:wrap;}
@@ -82,9 +82,9 @@ code{background:var(--card2);padding:1px 6px;border-radius:5px;font-size:12px;fo
 <body>
 
 <div class="cover">
-  <span class="cover-icon">🌙</span>
+  <img class="cover-icon" src="icon.jpeg" alt="嘟嘟一家">
   <div class="cover-title">嘟嘟一家 · 操作說明書</div>
-  <div class="cover-ver">v3.2 · 2026-04-15</div>
+  <div class="cover-ver">v3.3 · 2026-05-01</div>
   <a class="cover-url" href="https://yui0151.github.io/home-hub/" target="_blank">yui0151.github.io/home-hub</a>
   <div class="cover-tags">
     <span class="ctag">🏡 首頁</span><span class="ctag">📋 提醒</span>
@@ -94,13 +94,14 @@ code{background:var(--card2);padding:1px 6px;border-radius:5px;font-size:12px;fo
 
 <nav class="snav">
   <a href="#start">🚀 開始</a>
+  <a href="#pwa">📱 主畫面</a>
   <a href="#home">🏡 首頁</a>
   <a href="#reminders">📋 提醒</a>
   <a href="#inventory">📦 庫存</a>
   <a href="#shopping">🛒 待買</a>
   <a href="#wardrobe">👗 衣櫥</a>
   <a href="#wiki">📖 百科</a>
-  <a href="#csv">📋 CSV匯入</a>
+  <a href="#csv">📋 CSV</a>
   <a href="#faq">❓ FAQ</a>
 </nav>
 
@@ -112,41 +113,62 @@ code{background:var(--card2);padding:1px 6px;border-radius:5px;font-size:12px;fo
   <div class="sec-hd"><div class="sec-num">1</div><div><div class="sec-title">🚀 開始使用</div><div class="sec-sub">登入一次，全家即時同步</div></div></div>
   <div class="steps">
     <div class="step"><div class="snum">1</div><div class="sbody"><div class="stitle">打開 App 網址</div><div class="sdesc">手機瀏覽器開啟：<code>yui0151.github.io/home-hub/</code></div></div></div>
-    <div class="step"><div class="snum">2</div><div class="sbody"><div class="stitle">輸入家庭房間碼</div><div class="sdesc">全家共用同一組房間碼，點「進入我的家庭」。之後不需要重複輸入。</div></div></div>
-    <div class="step"><div class="snum">3</div><div class="sbody"><div class="stitle">加到手機桌面（建議）</div><div class="sdesc"><strong>iPhone：</strong>Safari → 分享 →「加入主畫面」<br><strong>Android：</strong>Chrome → 右上角 →「加到主畫面」</div></div></div>
+    <div class="step"><div class="snum">2</div><div class="sbody"><div class="stitle">輸入家庭房間碼</div><div class="sdesc">全家共用同一組房間碼，點「進入我的家庭」，之後不需要重複輸入。</div></div></div>
+    <div class="step"><div class="snum">3</div><div class="sbody"><div class="stitle">加到手機主畫面（建議）</div><div class="sdesc"><strong>iPhone：</strong>Safari → 分享 →「加入主畫面」<br><strong>Android：</strong>Chrome → 右上角 →「加到主畫面」</div></div></div>
   </div>
   <div class="info"><div class="box-t">✅ 即時同步</div>任何人更新，其他家人馬上看到。資料存雲端，換手機不怕。</div>
-  <div class="tip"><div class="box-t">📱 底部導覽列</div>畫面下方五個按鈕，隨時切換，不需返回上一頁。</div>
 </div>
 
 <hr class="divider">
 
-<!-- 2. 首頁 -->
+<!-- 2. PWA 主畫面 -->
+<div class="sec">
+  <span class="anchor" id="pwa"></span>
+  <div class="sec-hd"><div class="sec-num">2</div><div><div class="sec-title">📱 加到主畫面</div><div class="sec-sub">像真正的 App 一樣使用</div></div></div>
+  <div class="fgrid">
+    <div class="fcard"><span class="ficon">🏠</span><div class="ftitle">房子圖示</div><div class="fdesc">主畫面顯示自訂圖示，不是預設截圖</div></div>
+    <div class="fcard"><span class="ficon">📺</span><div class="ftitle">全螢幕模式</div><div class="fdesc">開啟後沒有瀏覽器網址列，沉浸感更好</div></div>
+    <div class="fcard"><span class="ficon">🎨</span><div class="ftitle">主題色</div><div class="fdesc">狀態列配合奶茶色，視覺一致</div></div>
+    <div class="fcard"><span class="ficon">⚡</span><div class="ftitle">快速啟動</div><div class="fdesc">點圖示直接開啟，不需先開瀏覽器</div></div>
+  </div>
+  <div class="tip"><div class="box-t">🔄 全螢幕模式如何重新整理？</div>
+    全螢幕模式沒有瀏覽器的重新整理按鈕，有兩個方式：<br>
+    ① 在頁面最頂端<strong>往下拉</strong>（下拉重新整理手勢）<br>
+    ② <strong>關掉 App 重開</strong>（多工視窗往上滑關掉，再點桌面圖示）
+  </div>
+  <div class="warn"><div class="box-t">⚠️ 更新圖示需重新加一次</div>
+    已加到主畫面的捷徑不會自動更新圖示。若圖示有改變，需先刪除舊捷徑，再重新加入主畫面。
+  </div>
+</div>
+
+<hr class="divider">
+
+<!-- 3. 首頁 -->
 <div class="sec">
   <span class="anchor" id="home"></span>
-  <div class="sec-hd"><div class="sec-num">2</div><div><div class="sec-title">🏡 首頁儀表板</div><div class="sec-sub">家庭全覽，每天開 App 第一眼</div></div></div>
+  <div class="sec-hd"><div class="sec-num">3</div><div><div class="sec-title">🏡 首頁儀表板</div><div class="sec-sub">家庭全覽，每天開 App 第一眼</div></div></div>
   <div class="fgrid">
     <div class="fcard"><span class="ficon">☀️</span><div class="ftitle">即時天氣</div><div class="fdesc">自動定位，氣溫＋穿衣建議</div></div>
     <div class="fcard"><span class="ficon">📊</span><div class="ftitle">四格統計</div><div class="fdesc">急件 / 低庫存 / 衣物 / 書籤，點格子直接跳模組</div></div>
     <div class="fcard"><span class="ficon">⚡</span><div class="ftitle">急件提醒</div><div class="fdesc">3 天內到期自動浮出</div></div>
     <div class="fcard"><span class="ficon">💰</span><div class="ftitle">本月費用</div><div class="fdesc">標注月份，已付顯示刪除線</div></div>
     <div class="fcard"><span class="ficon">📦</span><div class="ftitle">庫存不足</div><div class="fdesc">點擊直接跳到待買清單</div></div>
-    <div class="fcard"><span class="ficon">📌</span><div class="ftitle">精選書籤</div><div class="fdesc">小百科裡釘選的書籤自動同步到這裡</div></div>
+    <div class="fcard"><span class="ficon">📌</span><div class="ftitle">精選書籤</div><div class="fdesc">小百科釘選的書籤自動同步到這裡</div></div>
   </div>
   <p style="font-size:14px;font-weight:700;margin:20px 0 10px;">快速記錄（三個 Tab）</p>
   <div class="steps">
     <div class="step"><div class="snum c">📝</div><div class="sbody"><div class="stitle">備忘錄</div><div class="sdesc">隨手記，自動儲存。</div></div></div>
     <div class="step"><div class="snum c">✅</div><div class="sbody"><div class="stitle">待辦事項</div><div class="sdesc">打勾完成，✕ 刪除。Tab 旁數字 = 未完成數量。</div></div></div>
-    <div class="step"><div class="snum c">🛍️</div><div class="sbody"><div class="stitle">待買清單</div><div class="sdesc">個人購物備忘，Tab 旁顯示未購買數。</div></div></div>
+    <div class="step"><div class="snum c">🛍️</div><div class="sbody"><div class="stitle">待買清單</div><div class="sdesc">個人購物備忘（庫存不足的品項在庫存模組的「待買清單」管理）。</div></div></div>
   </div>
 </div>
 
 <hr class="divider">
 
-<!-- 3. 提醒 -->
+<!-- 4. 提醒 -->
 <div class="sec">
   <span class="anchor" id="reminders"></span>
-  <div class="sec-hd"><div class="sec-num">3</div><div><div class="sec-title">📋 提醒系統</div><div class="sec-sub">帳單、訂閱、家務、醫療全管理</div></div></div>
+  <div class="sec-hd"><div class="sec-num">4</div><div><div class="sec-title">📋 提醒系統</div><div class="sec-sub">帳單、訂閱、家務、醫療全管理</div></div></div>
   <div class="tbl"><table>
     <tr><th>類型</th><th>適合記錄</th></tr>
     <tr><td>💰 帳單費用</td><td>水電費、房租、保費、電話費</td></tr>
@@ -157,40 +179,39 @@ code{background:var(--card2);padding:1px 6px;border-radius:5px;font-size:12px;fo
     <tr><td>📌 其他</td><td>不屬於以上的事項</td></tr>
   </table></div>
   <div class="steps">
-    <div class="step"><div class="snum">1</div><div class="sbody"><div class="stitle">新增提醒</div><div class="sdesc">右下角 <span class="bdg bdg-c">＋</span>，選類型、填名稱、設到期日與週期（9 種：單次 → 每年）。</div></div></div>
-    <div class="step"><div class="snum">2</div><div class="sbody"><div class="stitle">標為完成 → 自動建立下次</div><div class="sdesc">點卡片 → 詳情 →「標為完成」。有金額先詢問本次實際金額（可修改）。完成後自動新增下一期。</div></div></div>
-    <div class="step"><div class="snum">3</div><div class="sbody"><div class="stitle">分組顯示，可收折</div><div class="sdesc">逾期 / 今天 / 7天內 / 其他 / 已完成。點標題展開或收折。即將到期預設展開。</div></div></div>
+    <div class="step"><div class="snum">1</div><div class="sbody"><div class="stitle">新增提醒</div><div class="sdesc">右下角 <span class="bdg bdg-c">＋</span>，選類型、填名稱、設到期日與週期。</div></div></div>
+    <div class="step"><div class="snum">2</div><div class="sbody"><div class="stitle">標為完成 → 自動建立下次</div><div class="sdesc">點卡片 → 詳情 →「標為完成」。有金額先詢問本次實際金額。完成後自動新增下一期。</div></div></div>
+    <div class="step"><div class="snum">3</div><div class="sbody"><div class="stitle">分組顯示，可收折</div><div class="sdesc">逾期 / 今天 / 7天內 / 其他 / 已完成，點標題展開或收折。</div></div></div>
   </div>
-  <div class="info"><div class="box-t">🔄 自動計算範例</div>水電費「每月 10 日」，5月10日完成 → 自動新增「6月10日」，不需手動建立。</div>
+  <div class="info"><div class="box-t">🔄 自動計算範例</div>水電費「每月 10 日」，5月10日完成 → 自動新增「6月10日」。</div>
 </div>
 
 <hr class="divider">
 
-<!-- 4. 庫存 -->
+<!-- 5. 庫存 -->
 <div class="sec">
   <span class="anchor" id="inventory"></span>
-  <div class="sec-hd"><div class="sec-num">4</div><div><div class="sec-title">📦 庫存管理</div><div class="sec-sub">家中物品追蹤，快速加減不需進詳情</div></div></div>
+  <div class="sec-hd"><div class="sec-num">5</div><div><div class="sec-title">📦 庫存管理</div><div class="sec-sub">家中物品追蹤，快速加減不需進詳情</div></div></div>
   <div class="steps">
-    <div class="step"><div class="snum">1</div><div class="sbody"><div class="stitle">新增品項</div><div class="sdesc">右下角 <span class="bdg bdg-c">＋</span>，選分類、填名稱數量。<br><strong>警告值：</strong><code>0</code> = 用完才提醒；<code>2</code> = 剩 2 個以下標紅警告。</div></div></div>
-    <div class="step"><div class="snum">2</div><div class="sbody"><div class="stitle">快速加減數量</div><div class="sdesc">卡片上直接點 <span class="bdg bdg-c">−</span> <span class="bdg bdg-c">＋</span>，不需要進詳情頁。</div></div></div>
-    <div class="step"><div class="snum">3</div><div class="sbody"><div class="stitle">切換模式 + 排序</div><div class="sdesc">右上角 <span class="bdg bdg-c">⊞</span> 網格 / <span class="bdg bdg-c">☰</span> 列表（顯示存放位置）。排序：名稱（預設）/ 新增日期。</div></div></div>
-    <div class="step"><div class="snum">4</div><div class="sbody"><div class="stitle">分類 Accordion 預設收折</div><div class="sdesc">點分類標題展開或收折。低庫存的分類顯示 ⚠️。</div></div></div>
+    <div class="step"><div class="snum">1</div><div class="sbody"><div class="stitle">新增品項</div><div class="sdesc">右下角 <span class="bdg bdg-c">＋</span>，選分類、填名稱數量。<br><strong>警告值：</strong><code>0</code> = 用完才提醒；<code>2</code> = 剩 2 個以下標紅。</div></div></div>
+    <div class="step"><div class="snum">2</div><div class="sbody"><div class="stitle">📷 上傳照片</div><div class="sdesc">新增品項時，點橘色 📷 按鈕 → 選手機相簿 → 自動上傳到雲端 → 完成後顯示預覽。也可以直接貼圖片網址。</div></div></div>
+    <div class="step"><div class="snum">3</div><div class="sbody"><div class="stitle">快速加減數量</div><div class="sdesc">卡片上直接點 <span class="bdg bdg-c">−</span> <span class="bdg bdg-c">＋</span>，不需進詳情頁。</div></div></div>
+    <div class="step"><div class="snum">4</div><div class="sbody"><div class="stitle">切換模式 + 排序</div><div class="sdesc"><span class="bdg bdg-c">⊞</span> 網格 / <span class="bdg bdg-c">☰</span> 列表（顯示存放位置）。排序：名稱（預設）/ 新增日期。</div></div></div>
   </div>
-  <div class="tip"><div class="box-t">📸 品項照片</div>填入圖片網址，卡片顯示商品圖（contain 完整顯示不裁切）。無圖自動顯示分類 Emoji。</div>
 </div>
 
 <hr class="divider">
 
-<!-- 5. 待買清單 -->
+<!-- 6. 待買清單 -->
 <div class="sec">
   <span class="anchor" id="shopping"></span>
-  <div class="sec-hd"><div class="sec-num">5</div><div><div class="sec-title">🛒 待買清單</div><div class="sec-sub">在庫存管理頁切換到「待買」頁籤</div></div></div>
+  <div class="sec-hd"><div class="sec-num">6</div><div><div class="sec-title">🛒 待買清單</div><div class="sec-sub">庫存管理 → 切換到「待買」頁籤 · 全家即時同步</div></div></div>
 
   <p style="font-size:14px;font-weight:700;margin-bottom:10px;">📦 庫存不足自動加入</p>
   <div class="steps">
-    <div class="step"><div class="snum s">✓</div><div class="sbody"><div class="stitle">逛超市邊買邊打勾</div><div class="sdesc">點項目 → 打勾＋刪除線，清楚標示已買。狀態存手機本地，重整不消失。</div></div></div>
-    <div class="step"><div class="snum s">✕</div><div class="sbody"><div class="stitle">✕ 單筆移除</div><div class="sdesc">點右側 ✕，從待買清單暫時移除（不影響庫存數量）。</div></div></div>
-    <div class="step"><div class="snum s">🗑</div><div class="sbody"><div class="stitle">一鍵清除已勾選</div><div class="sdesc">有打勾時，頂部出現「✓ 清除已勾選項目」按鈕，結帳後一次清乾淨。</div></div></div>
+    <div class="step"><div class="snum s">✓</div><div class="sbody"><div class="stitle">逛超市邊買邊打勾</div><div class="sdesc">點項目 → 打勾＋刪除線，清楚標示已買。</div></div></div>
+    <div class="step"><div class="snum s">✕</div><div class="sbody"><div class="stitle">✕ 單筆移除</div><div class="sdesc">點右側 ✕，從清單暫時移除（不影響庫存數量）。</div></div></div>
+    <div class="step"><div class="snum s">🗑</div><div class="sbody"><div class="stitle">一鍵清除已勾選</div><div class="sdesc">有打勾時，頂部出現「✓ 清除已勾選項目」，結帳後一次清乾淨。</div></div></div>
   </div>
 
   <div class="flow">
@@ -202,114 +223,94 @@ code{background:var(--card2);padding:1px 6px;border-radius:5px;font-size:12px;fo
   </div>
 
   <div class="warn"><div class="box-t">💡 不想追蹤某樣東西了？</div>
-  例如「柔膚巾不需要再買」→ 去<strong>庫存清單</strong>把警告值改成 <code>0</code>（用完才提醒）或直接刪除品項。不要只在待買清單刪除，那樣下次數量變動還是會再出現。</div>
+    去<strong>庫存清單</strong>把警告值改成 <code>0</code>（用完才提醒），或直接刪除品項。
+  </div>
 
-  <p style="font-size:14px;font-weight:700;margin:20px 0 10px;">✏️ 自由新增區（非庫存品項）</p>
+  <p style="font-size:14px;font-weight:700;margin:20px 0 10px;">✏️ 自由新增區（非庫存品項 · 全家共用）</p>
   <div class="tbl"><table>
     <tr><th>操作</th><th>說明</th></tr>
     <tr><td>點項目</td><td>打勾＋刪除線</td></tr>
     <tr><td>點 ✕</td><td>永久刪除這筆</td></tr>
     <tr><td>點「清除已完成」</td><td>一次刪掉所有已打勾項目</td></tr>
   </table></div>
-  <div class="info"><div class="box-t">💾 自由填寫區存在手機本地，重整不消失。</div></div>
+  <div class="info"><div class="box-t">☁️ 自由新增區存 Firebase，全家即時同步。</div>老公在外面新增，你馬上看到。</div>
 </div>
 
 <hr class="divider">
 
-<!-- 6. 衣櫥 -->
+<!-- 7. 衣櫥 -->
 <div class="sec">
   <span class="anchor" id="wardrobe"></span>
-  <div class="sec-hd"><div class="sec-num">6</div><div><div class="sec-title">👗 電子衣櫥</div><div class="sec-sub">管理孩子衣物的尺碼與換季狀態</div></div></div>
+  <div class="sec-hd"><div class="sec-num">7</div><div><div class="sec-title">👗 電子衣櫥</div><div class="sec-sub">管理孩子衣物的尺碼與換季狀態</div></div></div>
   <div class="steps">
     <div class="step"><div class="snum">1</div><div class="sbody"><div class="stitle">新增衣物</div><div class="sdesc">右下角 <span class="bdg bdg-c">＋</span>。照片網址欄在最上方，貼上即時預覽。填名稱、尺碼、類型、來源、狀態。</div></div></div>
-    <div class="step"><div class="snum">2</div><div class="sbody"><div class="stitle">更新換季狀態</div><div class="sdesc">點卡片 → ✏️ 編輯 → 改狀態（當季 / 非當季 / 穿不下 / 已轉贈）。頂部四格統計即時更新。</div></div></div>
-    <div class="step"><div class="snum">3</div><div class="sbody"><div class="stitle">排序 + 切換模式</div><div class="sdesc">排序：新增日期（預設，最新在前）/ 名稱。⊞ 網格 / ☰ 列表切換。</div></div></div>
-    <div class="step"><div class="snum">4</div><div class="sbody"><div class="stitle">📌 釘選常穿衣物</div><div class="sdesc">進詳情頁點 📍，加入頂部橫向快速區，常穿的不用翻找。</div></div></div>
+    <div class="step"><div class="snum">2</div><div class="sbody"><div class="stitle">更新換季狀態</div><div class="sdesc">點卡片 → ✏️ 編輯 → 改狀態（當季 / 非當季 / 穿不下 / 已轉贈）。</div></div></div>
+    <div class="step"><div class="snum">3</div><div class="sbody"><div class="stitle">📌 釘選常穿衣物</div><div class="sdesc">詳情頁點 📍，加入頂部橫向快速區，常穿的不用翻找。</div></div></div>
   </div>
   <div class="info"><div class="box-t">🖼 詳情頁</div>雙欄對稱排版。圖片 contain 完整顯示，無圖顯示 👗 Emoji。</div>
 </div>
 
 <hr class="divider">
 
-<!-- 7. 百科 -->
+<!-- 8. 百科 -->
 <div class="sec">
   <span class="anchor" id="wiki"></span>
-  <div class="sec-hd"><div class="sec-num">7</div><div><div class="sec-title">📖 小百科</div><div class="sec-sub">收藏育兒資訊、食譜、好用連結</div></div></div>
+  <div class="sec-hd"><div class="sec-num">8</div><div><div class="sec-title">📖 小百科</div><div class="sec-sub">收藏育兒資訊、食譜、好用連結</div></div></div>
   <div class="steps">
     <div class="step"><div class="snum">1</div><div class="sbody"><div class="stitle">新增書籤</div><div class="sdesc">右下角 <span class="bdg bdg-c">＋</span>，貼網址 →「抓取預覽」自動填入標題和封面圖。無圖自動顯示分類 Emoji。</div></div></div>
     <div class="step"><div class="snum">2</div><div class="sbody"><div class="stitle">附加 Markdown 筆記</div><div class="sdesc">書籤可加筆記：<code># 標題</code> <code>**粗體**</code> <code>- 清單</code>，含即時預覽。</div></div></div>
-    <div class="step"><div class="snum">3</div><div class="sbody"><div class="stitle">排序 + 搜尋 + 分類篩選</div><div class="sdesc">排序：新增日期（預設）/ 名稱。搜尋標題、標籤、網域。9 種分類 pill 快速篩選。</div></div></div>
-    <div class="step"><div class="snum">4</div><div class="sbody"><div class="stitle">📌 釘選書籤 → 同步到首頁</div><div class="sdesc">進詳情頁點 📍 釘選。釘選的書籤出現在小百科頂部快速區，同時<strong>自動同步到首頁「精選書籤」</strong>。</div></div></div>
-  </div>
-  <div class="tip"><div class="box-t">📌 釘選書籤流程</div>
-    <div class="flow" style="margin:6px 0 0;">
-      <div class="flow-s">小百科 → 書籤詳情 → 點 📍</div>
-      <div class="flow-a">→</div>
-      <div class="flow-s">首頁「精選書籤」自動出現</div>
-    </div>
+    <div class="step"><div class="snum">3</div><div class="sbody"><div class="stitle">📌 釘選書籤 → 同步到首頁</div><div class="sdesc">詳情頁點 📍 釘選。釘選書籤出現在頂部快速區，同時<strong>自動同步到首頁「精選書籤」</strong>。</div></div></div>
   </div>
 </div>
 
 <hr class="divider">
 
-<!-- 8. CSV 匯入 -->
+<!-- 9. CSV 匯入 -->
 <div class="sec">
   <span class="anchor" id="csv"></span>
-  <div class="sec-hd"><div class="sec-num">8</div><div><div class="sec-title">📋 CSV 批量匯入</div><div class="sec-sub">在電腦整理好資料，貼上即匯入</div></div></div>
-
+  <div class="sec-hd"><div class="sec-num">9</div><div><div class="sec-title">📋 CSV 批量匯入</div><div class="sec-sub">在電腦整理好資料，貼上即匯入</div></div></div>
   <div class="steps">
-    <div class="step"><div class="snum">1</div><div class="sbody"><div class="stitle">用 Excel / Numbers 整理資料</div><div class="sdesc">照下方格式，第 1 列填欄位標題，從第 2 列填資料。複製全部儲存格。</div></div></div>
-    <div class="step"><div class="snum">2</div><div class="sbody"><div class="stitle">進入對應模組 → 點右上角 📥</div><div class="sdesc">要匯入庫存進庫存管理，要匯入百科進小百科，依此類推。</div></div></div>
-    <div class="step"><div class="snum">3</div><div class="sbody"><div class="stitle">貼上 CSV 文字 → 點「匯入」</div><div class="sdesc">完成顯示「✅ 成功匯入 N 筆」。每次匯入為新增，不覆蓋現有資料。</div></div></div>
+    <div class="step"><div class="snum">1</div><div class="sbody"><div class="stitle">整理 CSV 資料</div><div class="sdesc">用 Excel / Numbers，第 1 列填欄位標題，第 2 列起填資料，複製全部。</div></div></div>
+    <div class="step"><div class="snum">2</div><div class="sbody"><div class="stitle">進入模組 → 點右上角 📥</div><div class="sdesc">要匯入庫存進庫存管理，要匯入百科進小百科，依此類推。</div></div></div>
+    <div class="step"><div class="snum">3</div><div class="sbody"><div class="stitle">貼上 CSV → 點「匯入」</div><div class="sdesc">完成顯示「✅ 成功匯入 N 筆」。每次為新增，不覆蓋現有資料。</div></div></div>
   </div>
 
   <p style="font-size:14px;font-weight:700;margin:18px 0 8px;">📦 庫存格式</p>
   <div class="csv-box"><pre>name,category,quantity,unit,threshold,imageUrl,barcode,location,note
 雞蛋,food,10,顆,0,,,冰箱,
-衛生紙,clean,3,包,2,,,浴室,抽取式
-嬰兒濕巾,baby,5,包,2,,,客廳,敏感膚質</pre></div>
+衛生紙,clean,3,包,2,,,浴室,抽取式</pre></div>
   <div class="tags"><span class="tag">food</span><span class="tag">drink</span><span class="tag">frozen</span><span class="tag">clean</span><span class="tag">bath</span><span class="tag">medical</span><span class="tag">baby</span><span class="tag">kitchen</span><span class="tag">office</span><span class="tag">other</span></div>
-  <p style="font-size:12px;color:var(--muted);margin-top:6px;">threshold：0 = 用完才提醒，>0 = 低於此值提醒</p>
-
-  <p style="font-size:14px;font-weight:700;margin:18px 0 8px;">👗 衣櫥格式</p>
-  <div class="csv-box"><pre>name,type,size,sleeve,source,status,location,worn,note,imageUrl
-粉色包屁衣,洋裝/連身,80cm,短袖,自購,當季,臥室衣櫃,true,,
-藍格外套,外套,90cm,長袖,恩典牌,非當季,儲藏室,false,阿嬤送的,</pre></div>
-  <p style="font-size:12px;color:var(--muted);">worn：true = 已穿過，false = 全新未穿</p>
 
   <p style="font-size:14px;font-weight:700;margin:18px 0 8px;">📋 提醒格式</p>
   <div class="csv-box"><pre>title,type,recurrence,dueDate,amount,description
 水電費,financial,monthly,2026-05-10,1200,每月10號繳
-Netflix,subscription,monthly,2026-05-15,390,家庭方案
-寶寶回診,health,monthly,2026-05-28,,成大醫院小兒科</pre></div>
-  <div class="tags"><span class="tag">financial</span><span class="tag">subscription</span><span class="tag">consumable</span><span class="tag">chore</span><span class="tag">health</span><span class="tag">other</span></div>
-  <div class="tags" style="margin-top:4px;"><span class="tag">once</span><span class="tag">weekly</span><span class="tag">biweekly</span><span class="tag">monthly</span><span class="tag">quarterly</span><span class="tag">semiannual</span><span class="tag">yearly</span></div>
+Netflix,subscription,monthly,2026-05-15,390,家庭方案</pre></div>
 
   <p style="font-size:14px;font-weight:700;margin:18px 0 8px;">📖 百科格式</p>
   <div class="csv-box"><pre>title,category,tags,url,imageUrl,note
-嬰兒推車比較,baby,推車 育兒,https://babycare.tw,,輕便型首選
-氣炸鍋雞翅,recipe,雞肉 氣炸,https://cooking.tw,,180度20分鐘</pre></div>
+嬰兒推車比較,baby,推車 育兒,https://babycare.tw,,輕便型首選</pre></div>
   <p style="font-size:12px;color:var(--muted);">tags：多個標籤用空格分隔</p>
 </div>
 
 <hr class="divider">
 
-<!-- 9. FAQ -->
+<!-- 10. FAQ -->
 <div class="sec">
   <span class="anchor" id="faq"></span>
-  <div class="sec-hd"><div class="sec-num">9</div><div><div class="sec-title">❓ 常見問題</div></div></div>
-  <div class="faq"><div class="faq-q">資料沒有即時更新</div><div class="faq-a">確認已連網，下拉重新整理。仍不更新關閉重開。</div></div>
+  <div class="sec-hd"><div class="sec-num">10</div><div><div class="sec-title">❓ 常見問題</div></div></div>
+  <div class="faq"><div class="faq-q">資料沒有即時更新</div><div class="faq-a">確認已連網，下拉重新整理。仍不更新關掉重開。</div></div>
+  <div class="faq"><div class="faq-q">全螢幕模式怎麼重新整理</div><div class="faq-a">在頁面最頂端往下拉（下拉重新整理），或關掉 App 重開。</div></div>
   <div class="faq"><div class="faq-q">天氣沒有顯示</div><div class="faq-a">確認瀏覽器允許位置存取。iPhone：設定 → Safari → 位置 → 允許。</div></div>
-  <div class="faq"><div class="faq-q">書籤抓取預覽失敗</div><div class="faq-a">手動填入標題即可，封面圖可另外貼圖片網址。</div></div>
-  <div class="faq"><div class="faq-q">首頁沒有顯示精選書籤</div><div class="faq-a">進小百科，點任一書籤 → 詳情 → 點右上角 📍 釘選。釘選後首頁會自動出現。</div></div>
-  <div class="faq"><div class="faq-q">待買清單打勾後重整消失</div><div class="faq-a">打勾狀態存在手機本地。若消失，確認是否清除了瀏覽器快取。</div></div>
-  <div class="faq"><div class="faq-q">某樣庫存品不想追蹤了</div><div class="faq-a">進庫存清單點卡片 → ✏️ → 把警告值改成 0，或直接刪除品項。</div></div>
-  <div class="faq"><div class="faq-q">刪錯資料了</div><div class="faq-a">刪除後無法還原，建議重要資料定期用 CSV 匯出備份。</div></div>
+  <div class="faq"><div class="faq-q">照片上傳失敗</div><div class="faq-a">確認網路連線正常，檔案太大可先壓縮再上傳。或直接貼圖片網址。</div></div>
+  <div class="faq"><div class="faq-q">書籤抓取預覽失敗</div><div class="faq-a">手動填入標題即可，封面圖可貼圖片網址。</div></div>
+  <div class="faq"><div class="faq-q">待買清單老公看不到</div><div class="faq-a">確認兩支手機輸入的是同一個房間碼。自由新增區已改為 Firebase 同步，新增後對方馬上看到。</div></div>
+  <div class="faq"><div class="faq-q">某樣庫存品不想追蹤了</div><div class="faq-a">把警告值改成 <code>0</code>（用完才提醒），或直接刪除品項。</div></div>
+  <div class="faq"><div class="faq-q">刪錯資料了</div><div class="faq-a">刪除後無法還原，建議定期用 CSV 備份重要資料。</div></div>
   <div class="faq"><div class="faq-q">可以在電腦上用嗎</div><div class="faq-a">可以，開啟同一網址輸入房間碼即可，完整支援電腦瀏覽器。</div></div>
 </div>
 
 <div class="footer">
-  嘟嘟一家 🌙 · Home Hub v3.2 · 2026-04-15<br>
+  嘟嘟一家 🌙 · Home Hub v3.3 · 2026-05-01<br>
   <a href="https://yui0151.github.io/home-hub/">→ 前往 App</a>
 </div>
 
