@@ -609,6 +609,20 @@ return(
 function InventoryForm({data,onSave,onCancel,onDelete}){
 const [form,setForm]=useState({name:’’,category:‘food’,quantity:1,unit:‘個’,threshold:0,imageUrl:’’,barcode:’’,location:’’,note:’’,…data});
 const set=(k,v)=>setForm(f=>({…f,[k]:v}));
+const uploadPhoto=function(file){
+if(!file)return;
+set(‘imageUrl’,‘上傳中…’);
+var fd=new FormData();
+fd.append(‘file’,file);
+fd.append(‘upload_preset’,CLOUDINARY_PRESET);
+fetch(‘https://api.cloudinary.com/v1_1/’+CLOUDINARY_CLOUD+’/image/upload’,{method:‘POST’,body:fd})
+.then(function(r){return r.json();})
+.then(function(d){
+if(d.secure_url){set(‘imageUrl’,d.secure_url);}
+else{set(‘imageUrl’,’’);alert(‘上傳失敗’);}
+})
+.catch(function(err){set(‘imageUrl’,’’);alert(‘上傳失敗：’+err.message);});
+};
 const save=()=>{if(!form.name.trim())return;onSave({…form,quantity:Number(form.quantity),threshold:Number(form.threshold)});};
 return(
 <div>
@@ -629,20 +643,7 @@ style={{padding:‘8px 4px’,borderRadius:8,border:`1.5px solid ${form.category
 <div style={{display:‘flex’,gap:8}}>
 <input className=“form-input” style={{flex:1}} value={form.imageUrl===‘上傳中…’?’’:form.imageUrl} onChange={e=>set(‘imageUrl’,e.target.value)} placeholder=“貼上圖片網址（選填）”/>
 <label style={{display:‘flex’,alignItems:‘center’,justifyContent:‘center’,width:44,height:44,flexShrink:0,background:‘var(–clay)’,borderRadius:‘var(–radius-sm)’,cursor:‘pointer’,color:‘white’,fontSize:20}}>
-📷<input type=“file” accept=“image/*” style={{display:‘none’}} onChange={async e=>{
-const file=e.target.files[0];
-if(!file)return;
-set(‘imageUrl’,‘上傳中…’);
-try{
-const fd=new FormData();
-fd.append(‘file’,file);
-fd.append(‘upload_preset’,CLOUDINARY_PRESET);
-const res=await fetch(‘https://api.cloudinary.com/v1_1/’+CLOUDINARY_CLOUD+’/image/upload’,{method:‘POST’,body:fd});
-const d=await res.json();
-if(d.secure_url){set(‘imageUrl’,d.secure_url);}
-else{set(‘imageUrl’,’’);alert(‘上傳失敗：’+JSON.stringify(d.error));}
-}catch(err){set(‘imageUrl’,’’);alert(‘上傳失敗：’+err.message);}
-}}/>
+📷<input type=“file” accept=“image/*” style={{display:‘none’}} onChange={function(e){uploadPhoto(e.target.files[0]);}}/>
 </label>
 </div>
 <div className="form-row3">
