@@ -182,6 +182,8 @@ const firebaseConfig = {
   messagingSenderId: "286497032414",
   appId: "1:286497032414:web:16d3f0242a400d0de85a4f"
 };
+const CLOUDINARY_CLOUD='dxd5ijwof';
+const CLOUDINARY_PRESET='ml_default';
 let db;
 try{if(!firebase.apps.length)firebase.initializeApp(firebaseConfig);db=firebase.firestore();db.enablePersistence().catch(()=>{});}catch(e){}
 
@@ -502,6 +504,20 @@ function WikiForm({data,onSave,onCancel,onDelete}){
   const [fetching,setFetching]=useState(false);
   const [noteTab,setNoteTab]=useState('edit');
   const set=(k,v)=>setForm(f=>({...f,[k]:v}));
+  const uploadPhoto=function(file,setFn){
+    if(!file)return;
+    setFn('上傳中...');
+    var fd=new FormData();
+    fd.append('file',file);
+    fd.append('upload_preset',CLOUDINARY_PRESET);
+    fetch('https://api.cloudinary.com/v1_1/'+CLOUDINARY_CLOUD+'/image/upload',{method:'POST',body:fd})
+      .then(function(r){return r.json();})
+      .then(function(d){
+        if(d.secure_url){setFn(d.secure_url);}
+        else{setFn('');alert('上傳失敗');}
+      })
+      .catch(function(err){setFn('');alert('上傳失敗：'+err.message);});
+  };
 
   const doFetch=async()=>{
     if(!form.url)return;
@@ -544,7 +560,10 @@ function WikiForm({data,onSave,onCancel,onDelete}){
       <label className="form-label">標題 *</label>
       <input className="form-input" value={form.title} onChange={e=>set('title',e.target.value)} placeholder="書籤標題"/>
       <label className="form-label">封面圖片網址 ✨ <span style={{fontSize:11,fontWeight:400,color:'var(--text-muted)'}}>（選填，可覆蓋 OG 圖）</span></label>
-      <input className="form-input" value={form.imageUrl} onChange={e=>set('imageUrl',e.target.value)} placeholder="https://...（留空使用 OG 圖片）"/>
+      <input className="form-input" value={form.imageUrl==='上傳中...'?'':form.imageUrl} onChange={e=>set('imageUrl',e.target.value)} placeholder="貼上圖片網址（或點 📷 上傳）"/>
+        <label style={{display:'flex',alignItems:'center',gap:8,marginTop:6,cursor:'pointer',background:'var(--clay)',color:'white',borderRadius:'var(--radius-sm)',padding:'8px 14px',fontSize:13,fontWeight:500}}>
+          📷 從相簿上傳<input type="file" accept="image/*" style={{display:'none'}} onChange={function(e){uploadPhoto(e.target.files[0],function(url){set('imageUrl',url)});}}/>
+        </label>
       {coverImg&&<img src={coverImg} alt="" style={{width:'100%',height:100,objectFit:'cover',borderRadius:8,marginTop:6}} onError={e=>{e.target.style.display='none';}}/>}
       <div className="form-row" style={{marginTop:14}}>
         <div>

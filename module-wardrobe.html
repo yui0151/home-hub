@@ -165,6 +165,8 @@ const firebaseConfig = {
   messagingSenderId: "286497032414",
   appId: "1:286497032414:web:16d3f0242a400d0de85a4f"
 };
+const CLOUDINARY_CLOUD='dxd5ijwof';
+const CLOUDINARY_PRESET='ml_default';
 let db;
 try{if(!firebase.apps.length)firebase.initializeApp(firebaseConfig);db=firebase.firestore();db.enablePersistence().catch(()=>{});}catch(e){}
 
@@ -468,11 +470,28 @@ function WardrobeDetail({item}){
 function WardrobeForm({data,onSave,onCancel,onDelete}){
   const [form,setForm]=useState({name:'',type:'上衣',size:'',sleeve:'短袖',source:'自購',status:'當季',location:'',worn:false,note:'',imageUrl:'',pinned:false,...data});
   const set=(k,v)=>setForm(f=>({...f,[k]:v}));
+  const uploadPhoto=function(file,setFn){
+    if(!file)return;
+    setFn('上傳中...');
+    var fd=new FormData();
+    fd.append('file',file);
+    fd.append('upload_preset',CLOUDINARY_PRESET);
+    fetch('https://api.cloudinary.com/v1_1/'+CLOUDINARY_CLOUD+'/image/upload',{method:'POST',body:fd})
+      .then(function(r){return r.json();})
+      .then(function(d){
+        if(d.secure_url){setFn(d.secure_url);}
+        else{setFn('');alert('上傳失敗');}
+      })
+      .catch(function(err){setFn('');alert('上傳失敗：'+err.message);});
+  };
   const save=()=>{if(!form.name.trim())return;onSave(form);};
   return(
     <div>
       <label className="form-label">照片網址 ✨</label>
-      <input className="form-input" value={form.imageUrl} onChange={e=>set('imageUrl',e.target.value)} placeholder="https://...（貼上圖片網址即時預覽）"/>
+      <input className="form-input" value={form.imageUrl==='上傳中...'?'':form.imageUrl} onChange={e=>set('imageUrl',e.target.value)} placeholder="貼上圖片網址（或點 📷 上傳）"/>
+        <label style={{display:'flex',alignItems:'center',gap:8,marginTop:6,cursor:'pointer',background:'var(--clay)',color:'white',borderRadius:'var(--radius-sm)',padding:'8px 14px',fontSize:13,fontWeight:500}}>
+          📷 從相簿上傳<input type="file" accept="image/*" style={{display:'none'}} onChange={function(e){uploadPhoto(e.target.files[0],function(url){set('imageUrl',url)});}}/>
+        </label>
       {form.imageUrl&&(
         <div style={{marginTop:8,marginBottom:8,borderRadius:10,overflow:'hidden',border:'1.5px solid var(--sand)',background:'var(--card2)'}}>
           <img src={form.imageUrl} alt="預覽" style={{width:'100%',maxHeight:180,objectFit:'contain',display:'block'}} onError={e=>{e.target.parentElement.style.display='none';}}/>
