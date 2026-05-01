@@ -4,7 +4,7 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
 <title>小百科 · 家庭數位管家</title>
-<link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>🌙</text></svg>">
+<link rel="icon" href="icon.jpeg" type="image/jpeg">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link href="https://fonts.googleapis.com/css2?family=Noto+Serif+TC:wght@400;500;700&family=Zen+Kaku+Gothic+New:wght@300;400;500&display=swap" rel="stylesheet">
 <script src="https://unpkg.com/react@18/umd/react.production.min.js"></script>
@@ -135,7 +135,6 @@ input,textarea,select{font-family:var(--sans);font-size:16px;}
 .nav-btn{opacity:.45;}
 .nav-btn.active{opacity:1;font-weight:600;}
 </style>
-
   <!-- PWA Meta -->
   <meta name="apple-mobile-web-app-capable" content="yes">
   <meta name="apple-mobile-web-app-status-bar-style" content="default">
@@ -143,12 +142,12 @@ input,textarea,select{font-family:var(--sans);font-size:16px;}
   <meta name="mobile-web-app-capable" content="yes">
   <meta name="theme-color" content="#A68A7D">
   <meta name="application-name" content="嘟嘟一家">
-  <link rel="apple-touch-icon" href="data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHZpZXdCb3g9IjAgMCAxODAgMTgwIj48cmVjdCB3aWR0aD0iMTgwIiBoZWlnaHQ9IjE4MCIgcng9IjAiIGZpbGw9IiNBNjhBN0QiLz48dGV4dCB4PSI5MCIgeT0iMTIwIiB0ZXh0LWFuY2hvcj0ibWlkZGxlIiBmb250LXNpemU9IjEwMCIgZm9udC1mYW1pbHk9IkFwcGxlIENvbG9yIEVtb2ppLFNlZ29lIFVJIEVtb2ppLHNhbnMtc2VyaWYiPvCfjJk8L3RleHQ+PC9zdmc+">
+  <link rel="apple-touch-icon" href="icon.jpeg">
   <script>
     (function(){
-      var iconDataUri = "data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHZpZXdCb3g9IjAgMCAxOTIgMTkyIj48cmVjdCB3aWR0aD0iMTkyIiBoZWlnaHQ9IjE5MiIgcng9IjQwIiBmaWxsPSIjQTY4QTdEIi8+PHRleHQgeD0iOTYiIHk9IjEzMCIgdGV4dC1hbmNob3I9Im1pZGRsZSIgZm9udC1zaXplPSIxMTAiIGZvbnQtZmFtaWx5PSJBcHBsZSBDb2xvciBFbW9qaSxTZWdvZSBVSSBFbW9qaSxzYW5zLXNlcmlmIj7wn4yZPC90ZXh0Pjwvc3ZnPg==";
+      var svgIcon = "icon.jpeg"; var _unused = "data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 192 192'%3E%3Crect width='192' height='192' rx='40' fill='%23A68A7D'/%3E%3Ctext y='140' x='96' text-anchor='middle' font-size='120' font-family='Apple Color Emoji,sans-serif'%3E🏡%3C/text%3E%3C/svg%3E";
       var manifest = {
-        name: "嘟嘟一家🌙",
+        name: "嘟嘟一家",
         short_name: "嘟嘟一家",
         description: "家庭數位管家",
         start_url: "/home-hub/",
@@ -159,15 +158,14 @@ input,textarea,select{font-family:var(--sans);font-size:16px;}
         theme_color: "#A68A7D",
         lang: "zh-TW",
         icons: [
-          { src: iconDataUri, sizes: "192x192", type: "image/svg+xml", purpose: "any maskable" },
-          { src: iconDataUri, sizes: "512x512", type: "image/svg+xml", purpose: "any maskable" }
+          { src: svgIcon, sizes: "192x192", type: "image/jpeg", purpose: "any" },
+          { src: svgIcon, sizes: "512x512", type: "image/jpeg", purpose: "any" }
         ]
       };
-      var blob = new Blob([JSON.stringify(manifest)], {type: "application/manifest+json"});
-      var url = URL.createObjectURL(blob);
+      var blob = new Blob([JSON.stringify(manifest)], {type:"application/manifest+json"});
       var link = document.createElement("link");
       link.rel = "manifest";
-      link.href = url;
+      link.href = URL.createObjectURL(blob);
       document.head.appendChild(link);
     })();
   </script>
@@ -186,36 +184,6 @@ const firebaseConfig = {
 };
 let db;
 try{if(!firebase.apps.length)firebase.initializeApp(firebaseConfig);db=firebase.firestore();db.enablePersistence().catch(()=>{});}catch(e){}
-
-const CLOUDINARY_CLOUD='dxd5ijwof';
-const CLOUDINARY_PRESET='ml_default';
-async function uploadToCloudinary(file){
-  const compressed=await compressImg(file,1200,0.82);
-  const fd=new FormData();
-  fd.append('file',compressed);
-  fd.append('upload_preset',CLOUDINARY_PRESET);
-  const r=await fetch('https://api.cloudinary.com/v1_1/'+CLOUDINARY_CLOUD+'/image/upload',{method:'POST',body:fd});
-  const d=await r.json();
-  if(!d.secure_url)throw new Error('upload failed');
-  return d.secure_url;
-}
-async function compressImg(file,maxW,q){
-  return new Promise(resolve=>{
-    const img=new Image();
-    const u=URL.createObjectURL(file);
-    img.onload=()=>{
-      let w=img.width,h=img.height;
-      if(w>maxW){h=Math.round(h*maxW/w);w=maxW;}
-      const c=document.createElement('canvas');
-      c.width=w;c.height=h;
-      c.getContext('2d').drawImage(img,0,0,w,h);
-      c.toBlob(b=>resolve(b||file),'image/jpeg',q);
-      URL.revokeObjectURL(u);
-    };
-    img.src=u;
-  });
-}
-
 
 const ROOM_KEY='hh_roomCode';
 const CATS=[
@@ -532,7 +500,6 @@ function WikiDetail({item}){
 function WikiForm({data,onSave,onCancel,onDelete}){
   const [form,setForm]=useState({title:'',category:'baby',tags:[],url:'',imageUrl:'',note:'',og:{},pinned:false,...data,tagsStr:(data.tags||[]).join(' ')});
   const [fetching,setFetching]=useState(false);
-  const [uploading,setUploading]=useState(false);
   const [noteTab,setNoteTab]=useState('edit');
   const set=(k,v)=>setForm(f=>({...f,[k]:v}));
 
@@ -576,26 +543,9 @@ function WikiForm({data,onSave,onCancel,onDelete}){
       )}
       <label className="form-label">標題 *</label>
       <input className="form-input" value={form.title} onChange={e=>set('title',e.target.value)} placeholder="書籤標題"/>
-      <label className="form-label">封面照片 ✨ <span style={{fontSize:11,fontWeight:400,color:'var(--text-muted)'}}>（選填，可覆蓋 OG 圖）</span></label>
-      <div style={{display:'flex',gap:10,alignItems:'center',marginBottom:8}}>
-        {coverImg
-          ?<img src={coverImg} alt="" style={{width:80,height:60,objectFit:'cover',borderRadius:10,border:'1.5px solid var(--sand)'}} onError={e=>{e.target.style.display='none';}}/>
-          :<div style={{width:80,height:60,borderRadius:10,background:'var(--card2)',border:'1.5px dashed var(--sand)',display:'flex',alignItems:'center',justifyContent:'center',fontSize:24}}>{'🖼'}</div>
-        }
-        <div>
-          <label style={{display:'inline-block',padding:'9px 16px',background:'var(--clay)',color:'white',borderRadius:10,fontSize:13,cursor:uploading?'not-allowed':'pointer',fontWeight:500,opacity:uploading?0.6:1}}>
-            {uploading?'上傳中...':'📷 選擇照片'}
-            <input type="file" accept="image/*" style={{display:'none'}} disabled={uploading} onChange={async e=>{
-              const f=e.target.files[0];if(!f)return;
-              setUploading(true);
-              try{const url=await uploadToCloudinary(f);set('imageUrl',url);}catch(err){alert('上傳失敗，請重試');}
-              setUploading(false);
-              e.target.value='';
-            }}/>
-          </label>
-          {form.imageUrl&&<button onClick={()=>set('imageUrl','')} style={{display:'block',marginTop:6,fontSize:12,color:'var(--text-muted)',background:'none',border:'none',cursor:'pointer'}}>移除照片</button>}
-        </div>
-      </div>
+      <label className="form-label">封面圖片網址 ✨ <span style={{fontSize:11,fontWeight:400,color:'var(--text-muted)'}}>（選填，可覆蓋 OG 圖）</span></label>
+      <input className="form-input" value={form.imageUrl} onChange={e=>set('imageUrl',e.target.value)} placeholder="https://...（留空使用 OG 圖片）"/>
+      {coverImg&&<img src={coverImg} alt="" style={{width:'100%',height:100,objectFit:'cover',borderRadius:8,marginTop:6}} onError={e=>{e.target.style.display='none';}}/>}
       <div className="form-row" style={{marginTop:14}}>
         <div>
           <label className="form-label" style={{marginTop:0}}>分類</label>

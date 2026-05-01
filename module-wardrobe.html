@@ -4,7 +4,7 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
 <title>電子衣櫥 · 家庭數位管家</title>
-<link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>🌙</text></svg>">
+<link rel="icon" href="icon.jpeg" type="image/jpeg">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link href="https://fonts.googleapis.com/css2?family=Noto+Serif+TC:wght@400;500;700&family=Zen+Kaku+Gothic+New:wght@300;400;500&display=swap" rel="stylesheet">
 <script src="https://unpkg.com/react@18/umd/react.production.min.js"></script>
@@ -118,7 +118,6 @@ input,textarea,select{font-family:var(--sans);font-size:16px;}
 .nav-btn{opacity:.45;}
 .nav-btn.active{opacity:1;font-weight:600;}
 </style>
-
   <!-- PWA Meta -->
   <meta name="apple-mobile-web-app-capable" content="yes">
   <meta name="apple-mobile-web-app-status-bar-style" content="default">
@@ -126,12 +125,12 @@ input,textarea,select{font-family:var(--sans);font-size:16px;}
   <meta name="mobile-web-app-capable" content="yes">
   <meta name="theme-color" content="#A68A7D">
   <meta name="application-name" content="嘟嘟一家">
-  <link rel="apple-touch-icon" href="data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHZpZXdCb3g9IjAgMCAxODAgMTgwIj48cmVjdCB3aWR0aD0iMTgwIiBoZWlnaHQ9IjE4MCIgcng9IjAiIGZpbGw9IiNBNjhBN0QiLz48dGV4dCB4PSI5MCIgeT0iMTIwIiB0ZXh0LWFuY2hvcj0ibWlkZGxlIiBmb250LXNpemU9IjEwMCIgZm9udC1mYW1pbHk9IkFwcGxlIENvbG9yIEVtb2ppLFNlZ29lIFVJIEVtb2ppLHNhbnMtc2VyaWYiPvCfjJk8L3RleHQ+PC9zdmc+">
+  <link rel="apple-touch-icon" href="icon.jpeg">
   <script>
     (function(){
-      var iconDataUri = "data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHZpZXdCb3g9IjAgMCAxOTIgMTkyIj48cmVjdCB3aWR0aD0iMTkyIiBoZWlnaHQ9IjE5MiIgcng9IjQwIiBmaWxsPSIjQTY4QTdEIi8+PHRleHQgeD0iOTYiIHk9IjEzMCIgdGV4dC1hbmNob3I9Im1pZGRsZSIgZm9udC1zaXplPSIxMTAiIGZvbnQtZmFtaWx5PSJBcHBsZSBDb2xvciBFbW9qaSxTZWdvZSBVSSBFbW9qaSxzYW5zLXNlcmlmIj7wn4yZPC90ZXh0Pjwvc3ZnPg==";
+      var svgIcon = "icon.jpeg"; var _unused = "data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 192 192'%3E%3Crect width='192' height='192' rx='40' fill='%23A68A7D'/%3E%3Ctext y='140' x='96' text-anchor='middle' font-size='120' font-family='Apple Color Emoji,sans-serif'%3E🏡%3C/text%3E%3C/svg%3E";
       var manifest = {
-        name: "嘟嘟一家🌙",
+        name: "嘟嘟一家",
         short_name: "嘟嘟一家",
         description: "家庭數位管家",
         start_url: "/home-hub/",
@@ -142,15 +141,14 @@ input,textarea,select{font-family:var(--sans);font-size:16px;}
         theme_color: "#A68A7D",
         lang: "zh-TW",
         icons: [
-          { src: iconDataUri, sizes: "192x192", type: "image/svg+xml", purpose: "any maskable" },
-          { src: iconDataUri, sizes: "512x512", type: "image/svg+xml", purpose: "any maskable" }
+          { src: svgIcon, sizes: "192x192", type: "image/jpeg", purpose: "any" },
+          { src: svgIcon, sizes: "512x512", type: "image/jpeg", purpose: "any" }
         ]
       };
-      var blob = new Blob([JSON.stringify(manifest)], {type: "application/manifest+json"});
-      var url = URL.createObjectURL(blob);
+      var blob = new Blob([JSON.stringify(manifest)], {type:"application/manifest+json"});
       var link = document.createElement("link");
       link.rel = "manifest";
-      link.href = url;
+      link.href = URL.createObjectURL(blob);
       document.head.appendChild(link);
     })();
   </script>
@@ -169,36 +167,6 @@ const firebaseConfig = {
 };
 let db;
 try{if(!firebase.apps.length)firebase.initializeApp(firebaseConfig);db=firebase.firestore();db.enablePersistence().catch(()=>{});}catch(e){}
-
-const CLOUDINARY_CLOUD='dxd5ijwof';
-const CLOUDINARY_PRESET='ml_default';
-async function uploadToCloudinary(file){
-  const compressed=await compressImg(file,1200,0.82);
-  const fd=new FormData();
-  fd.append('file',compressed);
-  fd.append('upload_preset',CLOUDINARY_PRESET);
-  const r=await fetch('https://api.cloudinary.com/v1_1/'+CLOUDINARY_CLOUD+'/image/upload',{method:'POST',body:fd});
-  const d=await r.json();
-  if(!d.secure_url)throw new Error('upload failed');
-  return d.secure_url;
-}
-async function compressImg(file,maxW,q){
-  return new Promise(resolve=>{
-    const img=new Image();
-    const u=URL.createObjectURL(file);
-    img.onload=()=>{
-      let w=img.width,h=img.height;
-      if(w>maxW){h=Math.round(h*maxW/w);w=maxW;}
-      const c=document.createElement('canvas');
-      c.width=w;c.height=h;
-      c.getContext('2d').drawImage(img,0,0,w,h);
-      c.toBlob(b=>resolve(b||file),'image/jpeg',q);
-      URL.revokeObjectURL(u);
-    };
-    img.src=u;
-  });
-}
-
 
 const ROOM_KEY='hh_roomCode';
 const TYPES=['上衣','洋裝/連身','裙子/褲子','套裝','外套','居家','配件','其他'];
@@ -238,7 +206,7 @@ function App(){
   const filtered=sorted.filter(r=>{
     const q=search.toLowerCase();
     const matchSearch=!q||r.name?.toLowerCase().includes(q)||r.size?.toLowerCase().includes(q)||r.location?.toLowerCase().includes(q);
-    const matchStatus=statusFilter==='all'||(statusFilter==='未穿'?!r.worn:r.status===statusFilter);
+    const matchStatus=statusFilter==='all'||r.status===statusFilter;
     const matchType=typeFilter==='all'||r.type===typeFilter;
     return matchSearch&&matchStatus&&matchType;
   });
@@ -334,7 +302,7 @@ function App(){
 
       {/* Status filter */}
       <div className="filter-row">
-        {['all','當季','非當季','穿不下','已轉贈/售出','未穿'].map(s=>(
+        {['all','當季','非當季','穿不下','已轉贈/售出'].map(s=>(
           <button key={s} className={`fpill ${statusFilter===s?'active':''}`} onClick={()=>setStatusFilter(s)}>{s==='all'?'全部狀態':s}</button>
         ))}
       </div>
@@ -499,31 +467,17 @@ function WardrobeDetail({item}){
 
 function WardrobeForm({data,onSave,onCancel,onDelete}){
   const [form,setForm]=useState({name:'',type:'上衣',size:'',sleeve:'短袖',source:'自購',status:'當季',location:'',worn:false,note:'',imageUrl:'',pinned:false,...data});
-  const [uploading,setUploading]=useState(false);
   const set=(k,v)=>setForm(f=>({...f,[k]:v}));
   const save=()=>{if(!form.name.trim())return;onSave(form);};
   return(
     <div>
-      <label className="form-label">照片 ✨</label>
-      <div style={{display:'flex',gap:10,alignItems:'center',marginBottom:8}}>
-        {form.imageUrl
-          ?<img src={form.imageUrl} alt="" style={{width:80,height:80,objectFit:'contain',borderRadius:10,border:'1.5px solid var(--sand)',background:'var(--card2)'}} onError={e=>{e.target.style.display='none';}}/>
-          :<div style={{width:80,height:80,borderRadius:10,background:'var(--card2)',border:'1.5px dashed var(--sand)',display:'flex',alignItems:'center',justifyContent:'center',fontSize:28}}>{'👗'}</div>
-        }
-        <div>
-          <label style={{display:'inline-block',padding:'9px 16px',background:'var(--clay)',color:'white',borderRadius:10,fontSize:13,cursor:uploading?'not-allowed':'pointer',fontWeight:500,opacity:uploading?0.6:1}}>
-            {uploading?'上傳中...':'📷 選擇照片'}
-            <input type="file" accept="image/*" style={{display:'none'}} disabled={uploading} onChange={async e=>{
-              const f=e.target.files[0];if(!f)return;
-              setUploading(true);
-              try{const url=await uploadToCloudinary(f);set('imageUrl',url);}catch(err){alert('上傳失敗，請重試');}
-              setUploading(false);
-              e.target.value='';
-            }}/>
-          </label>
-          {form.imageUrl&&<button onClick={()=>set('imageUrl','')} style={{display:'block',marginTop:6,fontSize:12,color:'var(--text-muted)',background:'none',border:'none',cursor:'pointer'}}>移除照片</button>}
+      <label className="form-label">照片網址 ✨</label>
+      <input className="form-input" value={form.imageUrl} onChange={e=>set('imageUrl',e.target.value)} placeholder="https://...（貼上圖片網址即時預覽）"/>
+      {form.imageUrl&&(
+        <div style={{marginTop:8,marginBottom:8,borderRadius:10,overflow:'hidden',border:'1.5px solid var(--sand)',background:'var(--card2)'}}>
+          <img src={form.imageUrl} alt="預覽" style={{width:'100%',maxHeight:180,objectFit:'contain',display:'block'}} onError={e=>{e.target.parentElement.style.display='none';}}/>
         </div>
-      </div>
+      )}
       <label className="form-label">衣物名稱 *</label>
       <input className="form-input" value={form.name} onChange={e=>set('name',e.target.value)} placeholder="例：粉色包屁衣"/>
       <div className="form-row">
