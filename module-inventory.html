@@ -1,4 +1,5 @@
 <!DOCTYPE html>
+
 <html lang="zh-TW">
 <head>
 <meta charset="UTF-8">
@@ -139,35 +140,36 @@ input,textarea,select{font-family:var(--sans);font-size:16px;}
 .inv-item-list{display:flex;align-items:center;gap:10px;padding:8px 14px;border-top:1px solid var(--sand);cursor:pointer;font-size:13px;}
 .inv-item-list:active{background:var(--card2);}
 
-
 .inv-grid{display:grid;grid-template-columns:1fr 1fr;gap:10px;}
-.inv-card{background:var(--white);border:1px solid var(--sand);border-radius:var(--radius-sm);overflow:hidden;cursor:pointer;transition:all .15s;}
-.inv-card:active{transform:scale(.97);background:var(--card2);}
-.inv-card-img{width:100%;height:90px;display:flex;align-items:center;justify-content:center;background:var(--card2);}
+.inv-card{background:var(–white);border:1px solid var(–sand);border-radius:var(–radius-sm);overflow:hidden;cursor:pointer;transition:all .15s;}
+.inv-card:active{transform:scale(.97);background:var(–card2);}
+.inv-card-img{width:100%;height:90px;display:flex;align-items:center;justify-content:center;background:var(–card2);}
 .inv-card-img img{width:100%;height:90px;object-fit:contain;}
 .inv-card-body{padding:8px 10px 10px;}
 .inv-card-name{font-size:13px;font-weight:500;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;}
 .inv-card-foot{display:flex;align-items:center;justify-content:space-between;margin-top:6px;}
-.inv-card-num{font-family:var(--serif);font-size:15px;font-weight:700;}
-.inv-card-num.low{color:var(--highlight);}
+.inv-card-num{font-family:var(–serif);font-size:15px;font-weight:700;}
+.inv-card-num.low{color:var(–highlight);}
 
 /* ── 庫存卡片網格模式 ── */
 .inv-grid{display:grid;grid-template-columns:1fr 1fr;gap:8px;padding:8px 10px 10px;}
-.inv-card{background:var(--white);border:1px solid var(--sand);border-radius:var(--radius-sm);overflow:hidden;cursor:pointer;transition:all .15s;}
-.inv-card:active{transform:scale(.97);background:var(--card2);}
-.inv-card-img{width:100%;height:88px;background:var(--card2);display:flex;align-items:center;justify-content:center;overflow:hidden;}
+.inv-card{background:var(–white);border:1px solid var(–sand);border-radius:var(–radius-sm);overflow:hidden;cursor:pointer;transition:all .15s;}
+.inv-card:active{transform:scale(.97);background:var(–card2);}
+.inv-card-img{width:100%;height:88px;background:var(–card2);display:flex;align-items:center;justify-content:center;overflow:hidden;}
 .inv-card-img img{width:100%;height:100%;object-fit:contain;}
 .inv-card-body{padding:8px 9px 9px;}
-.inv-card-name{font-size:13px;font-weight:600;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;color:var(--wood);}
+.inv-card-name{font-size:13px;font-weight:600;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;color:var(–wood);}
 .inv-card-foot{display:flex;align-items:center;justify-content:space-between;margin-top:7px;}
-.inv-card-num{font-family:var(--serif);font-size:15px;font-weight:700;}
-.inv-card-num.low{color:var(--highlight);}
+.inv-card-num{font-family:var(–serif);font-size:15px;font-weight:700;}
+.inv-card-num.low{color:var(–highlight);}
 
 /* 導覽列高亮 */
 .nav-btn{opacity:.45;}
 .nav-btn.active{opacity:1;font-weight:600;}
 </style>
+
   <!-- PWA Meta -->
+
   <meta name="apple-mobile-web-app-capable" content="yes">
   <meta name="apple-mobile-web-app-status-bar-style" content="default">
   <meta name="apple-mobile-web-app-title" content="嘟嘟一家">
@@ -217,417 +219,438 @@ const firebaseConfig = {
 let db;
 try{if(!firebase.apps.length)firebase.initializeApp(firebaseConfig);db=firebase.firestore();db.enablePersistence().catch(()=>{});}catch(e){}
 
-const ROOM_KEY='hh_roomCode';
-const SHOP_KEY_INV='hh_inv_shop';
+const ROOM_KEY=‘hh_roomCode’;
 const CATS=[
-  {key:'food',label:'食品',icon:'🥫'},{key:'drink',label:'飲料',icon:'🧃'},
-  {key:'frozen',label:'冷凍',icon:'🧊'},{key:'clean',label:'清潔',icon:'🧹'},
-  {key:'bath',label:'沐浴',icon:'🛁'},{key:'medical',label:'醫療',icon:'💊'},
-  {key:'baby',label:'嬰幼兒',icon:'🍼'},{key:'kitchen',label:'廚房',icon:'🍳'},
-  {key:'office',label:'文具',icon:'📎'},
-  {key:'other',label:'其他',icon:'📦'},
+{key:‘food’,label:‘食品’,icon:‘🥫’},{key:‘drink’,label:‘飲料’,icon:‘🧃’},
+{key:‘frozen’,label:‘冷凍’,icon:‘🧊’},{key:‘clean’,label:‘清潔’,icon:‘🧹’},
+{key:‘bath’,label:‘沐浴’,icon:‘🛁’},{key:‘medical’,label:‘醫療’,icon:‘💊’},
+{key:‘baby’,label:‘嬰幼兒’,icon:‘🍼’},{key:‘kitchen’,label:‘廚房’,icon:‘🍳’},
+{key:‘office’,label:‘文具’,icon:‘📎’},
+{key:‘other’,label:‘其他’,icon:‘📦’},
 ];
-const UNITS=['個','盒','包','袋','瓶','罐','條','片','顆','kg','g','L','ml','捲','組','雙','件','份'];
+const UNITS=[‘個’,‘盒’,‘包’,‘袋’,‘瓶’,‘罐’,‘條’,‘片’,‘顆’,‘kg’,‘g’,‘L’,‘ml’,‘捲’,‘組’,‘雙’,‘件’,‘份’];
 function catInfo(key){return CATS.find(c=>c.key===key)||CATS[CATS.length-1];}
-function isLow(r){if(r.threshold===0||r.threshold==='0')return Number(r.quantity)===0;return Number(r.quantity)<=Number(r.threshold);}
+function isLow(r){if(r.threshold===0||r.threshold===‘0’)return Number(r.quantity)===0;return Number(r.quantity)<=Number(r.threshold);}
 
 function App(){
-  const [roomCode]=useState(()=>localStorage.getItem(ROOM_KEY)||'');
-  const [items,setItems]=useState([]);
-  const [mainTab,setMainTab]=useState(()=>{const p=new URLSearchParams(window.location.search);return p.get('tab')||'inventory'});
-  const [search,setSearch]=useState('');
-  const [catFilter,setCatFilter]=useState('all');
-  const [openCats,setOpenCats]=useState({});
-  const [showAdd,setShowAdd]=useState(false);
-  const [showDetail,setShowDetail]=useState(null);
-  const [editMode,setEditMode]=useState(false);
-  const [showCsv,setShowCsv]=useState(false);
-  const [csvText,setCsvText]=useState('');
-  const [viewMode,setViewMode]=useState('card');
-  const [sortBy,setSortBy]=useState('name'); // name | createdAt
-  const [shopping,setShopping]=useState(()=>JSON.parse(localStorage.getItem(SHOP_KEY_INV+'_'+(localStorage.getItem(ROOM_KEY)||''))||'[]'));
-  const [shopInput,setShopInput]=useState('');
-  const [lowDone,setLowDone]=useState(()=>JSON.parse(localStorage.getItem('hh_low_done'+'_'+(localStorage.getItem(ROOM_KEY)||''))||'{}'));
-  const toggleLow=id=>setLowDone(p=>{const n={...p,[id]:!p[id]};localStorage.setItem('hh_low_done'+'_'+room,JSON.stringify(n));return n;});
-  const removeLow=id=>setLowDone(p=>{const n={...p};delete n[id];localStorage.setItem('hh_low_done'+'_'+room,JSON.stringify(n));return n;});
-  
-  const room=roomCode;
+const [roomCode]=useState(()=>localStorage.getItem(ROOM_KEY)||’’);
+const [items,setItems]=useState([]);
+const [mainTab,setMainTab]=useState(()=>{const p=new URLSearchParams(window.location.search);return p.get(‘tab’)||‘inventory’});
+const [search,setSearch]=useState(’’);
+const [catFilter,setCatFilter]=useState(‘all’);
+const [openCats,setOpenCats]=useState({});
+const [showAdd,setShowAdd]=useState(false);
+const [showDetail,setShowDetail]=useState(null);
+const [editMode,setEditMode]=useState(false);
+const [showCsv,setShowCsv]=useState(false);
+const [csvText,setCsvText]=useState(’’);
+const [viewMode,setViewMode]=useState(‘card’);
+const [sortBy,setSortBy]=useState(‘name’); // name | createdAt
+const [shopping,setShopping]=useState([]);
+const [shopInput,setShopInput]=useState(’’);
+const [lowDone,setLowDone]=useState(()=>JSON.parse(localStorage.getItem(‘hh_low_done’+’*’+(localStorage.getItem(ROOM_KEY)||’’))||’{}’));
+const toggleLow=id=>setLowDone(p=>{const n={…p,[id]:!p[id]};localStorage.setItem(‘hh_low_done’+’*’+room,JSON.stringify(n));return n;});
+const removeLow=id=>setLowDone(p=>{const n={…p};delete n[id];localStorage.setItem(‘hh_low_done’+’_’+room,JSON.stringify(n));return n;});
 
-  useEffect(()=>{
-    if(!room||!db)return;
-    const u=db.collection('inventory').doc(room).collection('items')
-      .onSnapshot(snap=>{setItems(snap.docs.map(d=>({id:d.id,...d.data()})));},()=>{});
-    return()=>u();
-  },[room]);
+const room=roomCode;
 
-  useEffect(()=>{if(!room)return;localStorage.setItem(SHOP_KEY_INV+'_'+room,JSON.stringify(shopping));},[shopping,room]);
+useEffect(()=>{
+if(!room||!db)return;
+const u1=db.collection(‘inventory’).doc(room).collection(‘items’)
+.onSnapshot(snap=>setItems(snap.docs.map(d=>({id:d.id,…d.data()}))),()=>{});
+const u2=db.collection(‘shopping’).doc(room).collection(‘items’)
+.orderBy(‘createdAt’,‘asc’)
+.onSnapshot(snap=>setShopping(snap.docs.map(d=>({id:d.id,…d.data()}))),()=>{});
+return()=>{u1();u2();};
+},[room]);
 
-  const filtered=items.filter(r=>{
-    const q=search.toLowerCase();
-    const matchSearch=!q||r.name?.toLowerCase().includes(q)||r.barcode?.includes(q)||r.location?.toLowerCase().includes(q);
-    const matchCat=catFilter==='all'||r.category===catFilter;
-    return matchSearch&&matchCat;
-  });
+const filtered=items.filter(r=>{
+const q=search.toLowerCase();
+const matchSearch=!q||r.name?.toLowerCase().includes(q)||r.barcode?.includes(q)||r.location?.toLowerCase().includes(q);
+const matchCat=catFilter===‘all’||r.category===catFilter;
+return matchSearch&&matchCat;
+});
 
-  const sortedItems=(arr)=>[...arr].sort((a,b)=>{
-    if(sortBy==='name') return (a.name||'').localeCompare(b.name||'','zh-TW');
-    return (b.createdAt||0)-(a.createdAt||0);
-  });
-  const byCategory=CATS.map(c=>({...c,items:sortedItems(filtered.filter(r=>r.category===c.key))})).filter(c=>c.items.length>0);
-  const lowItems=items.filter(isLow);
+const sortedItems=(arr)=>[…arr].sort((a,b)=>{
+if(sortBy===‘name’) return (a.name||’’).localeCompare(b.name||’’,‘zh-TW’);
+return (b.createdAt||0)-(a.createdAt||0);
+});
+const byCategory=CATS.map(c=>({…c,items:sortedItems(filtered.filter(r=>r.category===c.key))})).filter(c=>c.items.length>0);
+const lowItems=items.filter(isLow);
 
-  const updateQty=async(item,delta)=>{
-    if(!db)return;
-    const newQty=Math.max(0,Number(item.quantity)+delta);
-    await db.collection('inventory').doc(room).collection('items').doc(item.id).update({quantity:newQty,updatedAt:Date.now()});
-  };
+const updateQty=async(item,delta)=>{
+if(!db)return;
+const newQty=Math.max(0,Number(item.quantity)+delta);
+await db.collection(‘inventory’).doc(room).collection(‘items’).doc(item.id).update({quantity:newQty,updatedAt:Date.now()});
+};
 
-  const handleSave=async(data)=>{
-    if(!db)return;
-    const col=db.collection('inventory').doc(room).collection('items');
-    if(data.id){
-      await col.doc(data.id).update({...data,updatedAt:Date.now()});
-      setShowDetail({...showDetail,...data});setEditMode(false);
-    }else{
-      await col.add({...data,createdAt:Date.now(),updatedAt:Date.now()});
-      setShowAdd(false);
-    }
-  };
+const handleSave=async(data)=>{
+if(!db)return;
+const col=db.collection(‘inventory’).doc(room).collection(‘items’);
+if(data.id){
+await col.doc(data.id).update({…data,updatedAt:Date.now()});
+setShowDetail({…showDetail,…data});setEditMode(false);
+}else{
+await col.add({…data,createdAt:Date.now(),updatedAt:Date.now()});
+setShowAdd(false);
+}
+};
 
-  const handleDelete=async(item)=>{
-    if(!db||!window.confirm('確定刪除？'))return;
-    await db.collection('inventory').doc(room).collection('items').doc(item.id).delete();
-    setShowDetail(null);
-  };
+const handleDelete=async(item)=>{
+if(!db||!window.confirm(‘確定刪除？’))return;
+await db.collection(‘inventory’).doc(room).collection(‘items’).doc(item.id).delete();
+setShowDetail(null);
+};
 
-  const importCsv=async()=>{
-    if(!csvText.trim()||!db)return;
-    const lines=csvText.trim().split('\n').slice(1);
-    const batch=db.batch();
-    const col=db.collection('inventory').doc(room).collection('items');
-    lines.forEach(line=>{
-      const [name,category,quantity,unit,threshold,imageUrl,barcode,location,note]=line.split(',').map(s=>s.trim());
-      if(!name)return;
-      batch.set(col.doc(),{name,category:category||'other',quantity:Number(quantity)||0,unit:unit||'個',threshold:Number(threshold)||0,imageUrl:imageUrl||'',barcode:barcode||'',location:location||'',note:note||'',createdAt:Date.now(),updatedAt:Date.now()});
-    });
-    await batch.commit();setShowCsv(false);setCsvText('');
-  };
+const importCsv=async()=>{
+if(!csvText.trim()||!db)return;
+const lines=csvText.trim().split(’\n’).slice(1);
+const batch=db.batch();
+const col=db.collection(‘inventory’).doc(room).collection(‘items’);
+lines.forEach(line=>{
+const [name,category,quantity,unit,threshold,imageUrl,barcode,location,note]=line.split(’,’).map(s=>s.trim());
+if(!name)return;
+batch.set(col.doc(),{name,category:category||‘other’,quantity:Number(quantity)||0,unit:unit||‘個’,threshold:Number(threshold)||0,imageUrl:imageUrl||’’,barcode:barcode||’’,location:location||’’,note:note||’’,createdAt:Date.now(),updatedAt:Date.now()});
+});
+await batch.commit();setShowCsv(false);setCsvText(’’);
+};
 
-  const addShop=()=>{if(!shopInput.trim())return;setShopping(p=>[...p,{id:Date.now(),text:shopInput.trim(),done:false}]);setShopInput('');};
-  const toggleShop=id=>setShopping(p=>p.map(t=>t.id===id?{...t,done:!t.done}:t));
-  const delShop=id=>setShopping(p=>p.filter(t=>t.id!==id));
+const addShop=async()=>{
+if(!shopInput.trim()||!db)return;
+await db.collection(‘shopping’).doc(room).collection(‘items’).add({text:shopInput.trim(),done:false,createdAt:Date.now()});
+setShopInput(’’);
+};
+const toggleShop=async(id)=>{
+if(!db)return;
+const item=shopping.find(t=>t.id===id);
+if(!item)return;
+await db.collection(‘shopping’).doc(room).collection(‘items’).doc(id).update({done:!item.done});
+};
+const delShop=async(id)=>{
+if(!db)return;
+await db.collection(‘shopping’).doc(room).collection(‘items’).doc(id).delete();
+};
 
-  const moduleUrl=mod=>`${mod}?room=${room}`;
-  const toggleCat=key=>setOpenCats(p=>({...p,[key]:p[key]===true?false:true}));
+const moduleUrl=mod=>`${mod}?room=${room}`;
+const toggleCat=key=>setOpenCats(p=>({…p,[key]:p[key]===true?false:true}));
 
-  return(
-    <div className="app">
-      <div className="header">
-        <div className="header-row">
-          <div className="header-title">📦 庫存管理</div>
-          <div className="header-actions">
-            <select value={sortBy} onChange={e=>setSortBy(e.target.value)} style={{fontSize:12,padding:'4px 8px',border:'1px solid var(--sand)',borderRadius:8,background:'var(--card2)',color:'var(--wood)',fontFamily:'var(--sans)'}}>
-              <option value="name">名稱排序</option>
-              <option value="createdAt">新增日期</option>
-            </select>
-            <button className="icon-btn" onClick={()=>setViewMode(v=>v==='card'?'list':'card')} title="切換顯示">{viewMode==='card'?'☰':'⊞'}</button>
-            <button className="icon-btn" onClick={()=>setShowCsv(true)}>📥</button>
-          </div>
-        </div>
-        <div className="tab-switch">
-          <button className={`tsw ${mainTab==='inventory'?'active':''}`} onClick={()=>setMainTab('inventory')}>📦 庫存清單</button>
-          <button className={`tsw ${mainTab==='shopping'?'active':''}`} onClick={()=>setMainTab('shopping')}>🛒 待買清單</button>
-        </div>
+return(
+<div className="app">
+<div className="header">
+<div className="header-row">
+<div className="header-title">📦 庫存管理</div>
+<div className="header-actions">
+<select value={sortBy} onChange={e=>setSortBy(e.target.value)} style={{fontSize:12,padding:‘4px 8px’,border:‘1px solid var(–sand)’,borderRadius:8,background:‘var(–card2)’,color:‘var(–wood)’,fontFamily:‘var(–sans)’}}>
+<option value="name">名稱排序</option>
+<option value="createdAt">新增日期</option>
+</select>
+<button className=“icon-btn” onClick={()=>setViewMode(v=>v===‘card’?‘list’:‘card’)} title=“切換顯示”>{viewMode===‘card’?‘☰’:‘⊞’}</button>
+<button className=“icon-btn” onClick={()=>setShowCsv(true)}>📥</button>
+</div>
+</div>
+<div className="tab-switch">
+<button className={`tsw ${mainTab==='inventory'?'active':''}`} onClick={()=>setMainTab(‘inventory’)}>📦 庫存清單</button>
+<button className={`tsw ${mainTab==='shopping'?'active':''}`} onClick={()=>setMainTab(‘shopping’)}>🛒 待買清單</button>
+</div>
+</div>
+
+```
+  {mainTab==='inventory'&&(
+    <>
+      <div className="stats-row">
+        <div className="stat-card"><div className="stat-num">{items.length}</div><div className="stat-label">品項總數</div></div>
+        <div className="stat-card"><div className={`stat-num ${lowItems.length>0?'alert':''}`}>{lowItems.length}</div><div className="stat-label">庫存不足</div></div>
+        <div className="stat-card"><div className="stat-num">{byCategory.length}</div><div className="stat-label">分類數</div></div>
       </div>
-
-      {mainTab==='inventory'&&(
-        <>
-          <div className="stats-row">
-            <div className="stat-card"><div className="stat-num">{items.length}</div><div className="stat-label">品項總數</div></div>
-            <div className="stat-card"><div className={`stat-num ${lowItems.length>0?'alert':''}`}>{lowItems.length}</div><div className="stat-label">庫存不足</div></div>
-            <div className="stat-card"><div className="stat-num">{byCategory.length}</div><div className="stat-label">分類數</div></div>
-          </div>
-          <div className="search-row">
-            <span className="search-icon">🔍</span>
-            <input className="search-input" placeholder="搜尋名稱、條碼、位置..." value={search} onChange={e=>setSearch(e.target.value)} style={{paddingRight:search?'36px':'14px'}}/>
-            {search&&<button onClick={()=>setSearch('')} style={{position:'absolute',right:'26px',top:'50%',transform:'translateY(-50%)',background:'none',border:'none',cursor:'pointer',fontSize:16,color:'var(--text-muted)',lineHeight:1}}>✕</button>}
-          </div>
-          <div className="cat-pills">
-            <button className={`cpill ${catFilter==='all'?'active':''}`} onClick={()=>setCatFilter('all')}>全部</button>
-            {CATS.map(c=>(
-              <button key={c.key} className={`cpill ${catFilter===c.key?'active':''}`} onClick={()=>setCatFilter(c.key)}>{c.icon} {c.label}</button>
-            ))}
-          </div>
-          <div className="content">
-            {byCategory.length===0&&<div className="empty"><div style={{fontSize:40}}>📦</div><div style={{marginTop:8}}>還沒有庫存品項</div></div>}
-            {byCategory.map(c=>(
-              <div key={c.key} className="acc-group">
-                <div className="acc-header" onClick={()=>toggleCat(c.key)}>
-                  <div className="acc-header-left">
-                    <span className="acc-icon">{c.icon}</span>
-                    <span className="acc-name">{c.label}</span>
-                    <span className="acc-count">{c.items.length}</span>
-                    {c.items.some(isLow)&&<span style={{fontSize:10,color:'var(--highlight)'}}>⚠️</span>}
-                  </div>
-                  <span className={`acc-arrow ${openCats[c.key]!==false?'open':''}`}>▼</span>
-                </div>
-                {openCats[c.key]===true&&(
-                viewMode==='list'
-                ?<div key="list-wrap">
-                  {c.items.map(r=>(
-                    <div key={r.id} className="inv-item-list" onClick={()=>{setShowDetail(r);setEditMode(false);}}>
-                      <div className="inv-img-ph" style={{width:32,height:32,fontSize:14,borderRadius:6,flexShrink:0}}>{catInfo(r.category).icon}</div>
-                      <div style={{flex:1,minWidth:0}}>
-                        <div style={{fontSize:13,fontWeight:500,whiteSpace:'nowrap',overflow:'hidden',textOverflow:'ellipsis'}}>{r.name}</div>
-                        <div style={{fontSize:11,color:'var(--text-muted)',display:'flex',gap:6,marginTop:2}}>
-                          {r.location&&<span>{"📍"+r.location}</span>}
-                          {isLow(r)&&<span style={{color:'var(--highlight)'}}>{"⚠️不足"}</span>}
-                        </div>
-                      </div>
-                      <div className="qty-ctrl" onClick={e=>e.stopPropagation()}>
-                        <button className="qty-btn" onClick={()=>updateQty(r,-1)}>{"−"}</button>
-                        <span className={`qty-num ${isLow(r)?'low':''}`}>{r.quantity}</span>
-                        <button className="qty-btn" onClick={()=>updateQty(r,1)}>{"＋"}</button>
-                      </div>
-                      <span style={{fontSize:11,color:'var(--text-muted)',marginLeft:2}}>{r.unit}</span>
-                    </div>
-                  ))}
-                </div>
-                :<div key="card-wrap" className="inv-grid" style={{padding:'8px 10px 10px'}}>
-                  {c.items.map(r=>(
-                    <div key={r.id} className="inv-card" onClick={()=>{setShowDetail(r);setEditMode(false);}}>
-                      <div className="inv-card-img">
-                        {r.imageUrl
-                          ?<img src={r.imageUrl} alt="" onError={e=>e.target.style.display='none'}/>
-                          :<span style={{fontSize:32}}>{catInfo(r.category).icon}</span>
-                        }
-                      </div>
-                      <div className="inv-card-body">
-                        <div className="inv-card-name">{r.name}</div>
-                        {r.location&&<div style={{fontSize:11,color:'var(--text-muted)',marginTop:2}}>{"📍"+r.location}</div>}
-                        <div className="inv-card-foot">
-                          <div>
-                            <span className={`inv-card-num ${isLow(r)?'low':''}`}>{r.quantity}</span>
-                            <span style={{fontSize:11,color:'var(--text-muted)',marginLeft:3}}>{r.unit}</span>
-                            {isLow(r)&&<span style={{fontSize:10,color:'var(--highlight)',marginLeft:3}}>{"⚠️"}</span>}
-                          </div>
-                          <div className="qty-ctrl" onClick={e=>e.stopPropagation()}>
-                            <button className="qty-btn" style={{width:24,height:24,fontSize:14}} onClick={()=>updateQty(r,-1)}>{"−"}</button>
-                            <button className="qty-btn" style={{width:24,height:24,fontSize:14}} onClick={()=>updateQty(r,1)}>{"＋"}</button>
-                          </div>
-                        </div>
-                      </div>
-                    </div>
-                  ))}
-                </div>
-              )}
+      <div className="search-row">
+        <span className="search-icon">🔍</span>
+        <input className="search-input" placeholder="搜尋名稱、條碼、位置..." value={search} onChange={e=>setSearch(e.target.value)} style={{paddingRight:search?'36px':'14px'}}/>
+        {search&&<button onClick={()=>setSearch('')} style={{position:'absolute',right:'26px',top:'50%',transform:'translateY(-50%)',background:'none',border:'none',cursor:'pointer',fontSize:16,color:'var(--text-muted)',lineHeight:1}}>✕</button>}
+      </div>
+      <div className="cat-pills">
+        <button className={`cpill ${catFilter==='all'?'active':''}`} onClick={()=>setCatFilter('all')}>全部</button>
+        {CATS.map(c=>(
+          <button key={c.key} className={`cpill ${catFilter===c.key?'active':''}`} onClick={()=>setCatFilter(c.key)}>{c.icon} {c.label}</button>
+        ))}
+      </div>
+      <div className="content">
+        {byCategory.length===0&&<div className="empty"><div style={{fontSize:40}}>📦</div><div style={{marginTop:8}}>還沒有庫存品項</div></div>}
+        {byCategory.map(c=>(
+          <div key={c.key} className="acc-group">
+            <div className="acc-header" onClick={()=>toggleCat(c.key)}>
+              <div className="acc-header-left">
+                <span className="acc-icon">{c.icon}</span>
+                <span className="acc-name">{c.label}</span>
+                <span className="acc-count">{c.items.length}</span>
+                {c.items.some(isLow)&&<span style={{fontSize:10,color:'var(--highlight)'}}>⚠️</span>}
               </div>
-            ))}
-          </div>
-        </>
-      )}
-
-      {mainTab==='shopping'&&(
-        <div className="shopping-section">
-          {lowItems.length>0&&(
-            <div className="low-stock-section" style={{padding:'12px 0 0'}}>
-              <div className="ls-title">📦 庫存自動加入（{lowItems.length} 項不足）</div>
-              {lowItems.some(r=>lowDone[r.id])&&(
-                <button onClick={()=>setLowDone(p=>{const n={};lowItems.forEach(r=>{if(!p[r.id])n[r.id]=false;});localStorage.setItem('hh_low_done'+'_'+room,JSON.stringify(n));return n;})}
-                  style={{width:'100%',padding:'8px',fontSize:12,color:'var(--sage)',background:'#edf2ec',border:'none',cursor:'pointer',fontFamily:'var(--sans)'}}>
-                  ✓ 清除已勾選項目
-                </button>
-              )}
-              {lowItems.map(r=>(
-                <div key={r.id} className="shop-item" style={{borderBottom:'1px solid #f5e5de',borderLeft:'3px solid var(--highlight)'}}>
-                  <button className={`shop-ck ${lowDone[r.id]?'done':''}`}
-                    style={{borderColor:'var(--highlight)'}}
-                    onClick={()=>toggleLow(r.id)}>
-                    {lowDone[r.id]?'✓':''}
-                  </button>
-                  <span className={`shop-text ${lowDone[r.id]?'done':''}`}>{r.name}</span>
-                  <span style={{fontSize:12,color:'var(--highlight)',marginRight:4}}>剩{r.quantity}{r.unit}</span>
-                  <button className="shop-del" onClick={()=>removeLow(r.id)}>✕</button>
+              <span className={`acc-arrow ${openCats[c.key]!==false?'open':''}`}>▼</span>
+            </div>
+            {openCats[c.key]===true&&(
+            viewMode==='list'
+            ?<div key="list-wrap">
+              {c.items.map(r=>(
+                <div key={r.id} className="inv-item-list" onClick={()=>{setShowDetail(r);setEditMode(false);}}>
+                  <div className="inv-img-ph" style={{width:32,height:32,fontSize:14,borderRadius:6,flexShrink:0}}>{catInfo(r.category).icon}</div>
+                  <div style={{flex:1,minWidth:0}}>
+                    <div style={{fontSize:13,fontWeight:500,whiteSpace:'nowrap',overflow:'hidden',textOverflow:'ellipsis'}}>{r.name}</div>
+                    <div style={{fontSize:11,color:'var(--text-muted)',display:'flex',gap:6,marginTop:2}}>
+                      {r.location&&<span>{"📍"+r.location}</span>}
+                      {isLow(r)&&<span style={{color:'var(--highlight)'}}>{"⚠️不足"}</span>}
+                    </div>
+                  </div>
+                  <div className="qty-ctrl" onClick={e=>e.stopPropagation()}>
+                    <button className="qty-btn" onClick={()=>updateQty(r,-1)}>{"−"}</button>
+                    <span className={`qty-num ${isLow(r)?'low':''}`}>{r.quantity}</span>
+                    <button className="qty-btn" onClick={()=>updateQty(r,1)}>{"＋"}</button>
+                  </div>
+                  <span style={{fontSize:11,color:'var(--text-muted)',marginLeft:2}}>{r.unit}</span>
                 </div>
               ))}
-              <div style={{fontSize:11,color:'var(--text-muted)',padding:'8px 14px',background:'var(--card2)',borderTop:'1px solid #f5e5de'}}>
-                💡 補貨後到庫存清單點 ＋，數量足夠後此列表自動更新
-              </div>
+            </div>
+            :<div key="card-wrap" className="inv-grid" style={{padding:'8px 10px 10px'}}>
+              {c.items.map(r=>(
+                <div key={r.id} className="inv-card" onClick={()=>{setShowDetail(r);setEditMode(false);}}>
+                  <div className="inv-card-img">
+                    {r.imageUrl
+                      ?<img src={r.imageUrl} alt="" onError={e=>e.target.style.display='none'}/>
+                      :<span style={{fontSize:32}}>{catInfo(r.category).icon}</span>
+                    }
+                  </div>
+                  <div className="inv-card-body">
+                    <div className="inv-card-name">{r.name}</div>
+                    {r.location&&<div style={{fontSize:11,color:'var(--text-muted)',marginTop:2}}>{"📍"+r.location}</div>}
+                    <div className="inv-card-foot">
+                      <div>
+                        <span className={`inv-card-num ${isLow(r)?'low':''}`}>{r.quantity}</span>
+                        <span style={{fontSize:11,color:'var(--text-muted)',marginLeft:3}}>{r.unit}</span>
+                        {isLow(r)&&<span style={{fontSize:10,color:'var(--highlight)',marginLeft:3}}>{"⚠️"}</span>}
+                      </div>
+                      <div className="qty-ctrl" onClick={e=>e.stopPropagation()}>
+                        <button className="qty-btn" style={{width:24,height:24,fontSize:14}} onClick={()=>updateQty(r,-1)}>{"−"}</button>
+                        <button className="qty-btn" style={{width:24,height:24,fontSize:14}} onClick={()=>updateQty(r,1)}>{"＋"}</button>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+              ))}
             </div>
           )}
-          <div className="shop-card" style={{marginTop:12}}>
-            <div className="shop-header">
-              <span>✏️</span>
-              <span className="shop-header-title">自由新增待買清單</span>
-              <span style={{fontSize:11,color:'var(--highlight)',marginLeft:'auto'}}>{shopping.filter(s=>!s.done).length} 項待買</span>
-              {shopping.some(s=>s.done)&&(
-                <button onClick={()=>setShopping(p=>p.filter(s=>!s.done))}
-                  style={{marginLeft:8,fontSize:11,color:'var(--sage)',background:'none',border:'none',cursor:'pointer',textDecoration:'underline'}}>
-                  清除已完成
-                </button>
-              )}
-            </div>
-            <div className="shop-add-row">
-              <input className="shop-input" placeholder="新增待買項目..." value={shopInput} onChange={e=>setShopInput(e.target.value)} onKeyDown={e=>e.key==='Enter'&&addShop()}/>
-              <button className="shop-add-btn" onClick={addShop}>＋</button>
-            </div>
-            {shopping.length===0&&<div style={{textAlign:'center',padding:'20px',color:'var(--text-muted)',fontSize:14}}>清單是空的，快來新增！</div>}
-            {shopping.map(t=>(
-              <div key={t.id} className="shop-item">
-                <button className={`shop-ck ${t.done?'done':''}`} onClick={()=>toggleShop(t.id)}>{t.done?'✓':''}</button>
-                <span className={`shop-text ${t.done?'done':''}`}>{t.text}</span>
-                <button className="shop-del" onClick={()=>delShop(t.id)}>✕</button>
-              </div>
-            ))}
           </div>
-        </div>
-      )}
-
-      {mainTab==='inventory'&&<button className="fab" onClick={()=>setShowAdd(true)}>＋</button>}
-
-      <div className="bottom-nav">
-        <a className="nav-btn" href={`index.html?room=${room}`}><span className="nav-icon">🏡</span>首頁</a>
-        <a className="nav-btn" href={moduleUrl('module-reminders.html')}><span className="nav-icon">📋</span>提醒</a>
-        <a className="nav-btn active" href="#"><span className="nav-icon">📦</span>庫存</a>
-        <a className="nav-btn" href={moduleUrl('module-wardrobe.html')}><span className="nav-icon">👗</span>衣櫥</a>
-        <a className="nav-btn" href={moduleUrl('module-wiki.html')}><span className="nav-icon">📖</span>百科</a>
+        ))}
       </div>
+    </>
+  )}
 
-      {showAdd&&(
-        <div className="modal-overlay" onClick={()=>setShowAdd(false)}>
-          <div className="modal-sheet" onClick={e=>e.stopPropagation()}>
-            <div className="modal-handle"/>
-            <div className="modal-header">
-              <div className="modal-title">新增庫存</div>
-              <button className="modal-close" onClick={()=>setShowAdd(false)}>✕</button>
+  {mainTab==='shopping'&&(
+    <div className="shopping-section">
+      {lowItems.length>0&&(
+        <div className="low-stock-section" style={{padding:'12px 0 0'}}>
+          <div className="ls-title">📦 庫存自動加入（{lowItems.length} 項不足）</div>
+          {lowItems.some(r=>lowDone[r.id])&&(
+            <button onClick={()=>setLowDone(p=>{const n={};lowItems.forEach(r=>{if(!p[r.id])n[r.id]=false;});localStorage.setItem('hh_low_done'+'_'+room,JSON.stringify(n));return n;})}
+              style={{width:'100%',padding:'8px',fontSize:12,color:'var(--sage)',background:'#edf2ec',border:'none',cursor:'pointer',fontFamily:'var(--sans)'}}>
+              ✓ 清除已勾選項目
+            </button>
+          )}
+          {lowItems.map(r=>(
+            <div key={r.id} className="shop-item" style={{borderBottom:'1px solid #f5e5de',borderLeft:'3px solid var(--highlight)'}}>
+              <button className={`shop-ck ${lowDone[r.id]?'done':''}`}
+                style={{borderColor:'var(--highlight)'}}
+                onClick={()=>toggleLow(r.id)}>
+                {lowDone[r.id]?'✓':''}
+              </button>
+              <span className={`shop-text ${lowDone[r.id]?'done':''}`}>{r.name}</span>
+              <span style={{fontSize:12,color:'var(--highlight)',marginRight:4}}>剩{r.quantity}{r.unit}</span>
+              <button className="shop-del" onClick={()=>removeLow(r.id)}>✕</button>
             </div>
-            <div className="modal-body"><InventoryForm data={{}} onSave={handleSave} onCancel={()=>setShowAdd(false)}/></div>
+          ))}
+          <div style={{fontSize:11,color:'var(--text-muted)',padding:'8px 14px',background:'var(--card2)',borderTop:'1px solid #f5e5de'}}>
+            💡 補貨後到庫存清單點 ＋，數量足夠後此列表自動更新
           </div>
         </div>
       )}
-
-      {showDetail&&(
-        <div className="modal-overlay" onClick={()=>setShowDetail(null)}>
-          <div className="modal-sheet" onClick={e=>e.stopPropagation()}>
-            <div className="modal-handle"/>
-            <div className="modal-header">
-              <div style={{display:'flex',alignItems:'center',gap:8}}>
-                <div className="modal-title">{showDetail.name}</div>
-                {!editMode&&<span className="readonly-badge">🔒 唯讀</span>}
-              </div>
-              <div style={{display:'flex',gap:6}}>
-                {!editMode&&<button className="icon-btn" onClick={()=>setEditMode(true)}>✏️</button>}
-                <button className="modal-close" onClick={()=>setShowDetail(null)}>✕</button>
-              </div>
-            </div>
-            <div className="modal-body">
-              {editMode
-                ?<InventoryForm data={showDetail} onSave={handleSave} onCancel={()=>setEditMode(false)} onDelete={()=>handleDelete(showDetail)}/>
-                :<InvDetail item={showDetail} onQty={(d)=>{updateQty(showDetail,d);setShowDetail(p=>({...p,quantity:Math.max(0,Number(p.quantity)+d)}));}}/>
-              }
-            </div>
-          </div>
+      <div className="shop-card" style={{marginTop:12}}>
+        <div className="shop-header">
+          <span>✏️</span>
+          <span className="shop-header-title">自由新增待買清單</span>
+          <span style={{fontSize:11,color:'var(--highlight)',marginLeft:'auto'}}>{shopping.filter(s=>!s.done).length} 項待買</span>
+          {shopping.some(s=>s.done)&&(
+            <button onClick={()=>(async()=>{
+              const done=shopping.filter(s=>s.done);
+              const batch=db.batch();
+              done.forEach(s=>batch.delete(db.collection('shopping').doc(room).collection('items').doc(s.id)));
+              await batch.commit();
+            })()}
+              style={{marginLeft:8,fontSize:11,color:'var(--sage)',background:'none',border:'none',cursor:'pointer',textDecoration:'underline'}}>
+              清除已完成
+            </button>
+          )}
         </div>
-      )}
-
-      {showCsv&&(
-        <div className="modal-overlay" onClick={()=>setShowCsv(false)}>
-          <div className="modal-sheet" onClick={e=>e.stopPropagation()}>
-            <div className="modal-handle"/>
-            <div className="modal-header"><div className="modal-title">📥 匯入庫存</div><button className="modal-close" onClick={()=>setShowCsv(false)}>✕</button></div>
-            <div className="modal-body">
-              <div style={{fontSize:12,color:'var(--text-muted)',marginBottom:10}}>或手動貼上 CSV（name, category, quantity, unit, threshold, imageUrl, barcode, location, note</div>
-              <textarea className="csv-area" value={csvText} onChange={e=>setCsvText(e.target.value)} placeholder={'name,category,quantity,unit,threshold,imageUrl,barcode,location,note\n雞蛋,food,10,顆,0,,,冰箱,\n衛生紙,clean,3,包,2,,,浴室,'}/>
-            </div>
-            <div className="modal-footer">
-              <button className="btn-secondary" onClick={()=>setShowCsv(false)}>取消</button>
-              <button className="btn-primary" onClick={importCsv}>匯入</button>
-            </div>
-          </div>
+        <div className="shop-add-row">
+          <input className="shop-input" placeholder="新增待買項目..." value={shopInput} onChange={e=>setShopInput(e.target.value)} onKeyDown={e=>e.key==='Enter'&&addShop()}/>
+          <button className="shop-add-btn" onClick={addShop}>＋</button>
         </div>
-      )}
+        {shopping.length===0&&<div style={{textAlign:'center',padding:'20px',color:'var(--text-muted)',fontSize:14}}>清單是空的，快來新增！</div>}
+        {shopping.map(t=>(
+          <div key={t.id} className="shop-item">
+            <button className={`shop-ck ${t.done?'done':''}`} onClick={()=>toggleShop(t.id)}>{t.done?'✓':''}</button>
+            <span className={`shop-text ${t.done?'done':''}`}>{t.text}</span>
+            <button className="shop-del" onClick={()=>delShop(t.id)}>✕</button>
+          </div>
+        ))}
+      </div>
     </div>
-  );
+  )}
+
+  {mainTab==='inventory'&&<button className="fab" onClick={()=>setShowAdd(true)}>＋</button>}
+
+  <div className="bottom-nav">
+    <a className="nav-btn" href={`index.html?room=${room}`}><span className="nav-icon">🏡</span>首頁</a>
+    <a className="nav-btn" href={moduleUrl('module-reminders.html')}><span className="nav-icon">📋</span>提醒</a>
+    <a className="nav-btn active" href="#"><span className="nav-icon">📦</span>庫存</a>
+    <a className="nav-btn" href={moduleUrl('module-wardrobe.html')}><span className="nav-icon">👗</span>衣櫥</a>
+    <a className="nav-btn" href={moduleUrl('module-wiki.html')}><span className="nav-icon">📖</span>百科</a>
+  </div>
+
+  {showAdd&&(
+    <div className="modal-overlay" onClick={()=>setShowAdd(false)}>
+      <div className="modal-sheet" onClick={e=>e.stopPropagation()}>
+        <div className="modal-handle"/>
+        <div className="modal-header">
+          <div className="modal-title">新增庫存</div>
+          <button className="modal-close" onClick={()=>setShowAdd(false)}>✕</button>
+        </div>
+        <div className="modal-body"><InventoryForm data={{}} onSave={handleSave} onCancel={()=>setShowAdd(false)}/></div>
+      </div>
+    </div>
+  )}
+
+  {showDetail&&(
+    <div className="modal-overlay" onClick={()=>setShowDetail(null)}>
+      <div className="modal-sheet" onClick={e=>e.stopPropagation()}>
+        <div className="modal-handle"/>
+        <div className="modal-header">
+          <div style={{display:'flex',alignItems:'center',gap:8}}>
+            <div className="modal-title">{showDetail.name}</div>
+            {!editMode&&<span className="readonly-badge">🔒 唯讀</span>}
+          </div>
+          <div style={{display:'flex',gap:6}}>
+            {!editMode&&<button className="icon-btn" onClick={()=>setEditMode(true)}>✏️</button>}
+            <button className="modal-close" onClick={()=>setShowDetail(null)}>✕</button>
+          </div>
+        </div>
+        <div className="modal-body">
+          {editMode
+            ?<InventoryForm data={showDetail} onSave={handleSave} onCancel={()=>setEditMode(false)} onDelete={()=>handleDelete(showDetail)}/>
+            :<InvDetail item={showDetail} onQty={(d)=>{updateQty(showDetail,d);setShowDetail(p=>({...p,quantity:Math.max(0,Number(p.quantity)+d)}));}}/>
+          }
+        </div>
+      </div>
+    </div>
+  )}
+
+  {showCsv&&(
+    <div className="modal-overlay" onClick={()=>setShowCsv(false)}>
+      <div className="modal-sheet" onClick={e=>e.stopPropagation()}>
+        <div className="modal-handle"/>
+        <div className="modal-header"><div className="modal-title">📥 匯入庫存</div><button className="modal-close" onClick={()=>setShowCsv(false)}>✕</button></div>
+        <div className="modal-body">
+          <div style={{fontSize:12,color:'var(--text-muted)',marginBottom:10}}>或手動貼上 CSV（name, category, quantity, unit, threshold, imageUrl, barcode, location, note</div>
+          <textarea className="csv-area" value={csvText} onChange={e=>setCsvText(e.target.value)} placeholder={'name,category,quantity,unit,threshold,imageUrl,barcode,location,note\n雞蛋,food,10,顆,0,,,冰箱,\n衛生紙,clean,3,包,2,,,浴室,'}/>
+        </div>
+        <div className="modal-footer">
+          <button className="btn-secondary" onClick={()=>setShowCsv(false)}>取消</button>
+          <button className="btn-primary" onClick={importCsv}>匯入</button>
+        </div>
+      </div>
+    </div>
+  )}
+</div>
+```
+
+);
 }
 
 function InvDetail({item,onQty}){
-  const c=catInfo(item.category);
-  return(
-    <div>
-      {item.imageUrl?<img src={item.imageUrl} alt="" style={{width:'100%',maxHeight:200,objectFit:'contain',borderRadius:12,marginBottom:12,background:'var(--card2)'}}/>:<div style={{width:'100%',height:80,display:'flex',alignItems:'center',justifyContent:'center',fontSize:48,marginBottom:12}}>{catInfo(item.category).icon}</div>}
-      <div style={{display:'flex',alignItems:'center',justifyContent:'space-between',marginBottom:16}}>
-        <div style={{display:'flex',alignItems:'center',gap:8}}>
-          <span style={{fontSize:28}}>{c.icon}</span>
-          <div>
-            <div style={{fontSize:12,color:'var(--text-muted)'}}>{c.label}</div>
-            <div style={{fontFamily:'var(--serif)',fontSize:22,fontWeight:700}}>{item.quantity} <span style={{fontSize:14}}>{item.unit}</span></div>
-          </div>
-        </div>
-        <div style={{display:'flex',alignItems:'center',gap:8}}>
-          <button onClick={()=>onQty(-1)} style={{width:36,height:36,borderRadius:'50%',background:'var(--card2)',fontSize:20,display:'flex',alignItems:'center',justifyContent:'center'}}>−</button>
-          <button onClick={()=>onQty(1)} style={{width:36,height:36,borderRadius:'50%',background:'var(--wood)',color:'white',fontSize:20,display:'flex',alignItems:'center',justifyContent:'center'}}>＋</button>
-        </div>
-      </div>
-      {[
-        {label:'警告值',val:item.threshold===0||item.threshold==='0'?'用完才提醒':`≤ ${item.threshold} ${item.unit}`},
-        {label:'條碼',val:item.barcode||'—'},
-        {label:'擺放位置',val:item.location||'—'},
-        {label:'備註',val:item.note||'—'},
-      ].map(f=>(
-        <div key={f.label} className="detail-field">
-          <div className="detail-label">{f.label}</div>
-          <div className="detail-val">{f.val}</div>
-        </div>
-      ))}
-    </div>
-  );
+const c=catInfo(item.category);
+return(
+<div>
+{item.imageUrl?<img src={item.imageUrl} alt=”” style={{width:‘100%’,maxHeight:200,objectFit:‘contain’,borderRadius:12,marginBottom:12,background:‘var(–card2)’}}/>:<div style={{width:‘100%’,height:80,display:‘flex’,alignItems:‘center’,justifyContent:‘center’,fontSize:48,marginBottom:12}}>{catInfo(item.category).icon}</div>}
+<div style={{display:‘flex’,alignItems:‘center’,justifyContent:‘space-between’,marginBottom:16}}>
+<div style={{display:‘flex’,alignItems:‘center’,gap:8}}>
+<span style={{fontSize:28}}>{c.icon}</span>
+<div>
+<div style={{fontSize:12,color:‘var(–text-muted)’}}>{c.label}</div>
+<div style={{fontFamily:‘var(–serif)’,fontSize:22,fontWeight:700}}>{item.quantity} <span style={{fontSize:14}}>{item.unit}</span></div>
+</div>
+</div>
+<div style={{display:‘flex’,alignItems:‘center’,gap:8}}>
+<button onClick={()=>onQty(-1)} style={{width:36,height:36,borderRadius:‘50%’,background:‘var(–card2)’,fontSize:20,display:‘flex’,alignItems:‘center’,justifyContent:‘center’}}>−</button>
+<button onClick={()=>onQty(1)} style={{width:36,height:36,borderRadius:‘50%’,background:‘var(–wood)’,color:‘white’,fontSize:20,display:‘flex’,alignItems:‘center’,justifyContent:‘center’}}>＋</button>
+</div>
+</div>
+{[
+{label:‘警告值’,val:item.threshold===0||item.threshold===‘0’?‘用完才提醒’:`≤ ${item.threshold} ${item.unit}`},
+{label:‘條碼’,val:item.barcode||’—’},
+{label:‘擺放位置’,val:item.location||’—’},
+{label:‘備註’,val:item.note||’—’},
+].map(f=>(
+<div key={f.label} className="detail-field">
+<div className="detail-label">{f.label}</div>
+<div className="detail-val">{f.val}</div>
+</div>
+))}
+</div>
+);
 }
 
 function InventoryForm({data,onSave,onCancel,onDelete}){
-  const [form,setForm]=useState({name:'',category:'food',quantity:1,unit:'個',threshold:0,imageUrl:'',barcode:'',location:'',note:'',...data});
-  const set=(k,v)=>setForm(f=>({...f,[k]:v}));
-  const save=()=>{if(!form.name.trim())return;onSave({...form,quantity:Number(form.quantity),threshold:Number(form.threshold)});};
-  return(
-    <div>
-      <label className="form-label">分類</label>
-      <div style={{display:'grid',gridTemplateColumns:'repeat(4,1fr)',gap:5,marginBottom:4}}>
-        {CATS.map(c=>(
-          <button key={c.key} onClick={()=>set('category',c.key)}
-            style={{padding:'8px 4px',borderRadius:8,border:`1.5px solid ${form.category===c.key?'var(--wood)':'var(--sand)'}`,background:form.category===c.key?'var(--wood)':'var(--card)',color:form.category===c.key?'white':'var(--wood)',fontSize:11,textAlign:'center'}}>
-            {c.icon}<br/>{c.label}
-          </button>
-        ))}
-      </div>
-      <label className="form-label">品項名稱 *</label>
-      <input className="form-input" value={form.name} onChange={e=>set('name',e.target.value)} placeholder="例：衛生紙、雞蛋"/>
-      <label className="form-label">照片網址 ✨</label>
-      <input className="form-input" value={form.imageUrl} onChange={e=>set('imageUrl',e.target.value)} placeholder="https://...（選填）"/>
-      <div className="form-row3">
-        <div><label className="form-label">數量</label><input className="form-input" type="number" value={form.quantity} onChange={e=>set('quantity',e.target.value)}/></div>
-        <div><label className="form-label">單位</label>
-          <select className="form-select" value={form.unit} onChange={e=>set('unit',e.target.value)}>
-            {UNITS.map(u=><option key={u}>{u}</option>)}
-          </select>
-        </div>
-        <div><label className="form-label">警告值</label><input className="form-input" type="number" value={form.threshold} onChange={e=>set('threshold',e.target.value)}/></div>
-      </div>
-      <div style={{fontSize:11,color:'var(--text-muted)',marginTop:-8,marginBottom:8}}>警告值 0 = 用完才提醒</div>
-      <div className="form-row">
-        <div><label className="form-label">條碼</label><input className="form-input" value={form.barcode} onChange={e=>set('barcode',e.target.value)} placeholder="選填"/></div>
-        <div><label className="form-label">擺放位置</label><input className="form-input" value={form.location} onChange={e=>set('location',e.target.value)} placeholder="選填"/></div>
-      </div>
-      <label className="form-label">備註</label>
-      <input className="form-input" value={form.note} onChange={e=>set('note',e.target.value)} placeholder="選填"/>
-      <div style={{display:'flex',gap:10,marginTop:16}}>
-        {onDelete&&<button className="btn-danger" onClick={onDelete}>刪除</button>}
-        <button className="btn-secondary" onClick={onCancel}>取消</button>
-        <button className="btn-primary" onClick={save}>儲存</button>
-      </div>
-    </div>
-  );
+const [form,setForm]=useState({name:’’,category:‘food’,quantity:1,unit:‘個’,threshold:0,imageUrl:’’,barcode:’’,location:’’,note:’’,…data});
+const set=(k,v)=>setForm(f=>({…f,[k]:v}));
+const save=()=>{if(!form.name.trim())return;onSave({…form,quantity:Number(form.quantity),threshold:Number(form.threshold)});};
+return(
+<div>
+<label className="form-label">分類</label>
+<div style={{display:‘grid’,gridTemplateColumns:‘repeat(4,1fr)’,gap:5,marginBottom:4}}>
+{CATS.map(c=>(
+<button key={c.key} onClick={()=>set(‘category’,c.key)}
+style={{padding:‘8px 4px’,borderRadius:8,border:`1.5px solid ${form.category===c.key?'var(--wood)':'var(--sand)'}`,background:form.category===c.key?‘var(–wood)’:‘var(–card)’,color:form.category===c.key?‘white’:‘var(–wood)’,fontSize:11,textAlign:‘center’}}>
+{c.icon}<br/>{c.label}
+</button>
+))}
+</div>
+<label className="form-label">品項名稱 *</label>
+<input className=“form-input” value={form.name} onChange={e=>set(‘name’,e.target.value)} placeholder=“例：衛生紙、雞蛋”/>
+<label className="form-label">照片網址 ✨</label>
+<input className=“form-input” value={form.imageUrl} onChange={e=>set(‘imageUrl’,e.target.value)} placeholder=“https://…（選填）”/>
+<div className="form-row3">
+<div><label className="form-label">數量</label><input className=“form-input” type=“number” value={form.quantity} onChange={e=>set(‘quantity’,e.target.value)}/></div>
+<div><label className="form-label">單位</label>
+<select className=“form-select” value={form.unit} onChange={e=>set(‘unit’,e.target.value)}>
+{UNITS.map(u=><option key={u}>{u}</option>)}
+</select>
+</div>
+<div><label className="form-label">警告值</label><input className=“form-input” type=“number” value={form.threshold} onChange={e=>set(‘threshold’,e.target.value)}/></div>
+</div>
+<div style={{fontSize:11,color:‘var(–text-muted)’,marginTop:-8,marginBottom:8}}>警告值 0 = 用完才提醒</div>
+<div className="form-row">
+<div><label className="form-label">條碼</label><input className=“form-input” value={form.barcode} onChange={e=>set(‘barcode’,e.target.value)} placeholder=“選填”/></div>
+<div><label className="form-label">擺放位置</label><input className=“form-input” value={form.location} onChange={e=>set(‘location’,e.target.value)} placeholder=“選填”/></div>
+</div>
+<label className="form-label">備註</label>
+<input className=“form-input” value={form.note} onChange={e=>set(‘note’,e.target.value)} placeholder=“選填”/>
+<div style={{display:‘flex’,gap:10,marginTop:16}}>
+{onDelete&&<button className="btn-danger" onClick={onDelete}>刪除</button>}
+<button className="btn-secondary" onClick={onCancel}>取消</button>
+<button className="btn-primary" onClick={save}>儲存</button>
+</div>
+</div>
+);
 }
 
-ReactDOM.createRoot(document.getElementById('root')).render(<App/>);
+ReactDOM.createRoot(document.getElementById(‘root’)).render(<App/>);
 </script>
+
 </body>
 </html>
