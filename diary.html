@@ -810,7 +810,7 @@ textarea::placeholder { color: var(--text-lighter); }
         <div class="today-info">
           <div class="today-month" id="today-month"></div>
           <div class="today-week" id="today-week"></div>
-          <div id="dudu-age" style="display:inline-block;margin-top:3px;font-size:11px;color:#b8967e;background:#f5ede8;padding:2px 8px;border-radius:10px;font-weight:600;letter-spacing:0.5px;"></div>
+
         </div>
       </div>
       <div style="display:flex;flex-direction:column;align-items:flex-end;gap:6px;">
@@ -999,8 +999,9 @@ async function init() {
 
 function updateTodayHeader() {
   const now = new Date();
-  document.getElementById('memory-date').textContent = `${MONTHS_ZH[now.getMonth()]} ${now.getDate()}日`;
-  document.getElementById('review-month-label').textContent = `${reviewYear}年 ${MONTHS_ZH[reviewMonth]}`;
+  document.getElementById('memory-date').textContent = `${MONTHS_ZH[now.getMonth()]} ${now.getDate()}日（${getDuduAge(now)}）`;
+  const rm = new Date(reviewYear, reviewMonth, 15);
+  document.getElementById('review-month-label').textContent = `${reviewYear}年 ${MONTHS_ZH[reviewMonth]}（${getDuduAge(rm)}）`;
   updateDisplayDate();
 }
 
@@ -1012,7 +1013,7 @@ function getDuduAge(forDate) {
   let days = ref.getDate() - birth.getDate();
   if (days < 0) { months--; const prev = new Date(ref.getFullYear(), ref.getMonth(), 0); days += prev.getDate(); }
   if (months < 0) { years--; months += 12; }
-  return "嘟嘟 " + years + "y" + months + "m" + days + "d";
+  return years + "y" + months + "m" + days + "d";
 }
 
 function updateDisplayDate() {
@@ -1020,8 +1021,7 @@ function updateDisplayDate() {
   const d = new Date(dateStr + 'T12:00:00');
   document.getElementById('today-num').textContent = d.getDate();
   document.getElementById('today-month').textContent = `${d.getFullYear()}年 ${MONTHS_ZH[d.getMonth()]}`;
-  document.getElementById('today-week').textContent = WEEKDAYS[d.getDay()];
-  document.getElementById('dudu-age').textContent = getDuduAge(d);
+  document.getElementById('today-week').textContent = WEEKDAYS[d.getDay()] + '（' + getDuduAge(d) + '）';
   renderTodayEntries();
 }
 
@@ -1291,7 +1291,8 @@ window.changeMonth = function(dir) {
   reviewMonth += dir;
   if (reviewMonth < 0) { reviewMonth = 11; reviewYear--; }
   if (reviewMonth > 11) { reviewMonth = 0; reviewYear++; }
-  document.getElementById('review-month-label').textContent = `${reviewYear}年 ${MONTHS_ZH[reviewMonth]}`;
+  const rmRef = new Date(reviewYear, reviewMonth, 15);
+  document.getElementById('review-month-label').textContent = `${reviewYear}年 ${MONTHS_ZH[reviewMonth]}（${getDuduAge(rmRef)}）`;
   renderReview();
 };
 
